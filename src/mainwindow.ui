@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>mainWindow</class>
+ <widget class="QMainWindow" name="mainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Series Watcher</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="serieswatcher.qrc">
+    <normaloff>:/res/serieswatcher.png</normaloff>:/res/serieswatcher.png</iconset>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QListView" name="listView"/>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu_File">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <addaction name="importAction"/>
+    <addaction name="exportAction"/>
+    <addaction name="separator"/>
+    <addaction name="quitAction"/>
+   </widget>
+   <widget class="QMenu" name="menu_Help">
+    <property name="title">
+     <string>&amp;Edit</string>
+    </property>
+    <addaction name="addShowAction"/>
+    <addaction name="deleteShowAction"/>
+    <addaction name="updateShowAction"/>
+    <addaction name="markWatchedAction"/>
+   </widget>
+   <widget class="QMenu" name="menu_Edit">
+    <property name="title">
+     <string>&amp;Help</string>
+    </property>
+    <addaction name="aboutQtAction"/>
+    <addaction name="aboutAction"/>
+   </widget>
+   <addaction name="menu_File"/>
+   <addaction name="menu_Help"/>
+   <addaction name="menu_Edit"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="addShowAction"/>
+   <addaction name="deleteShowAction"/>
+   <addaction name="updateShowAction"/>
+   <addaction name="markWatchedAction"/>
+  </widget>
+  <action name="addShowAction">
+   <property name="text">
+    <string>Add Show...</string>
+   </property>
+  </action>
+  <action name="deleteShowAction">
+   <property name="text">
+    <string>Delete Show</string>
+   </property>
+  </action>
+  <action name="updateShowAction">
+   <property name="text">
+    <string>Update</string>
+   </property>
+  </action>
+  <action name="markWatchedAction">
+   <property name="text">
+    <string>Mark Watched</string>
+   </property>
+  </action>
+  <action name="aboutQtAction">
+   <property name="icon">
+    <iconset resource="serieswatcher.qrc">
+     <normaloff>:/res/qt.png</normaloff>:/res/qt.png</iconset>
+   </property>
+   <property name="text">
+    <string>About Qt...</string>
+   </property>
+  </action>
+  <action name="aboutAction">
+   <property name="text">
+    <string>About...</string>
+   </property>
+  </action>
+  <action name="quitAction">
+   <property name="text">
+    <string>&amp;Quit</string>
+   </property>
+  </action>
+  <action name="importAction">
+   <property name="text">
+    <string>&amp;Import...</string>
+   </property>
+  </action>
+  <action name="exportAction">
+   <property name="text">
+    <string>&amp;Export...</string>
+   </property>
+  </action>
+  <action name="settingsAction">
+   <property name="text">
+    <string>&amp;Settings...</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="serieswatcher.qrc"/>
+ </resources>
+ <connections/>
+</ui>

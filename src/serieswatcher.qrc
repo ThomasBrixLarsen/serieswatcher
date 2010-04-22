@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/">
+    <file>../res/qt.png</file>
+    <file>../res/serieswatcher.png</file>
+  </qresource>
+</RCC>
