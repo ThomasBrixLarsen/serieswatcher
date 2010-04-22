@@ -1,10 +1,16 @@
+#include <QDebug>
+#include <QtNetwork/QNetworkAccessManager>
+
 #include "mainwindow.h"
+#include "searchdialog.h"
+#include "tvdb.h"
 
 MainWindow::MainWindow()
 {
   setupUi(this);
 
-  QStyle *style = QApplication::style();
+  manager = new QNetworkAccessManager(this);
+  searchDialog = new SearchDialog(this);
 
   quitAction->setIcon(QIcon::fromTheme("window-close"));
   updateShowAction->setIcon(QIcon::fromTheme("download"));
@@ -15,9 +21,20 @@ MainWindow::MainWindow()
   exportAction->setIcon(QIcon::fromTheme("document-export"));
   markWatchedAction->setIcon(QIcon::fromTheme("checkbox"));
   aboutAction->setIcon(QIcon::fromTheme("dialog-information"));
+
+  connect(addShowAction, SIGNAL(triggered()), this, SLOT(addShow()));
+
+  QtTvDB::Mirrors *m = TvDB::mirrors();
+  m->setKey("FAD75AF31E1B1577");
 }
 
 MainWindow::~MainWindow()
 {
 
+}
+
+void
+MainWindow::addShow()
+{
+  searchDialog->exec();
 }
