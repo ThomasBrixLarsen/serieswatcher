@@ -16,6 +16,8 @@ public:
 
 public slots:
   void addShow();
+  void addShow(const QString & name, qint64 id);
+
 private:
   SearchDialog *searchDialog;
   QNetworkAccessManager *manager;

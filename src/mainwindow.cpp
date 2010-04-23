@@ -1,5 +1,6 @@
 #include <QDebug>
 #include <QtNetwork/QNetworkAccessManager>
+#include <QtGui/QMessageBox>
 
 #include "mainwindow.h"
 #include "searchdialog.h"
@@ -11,6 +12,9 @@ MainWindow::MainWindow()
 
   manager = new QNetworkAccessManager(this);
   searchDialog = new SearchDialog(this);
+
+  connect(searchDialog, SIGNAL(showSelected(const QString &, qint64)),
+	  this, SLOT(addShow(const QString &, qint64)));
 
   quitAction->setIcon(QIcon::fromTheme("window-close"));
   updateShowAction->setIcon(QIcon::fromTheme("download"));
@@ -37,4 +41,10 @@ void
 MainWindow::addShow()
 {
   searchDialog->exec();
+}
+
+void
+MainWindow::addShow(const QString & name, qint64 id)
+{
+  QMessageBox::information(this, "test", name);
 }
