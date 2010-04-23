@@ -57,8 +57,10 @@ SearchDialog::error(QNetworkReply::NetworkError code)
 {
   QNetworkReply *r = dynamic_cast<QNetworkReply *>(sender());
 
+  if (code == QNetworkReply::OperationCanceledError)
+      return;
   if (r)
-    QMessageBox::critical(this, tr("Network Error"), r->errorString());
+      QMessageBox::critical(this, tr("Network Error"), r->errorString());
 }
 
 void
@@ -106,10 +108,19 @@ SearchDialog::requestFinished(QNetworkReply *rep)
 void
 SearchDialog::clear()
 {
-    qDeleteAll(itemsShows);
+    progressBar->setValue(0);
+
+    foreach (QNetworkReply *r, iconReplies.keys()) {
+	if (r->isRunning())
+	    r->close();
+	delete r;
+    }
     iconReplies.clear();
+
+    qDeleteAll(itemsShows);
     itemsShows.clear();
 
+    lineEdit->clear();
     listWidget->clear();
 }
 
@@ -155,3 +166,20 @@ SearchDialog::accept()
   }
   clear();
 }
+
+void
+SearchDialog::showEvent(QShowEvent * event)
+{
+    progressBar->setValue(0);
+    progressBar->setRange(0, 1);
+    lineEdit->setFocus();
+    QDialog::showEvent(event);
+}
+
+void
+SearchDialog::closeEvent(QCloseEvent * event)
+{
+    clear();
+    QDialog::closeEvent(event);
+}
+

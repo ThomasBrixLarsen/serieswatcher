@@ -21,6 +21,10 @@ signals:
 public slots:
   void accept();
 
+protected:
+  virtual void showEvent(QShowEvent * event);
+  virtual void closeEvent(QCloseEvent * event);
+
 private slots:
   void search();
   void requestFinished(QNetworkReply *rep);
