@@ -14,9 +14,11 @@ public:
   MainWindow();
   ~MainWindow();
 
-public slots:
+private slots:
   void addShow();
   void addShow(const QString & name, qint64 id);
+  void about();
+  void aboutQt();
 
 private:
   SearchDialog *searchDialog;

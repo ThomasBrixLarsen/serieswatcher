@@ -27,6 +27,8 @@ MainWindow::MainWindow()
   aboutAction->setIcon(QIcon::fromTheme("dialog-information"));
 
   connect(addShowAction, SIGNAL(triggered()), this, SLOT(addShow()));
+  connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
+  connect(aboutQtAction, SIGNAL(triggered()), this, SLOT(aboutQt()));
 
   QtTvDB::Mirrors *m = TvDB::mirrors();
   m->setKey("FAD75AF31E1B1577");
@@ -47,4 +49,16 @@ void
 MainWindow::addShow(const QString & name, qint64 id)
 {
   QMessageBox::information(this, "test", name);
+}
+
+void
+MainWindow::about()
+{
+  QMessageBox::about(this, tr("About Series Watcher"), tr("..."));
+}
+
+void
+MainWindow::aboutQt()
+{
+  QMessageBox::aboutQt(this);
 }
