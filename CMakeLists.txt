@@ -7,11 +7,15 @@ set(VERSION_MINOR "0")
 set(VERSION_PATCH "1")
 
 if(CMAKE_SYSTEM_NAME MATCHES Linux)
-  set(CMAKE_MODULE_PATH /usr/share/apps/cmake/modules/)
+  set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} /usr/share/apps/cmake/modules/)
 endif()
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/)
 
 find_package(Qt4 REQUIRED)
-find_package(QTTVDB REQUIRED)
+find_package(QtTvDB REQUIRED)
+find_package(Quazip)
+
+set(HAVE_QUAZIP ${QUAZIP_FOUND})
 
 ## GCC  ##
 set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O2")
@@ -21,8 +25,6 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99 -Wall -Wstrict-prototypes -Werror
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -ggdb3 -DDEBUG=1")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
-
-add_definitions(-include ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
 # compile in debug mode
 if(NOT CMAKE_BUILD_TYPE)

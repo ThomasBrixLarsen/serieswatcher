@@ -1,6 +1,26 @@
+/*
+ * Copyright (C) 2010 Corentin Chary <corentin.chary@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
+
 #include <QDebug>
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtGui/QMessageBox>
+
+#include "config.h"
 
 #include "mainwindow.h"
 #include "searchdialog.h"
@@ -54,7 +74,24 @@ MainWindow::addShow(const QString & name, qint64 id)
 void
 MainWindow::about()
 {
-  QMessageBox::about(this, tr("About Series Watcher"), tr("..."));
+  QMessageBox::about(this, tr("About Series Watcher " SERIES_WATCHER_VERSION),
+		     tr("Version: " SERIES_WATCHER_VERSION "\n"
+			"Home: http://xf.iksaif.net/dev/serieswatcher.html\n\n"
+			"Copyright (C) 2010 Corentin Chary <corentin.chary@gmail.com>\n"
+			"\n"
+			"This program is free software; you can redistribute it and/or modify\n"
+			"it under the terms of the GNU General Public License as published by\n"
+			"the Free Software Foundation; either version 2 of the License, or\n"
+			"(at your option) any later version.\n"
+			"\n"
+			"This program is distributed in the hope that it will be useful, but\n"
+			"WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY\n"
+			"or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License\n"
+			"for more details.\n"
+			"\n"
+			"You should have received a copy of the GNU General Public License along\n"
+			"with this program; if not, write to the Free Software Foundation, Inc.,\n"
+			"59 Temple Place, Suite 330, Boston, MA 02111-1307 USA\n"));
 }
 
 void
