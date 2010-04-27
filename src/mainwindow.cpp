@@ -24,6 +24,8 @@
 
 #include "mainwindow.h"
 #include "searchdialog.h"
+#include "updatethread.h"
+#include "updateprogressdialog.h"
 #include "tvdb.h"
 
 MainWindow::MainWindow()
@@ -52,6 +54,20 @@ MainWindow::MainWindow()
 
   QtTvDB::Mirrors *m = TvDB::mirrors();
   m->setKey("FAD75AF31E1B1577");
+
+  thread = new UpdateThread(this);
+  progress = new UpdateProgressDialog(this);
+
+  /*
+  connect(thread, SIGNAL(downloadStart(qint64, const QUrl &)), progress);
+  connect(progress, SIGNAL(abord()), thread, SLOT(abord());
+
+  connect(thread, SIGNAL(databaseUpdated()), this, SLOT(databaseUpdated()));
+  connect(thread, SIGNAL(started()), this, SLOT(updateStarted()));
+  connect(thread, SIGNAL(finished()), this, SLOT(updateFinished()));
+  connect(thread, SIGNAL(error(const QString &, const QString &)),
+	  this, SLOT(error(const QString &, const QString &)));
+  */
 }
 
 MainWindow::~MainWindow()
@@ -68,7 +84,8 @@ MainWindow::addShow()
 void
 MainWindow::addShow(const QString & name, qint64 id)
 {
-  QMessageBox::information(this, "test", name);
+  progress->show();
+  thread->update(id);
 }
 
 void

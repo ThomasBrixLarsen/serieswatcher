@@ -16,35 +16,15 @@
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef MAINWINDOW_H
-# define MAINWINDOW_H
+#include "updateprogressdialog.h"
 
-#include <QtGui/QMainWindow>
+UpdateProgressDialog::UpdateProgressDialog(QWidget * parent)
+ : QDialog(parent)
+{
+  setupUi(this);
+}
 
-#include "ui_mainwindow.h"
+UpdateProgressDialog::~UpdateProgressDialog()
+{
+}
 
-class SearchDialog;
-class UpdateThread;
-class QNetworkAccessManager;
-class UpdateProgressDialog;
-
-class MainWindow : public QMainWindow, private Ui_mainWindow {
-  Q_OBJECT
-public:
-  MainWindow();
-  ~MainWindow();
-
-private slots:
-  void addShow();
-  void addShow(const QString & name, qint64 id);
-  void about();
-  void aboutQt();
-
-private:
-  UpdateProgressDialog *progress;
-  SearchDialog *searchDialog;
-  QNetworkAccessManager *manager;
-  UpdateThread *thread;
-};
-
-#endif

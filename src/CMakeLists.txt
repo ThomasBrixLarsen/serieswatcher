@@ -13,9 +13,9 @@ INCLUDE_DIRECTORIES(
 	${QTTVDB_INCLUDE_DIR}
 )
 
-SET(serieswatcher_SRCS main.cpp mainwindow.cpp searchdialog.cpp tvdb.cpp searchlistwidget.cpp)
-SET(serieswatcher_UIS mainwindow.ui searchdialog.ui)
-SET(serieswatcher_MOC_HDRS mainwindow.h searchdialog.h searchlistwidget.h)
+SET(serieswatcher_SRCS main.cpp mainwindow.cpp searchdialog.cpp tvdb.cpp searchlistwidget.cpp updatethread.cpp updateprogressdialog.cpp)
+SET(serieswatcher_UIS mainwindow.ui searchdialog.ui updateprogressdialog.ui)
+SET(serieswatcher_MOC_HDRS mainwindow.h searchdialog.h searchlistwidget.h updatethread.h updateprogressdialog.h)
 SET(serieswatcher_RCS serieswatcher.qrc)
 
 QT4_WRAP_CPP(MOC_SOURCE ${serieswatcher_MOC_HDRS})

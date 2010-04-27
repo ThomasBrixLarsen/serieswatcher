@@ -16,35 +16,18 @@
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef MAINWINDOW_H
-# define MAINWINDOW_H
+#ifndef UPDATEPROGRESSDIALOG_H
+# define UPDATEPROGRESSDIALOG_H
 
-#include <QtGui/QMainWindow>
+#include "tvdb.h"
+#include "ui_updateprogressdialog.h"
 
-#include "ui_mainwindow.h"
-
-class SearchDialog;
-class UpdateThread;
-class QNetworkAccessManager;
-class UpdateProgressDialog;
-
-class MainWindow : public QMainWindow, private Ui_mainWindow {
+class UpdateProgressDialog : public QDialog, private Ui_UpdateProgressDialog
+{
   Q_OBJECT
 public:
-  MainWindow();
-  ~MainWindow();
-
-private slots:
-  void addShow();
-  void addShow(const QString & name, qint64 id);
-  void about();
-  void aboutQt();
-
-private:
-  UpdateProgressDialog *progress;
-  SearchDialog *searchDialog;
-  QNetworkAccessManager *manager;
-  UpdateThread *thread;
+  UpdateProgressDialog(QWidget * parent = 0);
+  ~UpdateProgressDialog();
 };
 
 #endif
