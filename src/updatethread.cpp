@@ -161,7 +161,9 @@ UpdateThread::processJobs()
 	if (banner->type() == "poster" || (banner->type() == "season" && banner->type2() == "season")) {
 	  if (cache->hasBannerFile(banner->id(), TvDBCache::Poster))
 	    continue ;
+	  mutex.lock();
 	  startJob(banner->id(), mirrors->bannerUrl(banner->path()), UpdateThread::Banner, manager2);
+	  mutex.unlock();
 	}
       }
       qDeleteAll(banners);
