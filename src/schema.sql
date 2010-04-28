@@ -61,6 +61,7 @@ CREATE TABLE IF NOT EXISTS "banners" (
     "showId" INTEGER,
     "path" TEXT,
     "type" TEXT,
+    "type2" TEXT,
     "language" TEXT,
     "season" TEXT
 );

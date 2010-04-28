@@ -106,24 +106,33 @@ TvDBCache::fetchBanners(qint64 showId)
 }
 
 QString
-TvDBCache::bannerPath(qint64 id)
+TvDBCache::bannerPath(qint64 id, BannerType type)
 {
   QString path = Settings::path();
   QDir dir(path);
+  QString subdir;
 
   if (!dir.exists("cache"))
     dir.mkdir("cache");
   dir.cd("cache");
-  if (!dir.exists("banners"))
-    dir.mkdir("banners");
-  dir.cd("banners");
+
+  if (type == Poster)
+    subdir = "poster";
+  if (type == Banner)
+    subdir = "banner";
+  if (type == Search)
+    subdir = "search";
+
+  if (!dir.exists(subdir))
+    dir.mkdir(subdir);
+  dir.cd(subdir);
   return dir.filePath(QString("%1").arg(id));
 }
 
 void
-TvDBCache::storeBannerFile(qint64 id, const QByteArray &data)
+TvDBCache::storeBannerFile(qint64 id, BannerType type, const QByteArray &data)
 {
-  QFile file(bannerPath(id));
+  QFile file(bannerPath(id, type));
 
   if (!file.open(QIODevice::WriteOnly))
     return;
@@ -132,13 +141,13 @@ TvDBCache::storeBannerFile(qint64 id, const QByteArray &data)
 }
 
 bool
-TvDBCache::hasBannerFile(qint64 id)
+TvDBCache::hasBannerFile(qint64 id, BannerType type)
 {
-  return QFileInfo(bannerPath(id)).exists();
+  return QFileInfo(bannerPath(id, type)).exists();
 }
 
 QPixmap
-TvDBCache::fetchBannerFile(qint64 id)
+TvDBCache::fetchBannerFile(qint64 id, BannerType type)
 {
-  return QPixmap(bannerPath(id));
+  return QPixmap(bannerPath(id, type));
 }

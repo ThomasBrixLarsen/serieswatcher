@@ -149,13 +149,17 @@ UpdateThread::processJobs()
 
     if (job.type == UpdateThread::ShowAndEpisodesZip) {
     } else if (job.type == UpdateThread::Banner) {
-      cache->storeBannerFile(job.id, data);
+      cache->storeBannerFile(job.id, TvDBCache::Poster, data);
     } else if (job.type == UpdateThread::BannersXml) {
       QList < QtTvDB::Banner * > banners = QtTvDB::Banner::parseBanners(data);
 
       foreach ( QtTvDB::Banner * banner, banners) {
-	if (banner->type() == "poster" || banner->type() == "season") {
-	  if (cache->hasBannerFile(banner->id()))
+	cache->storeBanner(banner);
+
+	if (banner->language() != "en")
+	  continue ;
+	if (banner->type() == "poster" || (banner->type() == "season" && banner->type2() == "season")) {
+	  if (cache->hasBannerFile(banner->id(), TvDBCache::Poster))
 	    continue ;
 	  startJob(banner->id(), mirrors->bannerUrl(banner->path()), UpdateThread::Banner, manager2);
 	}
@@ -164,6 +168,12 @@ UpdateThread::processJobs()
     } else if (job.type == UpdateThread::ShowAndEpisodesXml) {
       QList < QtTvDB::Show * > shows = QtTvDB::Show::parseShows(data);
       QList < QtTvDB::Episode * > episodes = QtTvDB::Episode::parseEpisodes(data);
+
+      foreach ( QtTvDB::Show * show, shows)
+	cache->storeShow(show);
+
+      foreach ( QtTvDB::Episode * episode, episodes)
+	cache->storeEpisode(episode);
 
       qDeleteAll(shows);
       qDeleteAll(episodes);

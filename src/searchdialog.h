@@ -26,6 +26,7 @@
 #include "ui_searchdialog.h"
 
 class QNetworkAccessManager;
+class TvDBCache;
 
 class SearchDialog : public QDialog, private Ui_searchDialog
 {
@@ -56,6 +57,7 @@ private:
   QMap < QNetworkReply *, QListWidgetItem * > iconReplies;
   QMap < QListWidgetItem *, QtTvDB::Show * > itemsShows;
   QPixmap blank;
+  TvDBCache *cache;
 };
 
 #endif

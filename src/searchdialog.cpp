@@ -23,6 +23,7 @@
 
 #include "searchdialog.h"
 #include "tvdb.h"
+#include "tvdbcache.h"
 
 SearchDialog::SearchDialog(QWidget * parent)
   : QDialog(parent)
@@ -33,6 +34,7 @@ SearchDialog::SearchDialog(QWidget * parent)
   setupUi(this);
 
   manager = new QNetworkAccessManager(this);
+  cache = new TvDBCache();
 
   searchButton->setIcon(QIcon::fromTheme("edit-find"));
 
@@ -44,7 +46,7 @@ SearchDialog::SearchDialog(QWidget * parent)
 
 SearchDialog::~SearchDialog()
 {
-
+  delete cache;
 }
 
 void
@@ -88,13 +90,15 @@ SearchDialog::requestFinished(QNetworkReply *rep)
 
   if (iconReplies.find(rep) != iconReplies.end()) {
     QPixmap pix;
+    QByteArray data = rep->readAll();
 
-    pix.loadFromData(rep->readAll());
+    pix.loadFromData(data);
     if (!pix.isNull()) {
       QListWidgetItem *item = iconReplies[rep];
 
       if (item) {
 	item->setIcon(pix);
+	cache->storeBannerFile(itemsShows[item]->id(), TvDBCache::Search, data);
 	QPixmapCache::insert("search-" + item->text(), pix);
       }
     }
@@ -153,7 +157,9 @@ SearchDialog::setItemIcon(QListWidgetItem *item, QtTvDB::Show *show)
   else {
     item->setIcon(blank);
 
-    if (!show->banner().isEmpty()) {
+    if (cache->hasBannerFile(show->id(), TvDBCache::Search)) {
+      item->setIcon(cache->fetchBannerFile(show->id(), TvDBCache::Search));
+    } else if (!show->banner().isEmpty()) {
       QUrl url = m->bannerUrl(show->banner());
       QNetworkReply *r = manager->get(QNetworkRequest(url));
 
