@@ -28,6 +28,8 @@
 
 #include <QtTvDB>
 
+class TvDBCache;
+
 class UpdateThread : public QThread
 {
   Q_OBJECT
@@ -51,12 +53,14 @@ public:
   bool updating();
 
 private:
-  void startJob(qint64 id, const QUrl & url, UpdateThread::Type type);
+  void startJob(qint64 id, const QUrl & url, UpdateThread::Type type,
+		QNetworkAccessManager *manager);
 
 private slots:
   void downloadProgress(qint64 done, qint64 total);
   void downloadFinished(QNetworkReply *reply);
   void downloadError(QNetworkReply::NetworkError error);
+  void processJobs();
 
 signals:
   void downloadStarted(qint64 id, UpdateThread::Type type, const QUrl &url);
@@ -78,8 +82,10 @@ private:
   QMutex mutex;
   QWaitCondition condition;
 
+  TvDBCache *cache;
   QtTvDB::Mirrors *mirrors;
-  QNetworkAccessManager *manager;
+  QNetworkAccessManager *manager1; /* For request in main thread */
+  QNetworkAccessManager *manager2; /* For request in update thread (banners) */
 
   QQueue < Job > jobs;
   QMap < QNetworkReply *, Job > downloads;

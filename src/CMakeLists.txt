@@ -2,6 +2,7 @@
 set(QT_USE_QTGUI TRUE)
 set(QT_USE_QTNETWORK TRUE)
 set(QT_USE_QTXML TRUE)
+set(QT_USE_QTSQL TRUE)
 
 INCLUDE( ${QT_USE_FILE} )
 
@@ -13,9 +14,25 @@ INCLUDE_DIRECTORIES(
 	${QTTVDB_INCLUDE_DIR}
 )
 
-SET(serieswatcher_SRCS main.cpp mainwindow.cpp searchdialog.cpp tvdb.cpp searchlistwidget.cpp updatethread.cpp updateprogressdialog.cpp)
+SET(serieswatcher_SRCS
+  main.cpp
+  mainwindow.cpp
+  searchdialog.cpp
+  tvdb.cpp
+  tvdbcache.cpp
+  searchlistwidget.cpp
+  updatethread.cpp
+  updateprogressdialog.cpp
+  settings.cpp)
+
 SET(serieswatcher_UIS mainwindow.ui searchdialog.ui updateprogressdialog.ui)
-SET(serieswatcher_MOC_HDRS mainwindow.h searchdialog.h searchlistwidget.h updatethread.h updateprogressdialog.h)
+SET(serieswatcher_MOC_HDRS
+  mainwindow.h
+  searchdialog.h
+  searchlistwidget.h
+  updatethread.h
+  updateprogressdialog.h
+  settings.h)
 SET(serieswatcher_RCS serieswatcher.qrc)
 
 QT4_WRAP_CPP(MOC_SOURCE ${serieswatcher_MOC_HDRS})

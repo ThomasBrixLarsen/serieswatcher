@@ -20,6 +20,8 @@
 #include <QtSql/QSqlQuery>
 #include <QtSql/QSqlError>
 #include <QtCore/QDir>
+#include <QtCore/QFileInfo>
+#include <QtGui/QPixmap>
 
 #include "settings.h"
 #include "tvdbcache.h"
@@ -101,4 +103,42 @@ QList < QtTvDB::Banner * >
 TvDBCache::fetchBanners(qint64 showId)
 {
   return QList < QtTvDB::Banner * >();
+}
+
+QString
+TvDBCache::bannerPath(qint64 id)
+{
+  QString path = Settings::path();
+  QDir dir(path);
+
+  if (!dir.exists("cache"))
+    dir.mkdir("cache");
+  dir.cd("cache");
+  if (!dir.exists("banners"))
+    dir.mkdir("banners");
+  dir.cd("banners");
+  return dir.filePath(QString("%1").arg(id));
+}
+
+void
+TvDBCache::storeBannerFile(qint64 id, const QByteArray &data)
+{
+  QFile file(bannerPath(id));
+
+  if (!file.open(QIODevice::WriteOnly))
+    return;
+  file.write(data);
+  file.close();
+}
+
+bool
+TvDBCache::hasBannerFile(qint64 id)
+{
+  return QFileInfo(bannerPath(id)).exists();
+}
+
+QPixmap
+TvDBCache::fetchBannerFile(qint64 id)
+{
+  return QPixmap(bannerPath(id));
 }

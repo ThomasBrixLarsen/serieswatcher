@@ -32,6 +32,7 @@ public:
   void storeEpisodes(QList < QtTvDB::Episode * > episodes);
   void storeBanner(QtTvDB::Banner *banner);
   void storeBanners(QList < QtTvDB::Banner * > banners);
+  void storeBannerFile(qint64 id, const QByteArray &data);
 
   QtTvDB::Show *fetchShow();
   QtTvDB::Episode *fetchEpisode();
@@ -39,6 +40,11 @@ public:
   QtTvDB::Banner *fetchBanner(qint64 id);
   QList < QtTvDB::Banner * > fetchBanners(qint64 showId);
 
+  bool hasBannerFile(qint64 id);
+  QPixmap fetchBannerFile(qint64 id);
+
+ private:
+  QString bannerPath(qint64 id);
 };
 
 #endif

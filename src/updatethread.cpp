@@ -17,21 +17,31 @@
  */
 
 #include <QtNetwork/QNetworkAccessManager>
+#include <QtCore/QTimer>
 
 #include <QtTvDB>
 
 #include "updatethread.h"
 #include "tvdb.h"
+#include "tvdbcache.h"
 
 UpdateThread::UpdateThread(QObject *parent)
-  : QThread(parent)
+  : QThread(parent), manager2(NULL)
 {
-  manager = new QNetworkAccessManager(this);
+  manager1 = new QNetworkAccessManager(this);
+  manager2 = new QNetworkAccessManager();
+
   mirrors = TvDB::mirrors();
+  cache = new TvDBCache();
+
+  connect(manager1, SIGNAL(finished(QNetworkReply *)), this, SLOT(downloadFinished(QNetworkReply *)));
+  connect(manager2, SIGNAL(finished(QNetworkReply *)), this, SLOT(downloadFinished(QNetworkReply *)));
 }
 
 UpdateThread::~UpdateThread()
 {
+  delete cache;
+  delete manager2;
 }
 
 void
@@ -45,13 +55,14 @@ UpdateThread::update(qint64 id)
   //#if HAVE_QUAZIP
   //  startJob(id, mirrors->showAndEpisodesUrlZip(id), UpdateThread::ShowAndEpisodesZip);
   //#else
-  startJob(id, mirrors->showAndEpisodesUrl(id), UpdateThread::ShowAndEpisodesXml);
-  startJob(id, mirrors->bannersUrl(id), UpdateThread::BannersXml);
+  startJob(id, mirrors->showAndEpisodesUrl(id), UpdateThread::ShowAndEpisodesXml, manager1);
+  startJob(id, mirrors->bannersUrl(id), UpdateThread::BannersXml, manager1);
   //#endif
 }
 
 void
-UpdateThread::startJob(qint64 id, const QUrl & url, UpdateThread::Type type)
+UpdateThread::startJob(qint64 id, const QUrl & url, UpdateThread::Type type,
+		       QNetworkAccessManager *manager)
 {
   QNetworkReply *reply = manager->get(QNetworkRequest(url));
 
@@ -97,7 +108,7 @@ UpdateThread::downloadFinished(QNetworkReply *reply)
   downloads.remove(reply);
   mutex.unlock();
 
-  condition.wakeOne();
+  QTimer::singleShot(1, this, SLOT(processJobs()));
 }
 
 void
@@ -118,15 +129,16 @@ UpdateThread::downloadError(QNetworkReply::NetworkError error)
 void
 UpdateThread::run()
 {
-  forever {
-    mutex.lock();
+ exec();
+}
+
+void
+UpdateThread::processJobs()
+{
+  mutex.lock();
+
+  while (!jobs.isEmpty()) {
     working = false;
-
-    if (jobs.isEmpty() && downloads.isEmpty())
-      emit finished();
-
-    while (jobs.isEmpty())
-      condition.wait(&mutex);
 
     Job job = jobs.dequeue();
 
@@ -137,22 +149,35 @@ UpdateThread::run()
 
     if (job.type == UpdateThread::ShowAndEpisodesZip) {
     } else if (job.type == UpdateThread::Banner) {
+      cache->storeBannerFile(job.id, data);
     } else if (job.type == UpdateThread::BannersXml) {
       QList < QtTvDB::Banner * > banners = QtTvDB::Banner::parseBanners(data);
 
-      /* Téléchaer */
-      qDebug() << banners;
+      foreach ( QtTvDB::Banner * banner, banners) {
+	if (banner->type() == "poster" || banner->type() == "season") {
+	  if (cache->hasBannerFile(banner->id()))
+	    continue ;
+	  startJob(banner->id(), mirrors->bannerUrl(banner->path()), UpdateThread::Banner, manager2);
+	}
+      }
+      qDeleteAll(banners);
     } else if (job.type == UpdateThread::ShowAndEpisodesXml) {
       QList < QtTvDB::Show * > shows = QtTvDB::Show::parseShows(data);
       QList < QtTvDB::Episode * > episodes = QtTvDB::Episode::parseEpisodes(data);
 
-      qDebug() << shows << episodes;
+      qDeleteAll(shows);
+      qDeleteAll(episodes);
     }
 
     mutex.lock();
     job.reply->deleteLater();
     mutex.unlock();
   }
+
+  mutex.lock();
+  if (jobs.isEmpty() && downloads.isEmpty())
+    emit finished();
+  mutex.unlock();
 }
 
 void
