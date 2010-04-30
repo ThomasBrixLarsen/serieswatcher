@@ -16,35 +16,22 @@
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef MAINWINDOW_H
-# define MAINWINDOW_H
+#ifndef JOB_H
+# define JOB_H
 
-#include <QtGui/QMainWindow>
+#include <QtCore/QByteArray>
 
-#include "ui_mainwindow.h"
+struct Job
+{
+  enum Type { ShowAndEpisodesXml, ShowAndEpisodesZip, BannersXml, Banner };
+  enum State { Unknown, Downloading, Parsing, Finished };
 
-class SearchDialog;
-class WorkerThread;
-class QNetworkAccessManager;
-class UpdateProgressDialog;
-
-class MainWindow : public QMainWindow, private Ui_mainWindow {
-  Q_OBJECT
-public:
-  MainWindow();
-  ~MainWindow();
-
-private slots:
-  void addShow();
-  void addShow(const QString & name, qint64 id);
-  void about();
-  void aboutQt();
-
-private:
-  UpdateProgressDialog *progress;
-  SearchDialog *searchDialog;
-  QNetworkAccessManager *manager;
-  WorkerThread *thread;
+  qint64 id;
+  Type type;
+  State state;
+  QUrl url;
+  QByteArray data;
 };
+
 
 #endif

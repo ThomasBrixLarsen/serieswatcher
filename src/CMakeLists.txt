@@ -21,16 +21,20 @@ SET(serieswatcher_SRCS
   tvdb.cpp
   tvdbcache.cpp
   searchlistwidget.cpp
-  updatethread.cpp
+  updateworker.cpp
   updateprogressdialog.cpp
-  settings.cpp)
+  settings.cpp
+  downloadworker.cpp
+  workerthread.cpp)
 
 SET(serieswatcher_UIS mainwindow.ui searchdialog.ui updateprogressdialog.ui)
 SET(serieswatcher_MOC_HDRS
   mainwindow.h
   searchdialog.h
   searchlistwidget.h
-  updatethread.h
+  updateworker.h
+  downloadworker.h
+  workerthread.h
   updateprogressdialog.h
   settings.h)
 SET(serieswatcher_RCS serieswatcher.qrc)

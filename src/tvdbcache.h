@@ -19,6 +19,8 @@
 #ifndef TVDB_CACHE_H
 # define TVDB_CACHE_H
 
+#include <QtSql/QSqlDatabase>
+
 #include <QtTvDB>
 
 class TvDBCache
@@ -26,14 +28,15 @@ class TvDBCache
 public:
   enum BannerType { Poster, Banner, Search };
 
-  TvDBCache();
+  TvDBCache(const QString & name = "default");
   ~TvDBCache();
 
   void storeShow(QtTvDB::Show *show);
+  void storeShows(QList < QtTvDB::Show * > shows);
   void storeEpisode(QtTvDB::Episode *episode);
   void storeEpisodes(QList < QtTvDB::Episode * > episodes);
-  void storeBanner(QtTvDB::Banner *banner);
-  void storeBanners(QList < QtTvDB::Banner * > banners);
+  void storeBanner(QtTvDB::Banner *banner, qint64 showId);
+  void storeBanners(QList < QtTvDB::Banner * > banners, qint64 showId);
   void storeBannerFile(qint64 id, BannerType type, const QByteArray &data);
 
   QtTvDB::Show *fetchShow();
@@ -46,7 +49,13 @@ public:
   QPixmap fetchBannerFile(qint64 id, BannerType type);
 
  private:
+  bool connectDb(const QString & name = "default");
+
+ private:
   QString bannerPath(qint64 id, BannerType type);
+
+  QSqlDatabase db;
+  QString dbName;
 };
 
 #endif

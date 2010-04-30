@@ -16,35 +16,36 @@
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef MAINWINDOW_H
-# define MAINWINDOW_H
+#ifndef WORKER_THREAD_H
+# define WORKER_THREAD_H
 
-#include <QtGui/QMainWindow>
+#include <QtCore/QThread>
 
-#include "ui_mainwindow.h"
+#include <QtTvDB>
 
-class SearchDialog;
-class WorkerThread;
-class QNetworkAccessManager;
-class UpdateProgressDialog;
+#include "job.h"
 
-class MainWindow : public QMainWindow, private Ui_mainWindow {
+class UpdateWorker;
+class DownloadWorker;
+
+class WorkerThread : public QThread
+{
   Q_OBJECT
 public:
-  MainWindow();
-  ~MainWindow();
+  WorkerThread(QObject *parent = 0);
+  ~WorkerThread();
 
-private slots:
-  void addShow();
-  void addShow(const QString & name, qint64 id);
-  void about();
-  void aboutQt();
+  DownloadWorker *downloadWorker();
+  UpdateWorker *updateWorker();
+
+  void abord();
+
+protected:
+  void run();
 
 private:
-  UpdateProgressDialog *progress;
-  SearchDialog *searchDialog;
-  QNetworkAccessManager *manager;
-  WorkerThread *thread;
+  UpdateWorker *uworker;
+  DownloadWorker *dworker;
 };
 
 #endif

@@ -43,7 +43,7 @@ CREATE TABLE  IF NOT EXISTS "shows" (
     "language" TEXT,
     "firstAired" INTEGER,
     "airsDay" TEXT,
-    "airsTime" INTEGER,
+    "airsTime" TEXT,
     "banner" TEXT,
     "poster" TEXT,
     "fanArt" TEXT,

@@ -16,35 +16,50 @@
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef MAINWINDOW_H
-# define MAINWINDOW_H
+#include "workerthread.h"
+#include "updateworker.h"
+#include "downloadworker.h"
 
-#include <QtGui/QMainWindow>
+WorkerThread::WorkerThread(QObject *parent)
+  : QThread(parent)
+{
+  dworker = new DownloadWorker(); /* Download in main thread */
+}
 
-#include "ui_mainwindow.h"
+WorkerThread::~WorkerThread()
+{
+  delete dworker;
+  delete uworker;
+}
 
-class SearchDialog;
-class WorkerThread;
-class QNetworkAccessManager;
-class UpdateProgressDialog;
+DownloadWorker *
+WorkerThread::downloadWorker()
+{
+  return dworker;
+}
 
-class MainWindow : public QMainWindow, private Ui_mainWindow {
-  Q_OBJECT
-public:
-  MainWindow();
-  ~MainWindow();
+UpdateWorker *
+WorkerThread::updateWorker()
+{
+  return uworker;
+}
 
-private slots:
-  void addShow();
-  void addShow(const QString & name, qint64 id);
-  void about();
-  void aboutQt();
+void
+WorkerThread::run()
+{
+  uworker = new UpdateWorker();
+  uworker->moveToThread(this);
 
-private:
-  UpdateProgressDialog *progress;
-  SearchDialog *searchDialog;
-  QNetworkAccessManager *manager;
-  WorkerThread *thread;
-};
+  connect(uworker, SIGNAL(newJob(Job *)), dworker, SLOT(startJob(Job *)));
+  connect(dworker, SIGNAL(downloadFinished(Job *)), uworker, SLOT(startJob(Job *)));
 
-#endif
+  exec();
+}
+
+void
+WorkerThread::abord()
+{
+  dworker->abord();
+  uworker->abord();
+  terminate();
+}

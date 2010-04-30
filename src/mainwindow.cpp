@@ -19,12 +19,14 @@
 #include <QDebug>
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtGui/QMessageBox>
+#include <QtSql/QSqlDatabase>
 
 #include "config.h"
 
 #include "mainwindow.h"
 #include "searchdialog.h"
-#include "updatethread.h"
+#include "workerthread.h"
+#include "downloadworker.h"
 #include "updateprogressdialog.h"
 #include "tvdb.h"
 
@@ -55,7 +57,8 @@ MainWindow::MainWindow()
   QtTvDB::Mirrors *m = TvDB::mirrors();
   m->setKey("FAD75AF31E1B1577");
 
-  thread = new UpdateThread(this);
+  thread = new WorkerThread();
+  thread->start(QThread::LowPriority);
   progress = new UpdateProgressDialog(this);
 
   /*
@@ -72,7 +75,8 @@ MainWindow::MainWindow()
 
 MainWindow::~MainWindow()
 {
-
+  QSqlDatabase::database("default").close();
+  QSqlDatabase::removeDatabase("default");
 }
 
 void
@@ -85,7 +89,7 @@ void
 MainWindow::addShow(const QString & name, qint64 id)
 {
   progress->show();
-  thread->update(id);
+  thread->downloadWorker()->updateShow(id);
 }
 
 void

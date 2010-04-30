@@ -28,51 +28,166 @@
 
 #include "schema.h"
 
-TvDBCache::TvDBCache()
+TvDBCache::TvDBCache(const QString & name)
+  : dbName(name)
 {
-  QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-
-  db.setDatabaseName(Settings::path() + QDir::separator() + "serieswatcher.db");
-  db.open();
-  QStringList queries = QString(schema).split(";");
-
-  foreach(QString query, queries) {
-    QSqlQuery q(query);
-
-    if (!q.exec()) {
-      qWarning() << q.lastError();
-      qWarning() << query;
-    }
-  }
+  if (!QSqlDatabase::contains(name))
+    connectDb(name);
 }
 
 TvDBCache::~TvDBCache()
 {
 }
 
+bool
+TvDBCache::connectDb(const QString & name)
+{
+  db = QSqlDatabase::addDatabase("QSQLITE", name);
+
+  db.setDatabaseName(Settings::path() + QDir::separator() + "serieswatcher.db");
+
+  if (!db.open())
+    return false;
+
+  QStringList queries = QString(schema).split(";");
+
+  foreach(QString query, queries) {
+    QSqlQuery q(query, db);
+
+    if (!q.exec()) {
+      qWarning() << q.lastError();
+      return false;
+    }
+  }
+  return true;
+}
+
 void
 TvDBCache::storeShow(QtTvDB::Show *show)
 {
+  QString sql;
+  QSqlQuery query(db);
+
+  sql = "INSERT INTO shows VALUES ";
+  sql += "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
+
+  query.prepare(sql);
+  query.addBindValue(show->id());
+  query.addBindValue(show->name());
+  query.addBindValue(show->overview());
+  query.addBindValue(show->genre().join("|"));
+  query.addBindValue(show->actors().join("|"));
+  query.addBindValue(show->network());
+  query.addBindValue(show->contentRating());
+  query.addBindValue(show->rating());
+  query.addBindValue(show->runtime());
+  query.addBindValue(show->status());
+  query.addBindValue(show->language());
+  query.addBindValue(show->firstAired().toTime_t());
+  query.addBindValue(show->airsDay());
+  query.addBindValue(show->airsTime());
+  query.addBindValue(show->banner());
+  query.addBindValue(show->poster());
+  query.addBindValue(show->fanArt());
+  query.addBindValue(show->imdbId());
+  query.addBindValue(show->seriesId());
+  query.addBindValue(show->zap2itId());
+  query.addBindValue(show->lastUpdated().toTime_t());
+
+  if (!query.exec()) {
+    qWarning() << query.executedQuery();
+    qWarning() << query.lastError();
+  }
+}
+
+void
+TvDBCache::storeShows(QList < QtTvDB::Show * > shows)
+{
+  foreach (QtTvDB::Show *show, shows)
+    storeShow(show);
 }
 
 void
 TvDBCache::storeEpisode(QtTvDB::Episode *episode)
 {
+  QString sql;
+  QSqlQuery query(db);
+
+  sql = "INSERT INTO episodes VALUES ";
+  sql += "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
+
+  query.prepare(sql);
+  query.addBindValue(episode->id());
+  query.addBindValue(episode->showId());
+  query.addBindValue(episode->seasonId());
+  query.addBindValue(episode->name());
+  query.addBindValue(episode->overview());
+  query.addBindValue(episode->season());
+  query.addBindValue(episode->episode());
+  query.addBindValue(episode->director());
+  query.addBindValue(episode->guestStars());
+  query.addBindValue(episode->language());
+  query.addBindValue(episode->productionCode());
+  query.addBindValue(episode->rating());
+  query.addBindValue(episode->writer());
+  query.addBindValue(episode->firstAired().toTime_t());
+  query.addBindValue(episode->dvdChapter());
+  query.addBindValue(episode->dvdDiscId());
+  query.addBindValue(episode->dvdEpisodeNumber());
+  query.addBindValue(episode->dvdSeason());
+  query.addBindValue(episode->image());
+  query.addBindValue(episode->airsAfterSeason());
+  query.addBindValue(episode->airsBeforeSeason());
+  query.addBindValue(episode->airsBeforeEpisode());
+  query.addBindValue(episode->combinedEpisode());
+  query.addBindValue(episode->combinedSeason());
+  query.addBindValue(episode->absoluteNumber());
+  query.addBindValue(episode->epImgFlag());
+  query.addBindValue(episode->imdbId());
+  query.addBindValue(episode->lastUpdated().toTime_t());
+
+  if (!query.exec()) {
+    qWarning() << query.executedQuery();
+    qWarning() << query.lastError();
+  }
 }
 
 void
 TvDBCache::storeEpisodes(QList < QtTvDB::Episode * > episodes)
 {
+  foreach (QtTvDB::Episode *episode, episodes)
+    storeEpisode(episode);
 }
 
 void
-TvDBCache::storeBanner(QtTvDB::Banner *banner)
+TvDBCache::storeBanner(QtTvDB::Banner *banner, qint64 showId)
 {
+  QString sql;
+  QSqlQuery query(db);
+
+  sql = "INSERT INTO banners VALUES ";
+  sql += "(?, ?, ?, ?, ?, ?, ?) ";
+
+  query.prepare(sql);
+  query.addBindValue(banner->id());
+  query.addBindValue(showId);
+  query.addBindValue(banner->path());
+  query.addBindValue(banner->type());
+  query.addBindValue(banner->type2());
+  query.addBindValue(banner->language());
+  query.addBindValue(banner->season());
+
+  if (!query.exec()) {
+    qWarning() << query.executedQuery();
+    qWarning() << query.lastError();
+  }
 }
 
 void
-TvDBCache::storeBanners(QList < QtTvDB::Banner * > banners)
+TvDBCache::storeBanners(QList < QtTvDB::Banner * > banners, qint64 showId)
 {
+  foreach (QtTvDB::Banner *banner, banners)
+    storeBanner(banner, showId);
 }
 
 QtTvDB::Show *
