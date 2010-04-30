@@ -19,10 +19,13 @@
 #ifndef UPDATEPROGRESSDIALOG_H
 # define UPDATEPROGRESSDIALOG_H
 
+#include <QtGui/QIcon>
+
 #include "tvdb.h"
 #include "ui_updateprogressdialog.h"
+#include "job.h"
 
-class Job;
+class UpdateProgressModel;
 
 class UpdateProgressDialog : public QDialog, private Ui_UpdateProgressDialog
 {
@@ -47,7 +50,13 @@ public slots:
   void error(const QString & title, const QString &message);
 
 private:
+  void updateItem(Job *job);
+
+private:
   QList < Job * > jobs;
+  QMap < Job *, QListWidgetItem * > items;
+  QMap < Job::State, QIcon > icons;
+
 };
 
 #endif

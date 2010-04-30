@@ -25,22 +25,57 @@ UpdateProgressDialog::UpdateProgressDialog(QWidget * parent)
  : QDialog(parent)
 {
   setupUi(this);
+
+  icons[Job::Downloading] = QIcon::fromTheme("download");
+  icons[Job::Waiting] = QIcon::fromTheme("chronometer");
+  icons[Job::Parsing] = QIcon::fromTheme("run-build");
+  icons[Job::Failed] = QIcon::fromTheme("dialog-close");
+  icons[Job::Finished] = QIcon::fromTheme("dialog-ok");
 }
+
 
 UpdateProgressDialog::~UpdateProgressDialog()
 {
 }
 
 void
+UpdateProgressDialog::updateItem(Job *job)
+{
+  QString text;
+
+  if (items.find(job) == items.end())
+    items[job] = new QListWidgetItem(listWidget);
+
+  if (job->state == Job::Downloading || job->state == Job::Parsing) {
+    int perc;
+
+    if (job->done >= job->total)
+      perc = 0;
+    else
+      perc = 100. * job->done / job->total;
+
+    text = QString("%1 (%2%)").arg(job->url.toString()).arg(perc);
+  } else
+    text = job->url.toString();
+
+  items[job]->setText(text);
+  items[job]->setIcon(icons[job->state]);
+}
+
+void
 UpdateProgressDialog::newJob(Job *job)
 {
   jobs << job;
+
+  updateItem(job);
 }
 
 void
 UpdateProgressDialog::parseStarted(Job *job)
 {
   parseLabel->setText(job->url.toString());
+
+  updateItem(job);
 }
 
 void
@@ -54,11 +89,14 @@ UpdateProgressDialog::parseProgress(Job *job, qint64 done, qint64 total)
 
   job->done = done;
   job->total = total;
+
+  updateItem(job);
 }
 
 void
 UpdateProgressDialog::parseFailed(Job *job)
 {
+  updateItem(job);
 }
 
 void
@@ -68,17 +106,22 @@ UpdateProgressDialog::parseFinished(Job *job)
   parseBar->reset();
   parseBar->setRange(0, 1);
   parseBar->setValue(1);
+
+  updateItem(job);
 }
 
 void
 UpdateProgressDialog::downloadStarted(Job *job)
 {
   downloadLabel->setText(job->url.toString());
+
+  updateItem(job);
 }
 
 void
 UpdateProgressDialog::downloadFailed(Job *job, const QString & error)
 {
+  updateItem(job);
 }
 
 void
@@ -90,6 +133,8 @@ UpdateProgressDialog::downloadProgress(Job *job, qint64 done, qint64 total)
     downloadBar->reset();
   downloadBar->setValue(done);
   downloadBar->setRange(0, total);
+
+  updateItem(job);
 }
 
 void
@@ -99,6 +144,8 @@ UpdateProgressDialog::downloadFinished(Job *job)
   downloadBar->reset();
   downloadBar->setRange(0, 1);
   downloadBar->setValue(1);
+
+  updateItem(job);
 }
 
 void
