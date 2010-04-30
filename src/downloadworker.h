@@ -57,8 +57,6 @@ signals:
   void downloadProgress(Job *job, qint64 done, qint64 total);
   void downloadFinished(Job *job);
 
-  void started();
-  void finished();
   void error(const QString & title, const QString &message);
 private:
   QtTvDB::Mirrors *mirrors;

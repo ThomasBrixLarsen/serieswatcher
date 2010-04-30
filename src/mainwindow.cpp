@@ -27,6 +27,7 @@
 #include "searchdialog.h"
 #include "workerthread.h"
 #include "downloadworker.h"
+#include "updateworker.h"
 #include "updateprogressdialog.h"
 #include "tvdb.h"
 
@@ -61,16 +62,35 @@ MainWindow::MainWindow()
   thread->start(QThread::LowPriority);
   progress = new UpdateProgressDialog(this);
 
-  /*
-  connect(thread, SIGNAL(downloadStart(qint64, const QUrl &)), progress);
-  connect(progress, SIGNAL(abord()), thread, SLOT(abord());
+  DownloadWorker *dworker = thread->downloadWorker();
+  UpdateWorker *uworker = thread->updateWorker();
 
+  connect(progress, SIGNAL(abord()), thread, SLOT(abord()));
+
+/*
   connect(thread, SIGNAL(databaseUpdated()), this, SLOT(databaseUpdated()));
   connect(thread, SIGNAL(started()), this, SLOT(updateStarted()));
   connect(thread, SIGNAL(finished()), this, SLOT(updateFinished()));
-  connect(thread, SIGNAL(error(const QString &, const QString &)),
+*/
+
+  connect(uworker, SIGNAL(newJob(Job *)), progress, SLOT(newJob(Job *)));
+  connect(uworker, SIGNAL(parseStarted(Job *)), progress, SLOT(parseStarted(Job *)));
+  connect(uworker, SIGNAL(parseProgress(Job *, qint64, qint64)),
+	  progress, SLOT(parseProgress(Job *, qint64, qint64)));
+  connect(uworker, SIGNAL(parseFailed(Job *)), progress, SLOT(parseFailed(Job *)));
+  connect(uworker, SIGNAL(parseFinished(Job *)), progress, SLOT(parseFinished(Job *)));
+  connect(uworker, SIGNAL(error(const QString &, const QString &)),
 	  this, SLOT(error(const QString &, const QString &)));
-  */
+
+  connect(dworker, SIGNAL(newJob(Job *)), progress, SLOT(newJob(Job *)));
+  connect(dworker, SIGNAL(downloadStarted(Job *)), progress, SLOT(downloadStarted(Job *)));
+  connect(dworker, SIGNAL(downloadProgress(Job *, qint64, qint64)),
+	  progress, SLOT(downloadProgress(Job *, qint64, qint64)));
+  connect(dworker, SIGNAL(downloadFailed(Job *, const QString &)),
+	  progress, SLOT(downloadFailed(Job *, const QString &)));
+  connect(dworker, SIGNAL(downloadFinished(Job *)), progress, SLOT(downloadFinished(Job *)));
+  connect(dworker, SIGNAL(error(const QString &, const QString &)),
+	  this, SLOT(error(const QString &, const QString &)));
 }
 
 MainWindow::~MainWindow()
@@ -90,6 +110,12 @@ MainWindow::addShow(const QString & name, qint64 id)
 {
   progress->show();
   thread->downloadWorker()->updateShow(id);
+}
+
+void
+MainWindow::error(const QString & title, const QString & message)
+{
+  QMessageBox::critical(this, title, message);
 }
 
 void

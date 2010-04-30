@@ -39,6 +39,7 @@ private slots:
   void addShow(const QString & name, qint64 id);
   void about();
   void aboutQt();
+  void error(const QString & title, const QString & message);
 
 private:
   UpdateProgressDialog *progress;

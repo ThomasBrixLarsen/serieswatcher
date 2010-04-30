@@ -88,8 +88,14 @@ DownloadWorker::downloadProgress(qint64 done, qint64 total)
 {
   QNetworkReply *reply = dynamic_cast<QNetworkReply *>(sender());
 
-  if (reply)
-    emit downloadProgress(downloads[reply], done, total);
+  if (reply) {
+    Job *job = downloads[reply];
+
+    job->done = done;
+    job->total = total;
+
+    emit downloadProgress(job, done, total);
+  }
 }
 
 void
@@ -98,6 +104,7 @@ DownloadWorker::downloadFinished(QNetworkReply *reply)
   Job *job = downloads[reply];
 
   job->data = reply->readAll();
+  job->state = Job::Waiting;
 
   downloads.remove(reply);
   reply->deleteLater();
@@ -115,7 +122,11 @@ DownloadWorker::downloadError(QNetworkReply::NetworkError error)
   if (error == QNetworkReply::OperationCanceledError)
     return;
 
-  emit downloadFailed(downloads[r], r->errorString());
+  Job *job = downloads[r];
+
+  job->state = Job::Waiting;
+
+  emit downloadFailed(job, r->errorString());
 }
 
 void

@@ -49,6 +49,8 @@ UpdateWorker::startJob(Job *job)
 
   emit parseStarted(job);
 
+  emit parseProgress(job, 0, 1);
+
   if (job->type == Job::ShowAndEpisodesZip)
     parseShowAndEpisodesZip(job);
   else if (job->type == Job::Banner)
@@ -57,6 +59,10 @@ UpdateWorker::startJob(Job *job)
     parseBannersXml(job);
   else if (job->type == Job::ShowAndEpisodesXml)
     parseShowAndEpisodesXml(job);
+
+  emit parseProgress(job, 1, 1);
+
+  job->state = Job::Finished;
 
   emit parseFinished(job);
 }
@@ -118,5 +124,4 @@ UpdateWorker::abord()
   QMutexLocker locker(&mutex);
 
   jobs.clear();
-  emit finished();
 }

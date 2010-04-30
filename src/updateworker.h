@@ -52,12 +52,10 @@ private:
 signals:
   void newJob(Job *job);
   void parseStarted(Job *job);
-  void parseProgress(Job *job);
+  void parseProgress(Job *job, qint64 done, qint64 total);
   void parseFailed(Job *job);
   void parseFinished(Job *job);
 
-  void started();
-  void finished();
   void error(const QString & title, const QString &message);
 
 private:

@@ -24,12 +24,14 @@
 struct Job
 {
   enum Type { ShowAndEpisodesXml, ShowAndEpisodesZip, BannersXml, Banner };
-  enum State { Unknown, Downloading, Parsing, Finished };
+  enum State { Unknown, Downloading, Waiting, Parsing, Failed, Finished };
 
   qint64 id;
   Type type;
   State state;
   QUrl url;
+  qint64 done;
+  qint64 total;
   QByteArray data;
 };
 

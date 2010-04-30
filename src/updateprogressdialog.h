@@ -22,12 +22,32 @@
 #include "tvdb.h"
 #include "ui_updateprogressdialog.h"
 
+class Job;
+
 class UpdateProgressDialog : public QDialog, private Ui_UpdateProgressDialog
 {
   Q_OBJECT
 public:
   UpdateProgressDialog(QWidget * parent = 0);
   ~UpdateProgressDialog();
+
+public slots:
+  void newJob(Job *job);
+
+  void parseStarted(Job *job);
+  void parseProgress(Job *job, qint64 done, qint64 total);
+  void parseFailed(Job *job);
+  void parseFinished(Job *job);
+
+  void downloadStarted(Job *job);
+  void downloadFailed(Job *job, const QString & error);
+  void downloadProgress(Job *job, qint64 done, qint64 total);
+  void downloadFinished(Job *job);
+
+  void error(const QString & title, const QString &message);
+
+private:
+  QList < Job * > jobs;
 };
 
 #endif

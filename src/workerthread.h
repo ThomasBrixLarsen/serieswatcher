@@ -38,6 +38,7 @@ public:
   DownloadWorker *downloadWorker();
   UpdateWorker *updateWorker();
 
+public slots:
   void abord();
 
 protected:

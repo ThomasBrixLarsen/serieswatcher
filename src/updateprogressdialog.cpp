@@ -16,7 +16,10 @@
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#include <QtGui/QMessageBox>
+
 #include "updateprogressdialog.h"
+#include "job.h"
 
 UpdateProgressDialog::UpdateProgressDialog(QWidget * parent)
  : QDialog(parent)
@@ -28,3 +31,78 @@ UpdateProgressDialog::~UpdateProgressDialog()
 {
 }
 
+void
+UpdateProgressDialog::newJob(Job *job)
+{
+  jobs << job;
+}
+
+void
+UpdateProgressDialog::parseStarted(Job *job)
+{
+  parseLabel->setText(job->url.toString());
+}
+
+void
+UpdateProgressDialog::parseProgress(Job *job, qint64 done, qint64 total)
+{
+  parseLabel->setText(job->url.toString());
+  if (total == -1)
+    parseBar->reset();
+  parseBar->setValue(done);
+  parseBar->setRange(0, total);
+
+  job->done = done;
+  job->total = total;
+}
+
+void
+UpdateProgressDialog::parseFailed(Job *job)
+{
+}
+
+void
+UpdateProgressDialog::parseFinished(Job *job)
+{
+  parseLabel->setText("");
+  parseBar->reset();
+  parseBar->setRange(0, 1);
+  parseBar->setValue(1);
+}
+
+void
+UpdateProgressDialog::downloadStarted(Job *job)
+{
+  downloadLabel->setText(job->url.toString());
+}
+
+void
+UpdateProgressDialog::downloadFailed(Job *job, const QString & error)
+{
+}
+
+void
+UpdateProgressDialog::downloadProgress(Job *job, qint64 done, qint64 total)
+{
+  downloadLabel->setText(job->url.toString());
+
+  if (total == -1)
+    downloadBar->reset();
+  downloadBar->setValue(done);
+  downloadBar->setRange(0, total);
+}
+
+void
+UpdateProgressDialog::downloadFinished(Job *job)
+{
+  downloadLabel->setText("");
+  downloadBar->reset();
+  downloadBar->setRange(0, 1);
+  downloadBar->setValue(1);
+}
+
+void
+UpdateProgressDialog::error(const QString & title, const QString &message)
+{
+  QMessageBox::critical(this, title, message);
+}
