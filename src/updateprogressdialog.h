@@ -49,6 +49,8 @@ public slots:
 
   void error(const QString & title, const QString &message);
 
+  void toggleDetails();
+
 private:
   void updateItem(Job *job);
 

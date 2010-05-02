@@ -31,11 +31,26 @@ UpdateProgressDialog::UpdateProgressDialog(QWidget * parent)
   icons[Job::Parsing] = QIcon::fromTheme("run-build");
   icons[Job::Failed] = QIcon::fromTheme("dialog-close");
   icons[Job::Finished] = QIcon::fromTheme("dialog-ok");
+
+  connect(detailsButton, SIGNAL(clicked()), this, SLOT(toggleDetails()));
 }
 
 
 UpdateProgressDialog::~UpdateProgressDialog()
 {
+}
+
+void
+UpdateProgressDialog::toggleDetails()
+{
+  if (listWidget->isVisible()) {
+    listWidget->hide();
+    detailsButton->setText(tr("Show Details >>"));
+  } else {
+    listWidget->show();
+    detailsButton->setText(tr("<< Hide Details"));
+  }
+  resize(size().width(), sizeHint().height());
 }
 
 void
