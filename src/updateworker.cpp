@@ -104,6 +104,8 @@ UpdateWorker::parseBannersXml(Job *job)
     }
   }
   qDeleteAll(banners);
+
+  cache->sync();
 }
 
 void
@@ -112,11 +114,23 @@ UpdateWorker::parseShowAndEpisodesXml(Job *job)
   QList < QtTvDB::Show * > shows = QtTvDB::Show::parseShows(job->data);
   QList < QtTvDB::Episode * > episodes = QtTvDB::Episode::parseEpisodes(job->data);
 
-  cache->storeShows(shows);
-  cache->storeEpisodes(episodes);
+  qint64 total = shows.size() + episodes.size();
+  qint64 done = 0;
+
+  foreach (QtTvDB::Show *show, shows) {
+    cache->storeShow(show);
+    emit parseProgress(job, done++, total);
+  }
+
+  foreach (QtTvDB::Episode *episode, episodes) {
+    cache->storeEpisode(episode);
+    emit parseProgress(job, done++, total);
+  }
 
   qDeleteAll(shows);
   qDeleteAll(episodes);
+
+  cache->sync();
 }
 
 

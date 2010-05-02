@@ -51,6 +51,9 @@ TvDBCache::connectDb(const QString & name)
 
   QStringList queries = QString(schema).split(";");
 
+  queries << "PRAGMA default_synchronous = 0;";
+  queries << "PRAGMA synchronous = 0;";
+
   foreach(QString query, queries) {
     QSqlQuery q(query, db);
 
@@ -265,4 +268,12 @@ QPixmap
 TvDBCache::fetchBannerFile(qint64 id, BannerType type)
 {
   return QPixmap(bannerPath(id, type));
+}
+
+void
+TvDBCache::sync()
+{
+  QFile file(db.databaseName());
+
+  fsync(file.handle());
 }

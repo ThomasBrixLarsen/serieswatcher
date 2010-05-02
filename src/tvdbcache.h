@@ -48,6 +48,8 @@ public:
   bool hasBannerFile(qint64 id, BannerType type);
   QPixmap fetchBannerFile(qint64 id, BannerType type);
 
+  void sync();
+
  private:
   bool connectDb(const QString & name = "default");
 
