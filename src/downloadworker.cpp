@@ -46,8 +46,8 @@ DownloadWorker::updateShow(qint64 id)
   //#if HAVE_QUAZIP
   //  startJob(id, mirrors->showAndEpisodesUrlZip(id), Job::ShowAndEpisodesZip);
   //#else
-  startJob(id, mirrors->showAndEpisodesUrl(id), Job::ShowAndEpisodesXml);
   startJob(id, mirrors->bannersUrl(id), Job::BannersXml);
+  startJob(id, mirrors->showAndEpisodesUrl(id), Job::ShowAndEpisodesXml);
   //#endif
 }
 
