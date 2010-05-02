@@ -25,7 +25,6 @@
 
 class SearchDialog;
 class WorkerThread;
-class QNetworkAccessManager;
 class UpdateProgressDialog;
 
 class MainWindow : public QMainWindow, private Ui_mainWindow {
@@ -42,9 +41,14 @@ private slots:
   void error(const QString & title, const QString & message);
 
 private:
+  void setupTvDB();
+  void createWorkers();
+  void createActions();
+  void createSearchDialog();
+
+private:
   UpdateProgressDialog *progress;
   SearchDialog *searchDialog;
-  QNetworkAccessManager *manager;
   WorkerThread *thread;
 };
 

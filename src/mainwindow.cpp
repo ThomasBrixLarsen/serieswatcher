@@ -17,7 +17,6 @@
  */
 
 #include <QDebug>
-#include <QtNetwork/QNetworkAccessManager>
 #include <QtGui/QMessageBox>
 #include <QtSql/QSqlDatabase>
 
@@ -39,12 +38,15 @@ MainWindow::MainWindow()
 {
   setupUi(this);
 
-  manager = new QNetworkAccessManager(this);
-  searchDialog = new SearchDialog(this);
+  setupTvDB();
+  createWorkers();
+  createActions();
+  createSearchDialog();
+}
 
-  connect(searchDialog, SIGNAL(showSelected(const QString &, qint64)),
-	  this, SLOT(addShow(const QString &, qint64)));
-
+void
+MainWindow::createActions()
+{
   quitAction->setIcon(QIcon::fromTheme("window-close"));
   updateShowAction->setIcon(QIcon::fromTheme("download"));
   deleteShowAction->setIcon(QIcon::fromTheme("edit-delete"));
@@ -58,10 +60,18 @@ MainWindow::MainWindow()
   connect(addShowAction, SIGNAL(triggered()), this, SLOT(addShow()));
   connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
   connect(aboutQtAction, SIGNAL(triggered()), this, SLOT(aboutQt()));
+}
 
+void
+MainWindow::setupTvDB()
+{
   QtTvDB::Mirrors *m = TvDB::mirrors();
   m->setKey("FAD75AF31E1B1577");
+}
 
+void
+MainWindow::createWorkers()
+{
   thread = new WorkerThread();
   thread->start(QThread::LowPriority);
   progress = new UpdateProgressDialog(this);
@@ -110,6 +120,15 @@ MainWindow::MainWindow()
     listView->setIconSize(QSize(100, 120));
   }
 
+}
+
+void
+MainWindow::createSearchDialog()
+{
+  searchDialog = new SearchDialog(this);
+
+  connect(searchDialog, SIGNAL(showSelected(const QString &, qint64)),
+	  this, SLOT(addShow(const QString &, qint64)));
 }
 
 MainWindow::~MainWindow()
