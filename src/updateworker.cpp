@@ -45,6 +45,8 @@ UpdateWorker::~UpdateWorker()
 void
 UpdateWorker::startJob(Job *job)
 {
+  QMutexLocker locker(&working);
+
   job->state = Job::Parsing;
 
   emit parseStarted(job);
@@ -121,7 +123,7 @@ UpdateWorker::parseShowAndEpisodesXml(Job *job)
 void
 UpdateWorker::abord()
 {
-  QMutexLocker locker(&mutex);
+  QMutexLocker locker(&working);
 
   jobs.clear();
 }

@@ -60,6 +60,7 @@ signals:
 
 private:
   QMutex mutex;
+  QMutex working;
 
   TvDBCache *cache;
   QtTvDB::Mirrors *mirrors;

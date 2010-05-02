@@ -61,5 +61,4 @@ WorkerThread::abord()
 {
   dworker->abord();
   uworker->abord();
-  terminate();
 }

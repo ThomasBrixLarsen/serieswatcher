@@ -33,6 +33,8 @@ UpdateProgressDialog::UpdateProgressDialog(QWidget * parent)
   icons[Job::Finished] = QIcon::fromTheme("dialog-ok");
 
   connect(detailsButton, SIGNAL(clicked()), this, SLOT(toggleDetails()));
+
+  abording = false;
 }
 
 
@@ -75,11 +77,25 @@ UpdateProgressDialog::updateItem(Job *job)
 
   items[job]->setText(text);
   items[job]->setIcon(icons[job->state]);
+
+  if (job->state == Job::Finished || job->state == Job::Failed)
+    done[job] = true;
+  if (done.size() == jobs.size()) {
+    buttonBox->setStandardButtons(QDialogButtonBox::Ok);
+    emit finished();
+  }
 }
 
 void
 UpdateProgressDialog::newJob(Job *job)
 {
+  abording = false;
+
+  if (jobs.size() == 0) {
+    buttonBox->setStandardButtons(QDialogButtonBox::Cancel);
+    emit started();
+  }
+
   jobs << job;
 
   updateItem(job);
@@ -88,6 +104,9 @@ UpdateProgressDialog::newJob(Job *job)
 void
 UpdateProgressDialog::parseStarted(Job *job)
 {
+  if (abording)
+    return;
+
   parseLabel->setText(job->url.toString());
 
   updateItem(job);
@@ -96,6 +115,9 @@ UpdateProgressDialog::parseStarted(Job *job)
 void
 UpdateProgressDialog::parseProgress(Job *job, qint64 done, qint64 total)
 {
+  if (abording)
+    return;
+
   parseLabel->setText(job->url.toString());
   if (total == -1)
     parseBar->reset();
@@ -111,12 +133,18 @@ UpdateProgressDialog::parseProgress(Job *job, qint64 done, qint64 total)
 void
 UpdateProgressDialog::parseFailed(Job *job)
 {
+  if (abording)
+    return;
+
   updateItem(job);
 }
 
 void
 UpdateProgressDialog::parseFinished(Job *job)
 {
+  if (abording)
+    return;
+
   parseLabel->setText("");
   parseBar->reset();
   parseBar->setRange(0, 1);
@@ -167,4 +195,31 @@ void
 UpdateProgressDialog::error(const QString & title, const QString &message)
 {
   QMessageBox::critical(this, title, message);
+}
+
+void
+UpdateProgressDialog::reset()
+{
+  listWidget->clear();
+  items.clear();
+  qDeleteAll(jobs);
+  jobs.clear();
+  done.clear();
+  buttonBox->setStandardButtons(QDialogButtonBox::Cancel);
+}
+
+void
+UpdateProgressDialog::accept()
+{
+  reset();
+  QDialog::accept();
+}
+
+void
+UpdateProgressDialog::reject()
+{
+  abording = true;
+  emit abord();
+  reset();
+  QDialog::reject();
 }

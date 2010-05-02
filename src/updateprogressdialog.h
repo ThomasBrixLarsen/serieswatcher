@@ -51,14 +51,24 @@ public slots:
 
   void toggleDetails();
 
+  void accept();
+  void reject();
+
+signals:
+  void abord();
+  void finished();
+  void started();
+
 private:
+  void reset();
   void updateItem(Job *job);
 
 private:
   QList < Job * > jobs;
   QMap < Job *, QListWidgetItem * > items;
   QMap < Job::State, QIcon > icons;
-
+  QMap < Job *, bool > done;
+  bool abording;
 };
 
 #endif
