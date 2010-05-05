@@ -28,7 +28,7 @@ class TvDBCache
 public:
   enum BannerType { Poster, Banner, Search };
 
-  TvDBCache(const QString & name = "default");
+  TvDBCache(const QString & name = QLatin1String(QSqlDatabase::defaultConnection));
   ~TvDBCache();
 
   void storeShow(QtTvDB::Show *show);
@@ -47,11 +47,11 @@ public:
 
   bool hasBannerFile(qint64 id, BannerType type);
   QPixmap fetchBannerFile(qint64 id, BannerType type);
-
+  QString name();
   void sync();
 
  private:
-  bool connectDb(const QString & name = "default");
+  bool connectDb(const QString & name = QLatin1String(QSqlDatabase::defaultConnection));
 
  private:
   QString bannerPath(qint64 id, BannerType type);

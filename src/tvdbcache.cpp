@@ -277,3 +277,9 @@ TvDBCache::sync()
 
   fsync(file.handle());
 }
+
+QString
+TvDBCache::name()
+{
+  return dbName;
+}
