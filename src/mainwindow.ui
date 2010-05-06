@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>989</width>
+    <height>581</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -29,7 +29,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>989</width>
      <height>20</height>
     </rect>
    </property>
@@ -77,6 +77,72 @@
    <addaction name="deleteShowAction"/>
    <addaction name="updateShowAction"/>
    <addaction name="markWatchedAction"/>
+  </widget>
+  <widget class="QDockWidget" name="infoDock">
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="infosDockContent"/>
+  </widget>
+  <widget class="QDockWidget" name="treeDock">
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="treeDockContent">
+    <layout class="QGridLayout" name="gridLayout_2">
+     <item row="0" column="0">
+      <widget class="QTreeWidget" name="treeWidget">
+       <property name="indentation">
+        <number>10</number>
+       </property>
+       <property name="rootIsDecorated">
+        <bool>false</bool>
+       </property>
+       <property name="animated">
+        <bool>true</bool>
+       </property>
+       <property name="headerHidden">
+        <bool>true</bool>
+       </property>
+       <column>
+        <property name="text">
+         <string/>
+        </property>
+       </column>
+       <item>
+        <property name="text">
+         <string>Lost</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Heroes</string>
+        </property>
+        <item>
+         <property name="text">
+          <string>Season 1</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Season 2</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>Episode 1</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Episode 2</string>
+          </property>
+         </item>
+        </item>
+       </item>
+      </widget>
+     </item>
+    </layout>
+   </widget>
   </widget>
   <action name="addShowAction">
    <property name="text">

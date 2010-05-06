@@ -30,6 +30,10 @@
 #include "updateworker.h"
 #include "updateprogressdialog.h"
 #include "tvdb.h"
+#include "showmodel.h"
+#include "seasonmodel.h"
+#include "showdelegate.h"
+#include "tvdbcache.h"
 
 MainWindow::MainWindow()
 {
@@ -91,6 +95,21 @@ MainWindow::MainWindow()
   connect(dworker, SIGNAL(downloadFinished(Job *)), progress, SLOT(downloadFinished(Job *)));
   connect(dworker, SIGNAL(error(const QString &, const QString &)),
 	  this, SLOT(error(const QString &, const QString &)));
+
+  TvDBCache *cache = new TvDBCache();
+  //  listView->setModel(new ShowModel(cache, listView));
+  SeasonModel *model = new SeasonModel(cache, listView);
+  model->setShowId(73739);
+  listView->setModel(model);
+
+  if (true) {
+    listView->setViewMode(QListView::IconMode);
+    listView->setIconSize(QSize(100, 120));
+    listView->setGridSize(QSize(150, 150));
+  } else {
+    listView->setIconSize(QSize(100, 120));
+  }
+
 }
 
 MainWindow::~MainWindow()

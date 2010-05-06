@@ -26,7 +26,9 @@ SET(serieswatcher_SRCS
   settings.cpp
   downloadworker.cpp
   workerthread.cpp
-  showmodel.cpp)
+  showmodel.cpp
+  seasonmodel.cpp
+  showdelegate.cpp)
 
 SET(serieswatcher_UIS mainwindow.ui searchdialog.ui updateprogressdialog.ui)
 SET(serieswatcher_MOC_HDRS
@@ -38,7 +40,9 @@ SET(serieswatcher_MOC_HDRS
   workerthread.h
   updateprogressdialog.h
   settings.h
-  showmodel.h)
+  showmodel.h
+  seasonmodel.h
+  showdelegate.h)
 SET(serieswatcher_RCS serieswatcher.qrc)
 
 QT4_WRAP_CPP(MOC_SOURCE ${serieswatcher_MOC_HDRS})

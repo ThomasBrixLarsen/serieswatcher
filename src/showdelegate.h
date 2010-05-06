@@ -19,11 +19,18 @@
 #ifndef SHOW_DELEGATE_H
 # define SHOW_DELEGATE_H
 
-#include <QtCore/QItemDelegate>
+#include <QtGui/QStyledItemDelegate>
 
-class ShowDelegate : public QItemDelegate
+class ShowDelegate : public QStyledItemDelegate
 {
+  Q_OBJECT
+public:
+  ShowDelegate(QWidget *parent = 0) : QStyledItemDelegate(parent) {}
 
+  void paint(QPainter *painter, const QStyleOptionViewItem &option,
+	     const QModelIndex &index) const;
+  QSize sizeHint(const QStyleOptionViewItem &option,
+		 const QModelIndex &index) const;
 };
 
 #endif
