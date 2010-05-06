@@ -26,6 +26,10 @@
 class SearchDialog;
 class WorkerThread;
 class UpdateProgressDialog;
+class ShowModel;
+class SeasonModel;
+class EpisodeModel;
+class TvDBCache;
 
 class MainWindow : public QMainWindow, private Ui_mainWindow {
   Q_OBJECT
@@ -45,11 +49,16 @@ private:
   void createWorkers();
   void createActions();
   void createSearchDialog();
+  void setupList();
 
 private:
   UpdateProgressDialog *progress;
   SearchDialog *searchDialog;
   WorkerThread *thread;
+  ShowModel *shows;
+  SeasonModel *seasons;
+  EpisodeModel *episodes;
+  TvDBCache *cache;
 };
 
 #endif

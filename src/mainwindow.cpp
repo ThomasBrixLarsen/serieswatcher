@@ -42,6 +42,7 @@ MainWindow::MainWindow()
   createWorkers();
   createActions();
   createSearchDialog();
+  setupList();
 }
 
 void
@@ -80,7 +81,6 @@ MainWindow::createWorkers()
   UpdateWorker *uworker = thread->updateWorker();
 
   connect(progress, SIGNAL(abord()), thread, SLOT(abord()));
-
 /*
   connect(thread, SIGNAL(databaseUpdated()), this, SLOT(databaseUpdated()));
   connect(thread, SIGNAL(started()), this, SLOT(updateStarted()));
@@ -105,21 +105,6 @@ MainWindow::createWorkers()
   connect(dworker, SIGNAL(downloadFinished(Job *)), progress, SLOT(downloadFinished(Job *)));
   connect(dworker, SIGNAL(error(const QString &, const QString &)),
 	  this, SLOT(error(const QString &, const QString &)));
-
-  TvDBCache *cache = new TvDBCache();
-  //  listView->setModel(new ShowModel(cache, listView));
-  SeasonModel *model = new SeasonModel(cache, listView);
-  model->setShowId(73739);
-  listView->setModel(model);
-
-  if (true) {
-    listView->setViewMode(QListView::IconMode);
-    listView->setIconSize(QSize(100, 120));
-    listView->setGridSize(QSize(150, 150));
-  } else {
-    listView->setIconSize(QSize(100, 120));
-  }
-
 }
 
 void
@@ -129,6 +114,26 @@ MainWindow::createSearchDialog()
 
   connect(searchDialog, SIGNAL(showSelected(const QString &, qint64)),
 	  this, SLOT(addShow(const QString &, qint64)));
+}
+
+void
+MainWindow::setupList()
+{
+  cache = new TvDBCache();
+
+  shows = new ShowModel(cache, this);
+  seasons = new SeasonModel(cache, listView);
+
+  seasons->setShowId(73739);
+  listView->setModel(seasons);
+
+  if (true) {
+    listView->setViewMode(QListView::IconMode);
+    listView->setIconSize(QSize(100, 120));
+    listView->setGridSize(QSize(150, 150));
+  } else {
+    listView->setIconSize(QSize(100, 120));
+  }
 }
 
 MainWindow::~MainWindow()
