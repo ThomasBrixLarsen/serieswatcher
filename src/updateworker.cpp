@@ -90,7 +90,9 @@ UpdateWorker::parseBannersXml(Job *job)
   foreach ( QtTvDB::Banner * banner, banners) {
     if (banner->language() != "en")
       continue ;
-    if (banner->type() == "poster" || (banner->type() == "season" && banner->type2() == "season")) {
+    if (banner->type() == "poster" ||
+	banner->type() == "series" ||
+	(banner->type() == "season" && banner->type2() == "season")) {
       if (cache->hasBannerFile(banner->id(), TvDBCache::Poster))
 	continue ;
 
