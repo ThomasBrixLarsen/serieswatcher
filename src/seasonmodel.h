@@ -16,25 +16,26 @@
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef SHOW_MODEL_H
-# define SHOW_MODEL_H
+#ifndef SEASON_MODEL_H
+# define SEASON_MODEL_H
 
 #include <QtSql/QSqlQueryModel>
 
 class TvDBCache;
 
-class ShowModel : public QSqlQueryModel
+class SeasonModel : public QSqlQueryModel
 {
   Q_OBJECT
 public:
   enum Role { Id = Qt::UserRole,
-	      Seasons,
+	      ShowId,
 	      Episodes,
 	      EpisodesNotWatched,
 	      NextEpisode };
 
-  ShowModel(TvDBCache *cache, QObject *parent = 0);
+  SeasonModel(TvDBCache *cache, QObject *parent = 0);
 
+  void setShowId(int showId);
   QVariant data(const QModelIndex &item, int role) const;
 private:
   TvDBCache *cache;

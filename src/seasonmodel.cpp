@@ -22,42 +22,56 @@
 #include <QtGui/QIcon>
 
 #include "tvdbcache.h"
-#include "showmodel.h"
+#include "seasonmodel.h"
 
-ShowModel::ShowModel(TvDBCache *c, QObject *parent)
+SeasonModel::SeasonModel(TvDBCache *c, QObject *parent)
   : QSqlQueryModel(parent), cache(c)
 {
   /* next episode, number of season */
-  setQuery("SELECT shows.name, shows.id, COUNT(DISTINCT episodes.id) as episodes, "
-	   "COUNT(DISTINCT episodes.season) as seasons, banners.id as bannerId "
-	   "FROM shows "
-	   "LEFT JOIN banners ON (shows.id = banners.showId AND banners.type = 'poster' "
-	   "AND banners.language = 'en') "
-	   "LEFT JOIN episodes ON shows.id = episodes.showId "
-	   "GROUP BY shows.id");
 }
 
-QVariant ShowModel::data(const QModelIndex &index, int role) const
+void
+SeasonModel::setShowId(int showId)
+{
+  QString query;
+
+  query = "SELECT episodes.season, episodes.seasonId, COUNT(DISTINCT episodes.id) as episodes, ";
+  query += "banners.id as bannerId, episodes.showId as showId ";
+  query += "FROM episodes ";
+  query += "LEFT JOIN banners ON (episodes.showid = banners.showId AND banners.type = 'season' ";
+  query += " AND banners.type2 = 'season' ";
+  query += " AND banners.season = episodes.season AND banners.language = 'en') ";
+  query += QString("WHERE episodes.showId = %1 ").arg(showId);
+  query += "GROUP BY episodes.season";
+  setQuery(query);
+}
+
+QVariant SeasonModel::data(const QModelIndex &index, int role) const
 {
   if (role >= Qt::UserRole) {
     QSqlRecord rec = record(index.row());
 
-    if (role == ShowModel::Id)
+    if (role == SeasonModel::Id)
       return rec.value("id").toInt();
-    if (role == ShowModel::Seasons)
-      return rec.value("seasons").toInt();
-    if (role == ShowModel::NextEpisode)
+    if (role == SeasonModel::ShowId)
+      return rec.value("showId").toInt();
+    if (role == SeasonModel::NextEpisode)
       return QDateTime();
-    if (role == ShowModel::Episodes)
+    if (role == SeasonModel::Episodes)
       return rec.value("episodes").toInt();
-    if (role == ShowModel::EpisodesNotWatched)
+    if (role == SeasonModel::EpisodesNotWatched)
       return rec.value("episodes").toInt();
   }
 
   QVariant value = QSqlQueryModel::data(index, role);
 
-  if (role == Qt::DisplayRole)
-    return value.toString();
+  if (role == Qt::DisplayRole) {
+    int season = value.toInt();
+
+    if (season)
+      return tr("Season %1").arg(season);
+    return tr("Specials");
+  }
   if (role == Qt::DecorationRole)
     return QIcon(cache->fetchBannerFile(record(index.row()).value("bannerId").toInt(), TvDBCache::Poster));
   return value;
