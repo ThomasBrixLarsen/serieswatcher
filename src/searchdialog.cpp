@@ -55,8 +55,11 @@ SearchDialog::search()
   QtTvDB::Mirrors *m = TvDB::mirrors();
 
   QUrl url = m->searchShowUrl(lineEdit->text());
-
-  manager->get(QNetworkRequest(url));
+  qDebug() << url << url.encodedQuery() << url.path() << url.encodedPath();
+  QNetworkReply *r = manager->get(QNetworkRequest(url));
+  qDebug() << url << url.encodedQuery() << url.encodedPath();
+  connect(r, SIGNAL(error(QNetworkReply::NetworkError)),
+          this, SLOT(error(QNetworkReply::NetworkError)));
 }
 
 void

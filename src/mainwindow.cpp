@@ -75,37 +75,44 @@ void
 MainWindow::createWorkers()
 {
   thread = new WorkerThread();
-  thread->start(QThread::LowPriority);
   progress = new UpdateProgressDialog(this);
 
-  DownloadWorker *dworker = thread->downloadWorker();
-  UpdateWorker *uworker = thread->updateWorker();
-
+  connect(thread, SIGNAL(started()), this, SLOT(threadStarted()));
   connect(progress, SIGNAL(abord()), thread, SLOT(abord()));
+
+  thread->start(QThread::LowPriority);
+
 /*
   connect(thread, SIGNAL(databaseUpdated()), this, SLOT(databaseUpdated()));
   connect(thread, SIGNAL(started()), this, SLOT(updateStarted()));
   connect(thread, SIGNAL(finished()), this, SLOT(updateFinished()));
 */
+}
 
-  connect(uworker, SIGNAL(newJob(Job *)), progress, SLOT(newJob(Job *)));
-  connect(uworker, SIGNAL(parseStarted(Job *)), progress, SLOT(parseStarted(Job *)));
-  connect(uworker, SIGNAL(parseProgress(Job *, qint64, qint64)),
-	  progress, SLOT(parseProgress(Job *, qint64, qint64)));
-  connect(uworker, SIGNAL(parseFailed(Job *)), progress, SLOT(parseFailed(Job *)));
-  connect(uworker, SIGNAL(parseFinished(Job *)), progress, SLOT(parseFinished(Job *)));
-  connect(uworker, SIGNAL(error(const QString &, const QString &)),
-	  this, SLOT(error(const QString &, const QString &)));
+void
+MainWindow::threadStarted()
+{
+    DownloadWorker *dworker = thread->downloadWorker();
+    UpdateWorker *uworker = thread->updateWorker();
 
-  connect(dworker, SIGNAL(newJob(Job *)), progress, SLOT(newJob(Job *)));
-  connect(dworker, SIGNAL(downloadStarted(Job *)), progress, SLOT(downloadStarted(Job *)));
-  connect(dworker, SIGNAL(downloadProgress(Job *, qint64, qint64)),
-	  progress, SLOT(downloadProgress(Job *, qint64, qint64)));
-  connect(dworker, SIGNAL(downloadFailed(Job *, const QString &)),
-	  progress, SLOT(downloadFailed(Job *, const QString &)));
-  connect(dworker, SIGNAL(downloadFinished(Job *)), progress, SLOT(downloadFinished(Job *)));
-  connect(dworker, SIGNAL(error(const QString &, const QString &)),
-	  this, SLOT(error(const QString &, const QString &)));
+    connect(uworker, SIGNAL(newJob(Job *)), progress, SLOT(newJob(Job *)));
+    connect(uworker, SIGNAL(parseStarted(Job *)), progress, SLOT(parseStarted(Job *)));
+    connect(uworker, SIGNAL(parseProgress(Job *, qint64, qint64)),
+            progress, SLOT(parseProgress(Job *, qint64, qint64)));
+    connect(uworker, SIGNAL(parseFailed(Job *)), progress, SLOT(parseFailed(Job *)));
+    connect(uworker, SIGNAL(parseFinished(Job *)), progress, SLOT(parseFinished(Job *)));
+    connect(uworker, SIGNAL(error(const QString &, const QString &)),
+            this, SLOT(error(const QString &, const QString &)));
+
+    connect(dworker, SIGNAL(newJob(Job *)), progress, SLOT(newJob(Job *)));
+    connect(dworker, SIGNAL(downloadStarted(Job *)), progress, SLOT(downloadStarted(Job *)));
+    connect(dworker, SIGNAL(downloadProgress(Job *, qint64, qint64)),
+            progress, SLOT(downloadProgress(Job *, qint64, qint64)));
+    connect(dworker, SIGNAL(downloadFailed(Job *, const QString &)),
+            progress, SLOT(downloadFailed(Job *, const QString &)));
+    connect(dworker, SIGNAL(downloadFinished(Job *)), progress, SLOT(downloadFinished(Job *)));
+    connect(dworker, SIGNAL(error(const QString &, const QString &)),
+            this, SLOT(error(const QString &, const QString &)));
 }
 
 void

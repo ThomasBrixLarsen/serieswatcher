@@ -43,6 +43,7 @@ private slots:
   void about();
   void aboutQt();
   void error(const QString & title, const QString & message);
+  void threadStarted();
 
 private:
   void setupTvDB();

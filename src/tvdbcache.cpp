@@ -277,7 +277,7 @@ TvDBCache::sync()
 {
   QFile file(db.databaseName());
 
-  fsync(file.handle());
+//fsync(file.handle());
 }
 
 QString
