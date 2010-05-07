@@ -240,6 +240,8 @@ TvDBCache::bannerPath(qint64 id, BannerType type)
     subdir = "banner";
   if (type == Search)
     subdir = "search";
+  if (type == Episode)
+    subdir = "episode";
 
   if (!dir.exists(subdir))
     dir.mkdir(subdir);

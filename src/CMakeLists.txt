@@ -28,6 +28,7 @@ SET(serieswatcher_SRCS
   workerthread.cpp
   showmodel.cpp
   seasonmodel.cpp
+  episodemodel.cpp
   showdelegate.cpp)
 
 SET(serieswatcher_UIS mainwindow.ui searchdialog.ui updateprogressdialog.ui)
@@ -42,6 +43,7 @@ SET(serieswatcher_MOC_HDRS
   settings.h
   showmodel.h
   seasonmodel.h
+  episodemodel.h
   showdelegate.h)
 SET(serieswatcher_RCS serieswatcher.qrc)
 

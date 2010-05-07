@@ -77,7 +77,7 @@ UpdateWorker::parseShowAndEpisodesZip(Job *job)
 void
 UpdateWorker::parseBanner(Job *job)
 {
-  cache->storeBannerFile(job->id, TvDBCache::Poster, job->data);
+  cache->storeBannerFile(job->id, job->bannerType, job->data);
 }
 
 void
@@ -93,16 +93,7 @@ UpdateWorker::parseBannersXml(Job *job)
     if (banner->type() == "poster" ||
 	banner->type() == "series" ||
 	(banner->type() == "season" && banner->type2() == "season")) {
-      if (cache->hasBannerFile(banner->id(), TvDBCache::Poster))
-	continue ;
-
-      Job *bjob = new Job();
-
-      bjob->id = banner->id();
-      bjob->type = Job::Banner;
-      bjob->url = mirrors->bannerUrl(banner->path());
-
-      emit newJob(bjob);
+      bannerJob(banner->id(), TvDBCache::Poster, mirrors->bannerUrl(banner->path()));
     }
   }
   qDeleteAll(banners);
@@ -125,6 +116,9 @@ UpdateWorker::parseShowAndEpisodesXml(Job *job)
   }
 
   foreach (QtTvDB::Episode *episode, episodes) {
+    if (episode->language() == "en" && !episode->image().isEmpty())
+      bannerJob(episode->id(), TvDBCache::Episode, mirrors->bannerUrl(episode->image()));
+
     cache->storeEpisode(episode);
     emit parseProgress(job, done++, total);
   }
@@ -135,6 +129,23 @@ UpdateWorker::parseShowAndEpisodesXml(Job *job)
   cache->sync();
 }
 
+void
+UpdateWorker::bannerJob(qint64 id, TvDBCache::BannerType type, const QUrl & url)
+{
+  Job *bjob;
+
+  if (cache->hasBannerFile(id, type))
+    return ;
+
+  bjob = new Job();
+
+  bjob->id = id;
+  bjob->type = Job::Banner;
+  bjob->bannerType = type;
+  bjob->url = url;
+
+  emit newJob(bjob);
+}
 
 void
 UpdateWorker::abord()

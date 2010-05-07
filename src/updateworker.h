@@ -59,6 +59,8 @@ signals:
   void error(const QString & title, const QString &message);
 
 private:
+  void bannerJob(qint64 id, TvDBCache::BannerType type, const QUrl & url);
+
   QMutex mutex;
   QMutex working;
 

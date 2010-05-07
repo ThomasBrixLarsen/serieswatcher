@@ -16,27 +16,25 @@
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef JOB_H
-# define JOB_H
+#ifndef EPISODE_MODEL_H
+# define EPISODE_MODEL_H
 
-#include <QtCore/QByteArray>
+#include <QtSql/QSqlQueryModel>
 
-#include "tvdbcache.h"
+class TvDBCache;
 
-struct Job
+class EpisodeModel : public QSqlQueryModel
 {
-  enum Type { ShowAndEpisodesXml, ShowAndEpisodesZip, BannersXml, Banner };
-  enum State { Unknown, Downloading, Waiting, Parsing, Failed, Finished };
+  Q_OBJECT
+public:
+  enum Role { Watched = Qt::UserRole };
 
-  qint64 id;
-  Type type;
-  State state;
-  TvDBCache::BannerType bannerType;
-  QUrl url;
-  qint64 done;
-  qint64 total;
-  QByteArray data;
+  EpisodeModel(TvDBCache *cache, QObject *parent = 0);
+
+  void setSeason(int showId, int season);
+  QVariant data(const QModelIndex &item, int role) const;
+private:
+  TvDBCache *cache;
 };
-
 
 #endif

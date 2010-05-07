@@ -17,6 +17,7 @@
  */
 
 #include <QtSql/QSqlRecord>
+#include <QtSql/QSqlQuery>
 #include <QtCore/QDateTime>
 #include <QtGui/QPixmap>
 #include <QtGui/QIcon>
@@ -36,13 +37,13 @@ SeasonModel::setShowId(int showId)
   QString query;
 
   query = "SELECT episodes.season, episodes.seasonId, COUNT(DISTINCT episodes.id) as episodes, ";
-  query += "banners.id as bannerId, episodes.showId as showId ";
+  query += "SUM(episodes_extra.watched) as episodesWatched, ";
+  query += "episodes.showId as showId ";
   query += "FROM episodes ";
-  query += "LEFT JOIN banners ON (episodes.showid = banners.showId AND banners.type = 'season' ";
-  query += " AND banners.type2 = 'season' ";
-  query += " AND banners.season = episodes.season AND banners.language = 'en') ";
+  query += "LEFT JOIN episodes_extra ON episodes.id = episodes_extra.id ";
   query += QString("WHERE episodes.showId = %1 ").arg(showId);
   query += "GROUP BY episodes.season";
+
   setQuery(query);
 }
 
@@ -52,7 +53,7 @@ QVariant SeasonModel::data(const QModelIndex &index, int role) const
     QSqlRecord rec = record(index.row());
 
     if (role == SeasonModel::Id)
-      return rec.value("id").toInt();
+      return rec.value("season").toInt();
     if (role == SeasonModel::ShowId)
       return rec.value("showId").toInt();
     if (role == SeasonModel::NextEpisode)
@@ -72,8 +73,24 @@ QVariant SeasonModel::data(const QModelIndex &index, int role) const
       return tr("Season %1").arg(season);
     return tr("Specials");
   }
-  if (role == Qt::DecorationRole)
-    return QIcon(cache->fetchBannerFile(record(index.row()).value("bannerId").toInt(), TvDBCache::Poster));
+  if (role == Qt::DecorationRole) {
+    QString sql;
+    QSqlRecord rec = record(index.row());
+
+    sql = "SELECT banners.id as bannerId FROM banners ";
+    sql += "WHERE banners.type = 'season' AND banners.type2 = 'season' ";
+    sql += "AND banners.season = %1 AND banners.language = 'en' ";
+    sql += "AND banners.showId = %2";
+
+    sql = sql
+      .arg(rec.value("season").toInt())
+      .arg(rec.value("showId").toInt());
+
+    QSqlQuery query(sql);
+
+    query.next();
+    return QIcon(cache->fetchBannerFile(query.record().value("bannerId").toInt(), TvDBCache::Poster));
+  }
   return value;
 }
 

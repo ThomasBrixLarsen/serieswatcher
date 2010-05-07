@@ -31,6 +31,7 @@
 #include "tvdb.h"
 #include "showmodel.h"
 #include "seasonmodel.h"
+#include "episodemodel.h"
 #include "showdelegate.h"
 #include "tvdbcache.h"
 
@@ -121,11 +122,13 @@ MainWindow::setupList()
 {
   cache = new TvDBCache();
 
-  shows = new ShowModel(cache, this);
+  shows = new ShowModel(cache, listView);
   seasons = new SeasonModel(cache, listView);
-
+  episodes = new EpisodeModel(cache, listView);
   seasons->setShowId(73739);
+  episodes->setSeason(73739, 1);
   listView->setModel(seasons);
+  //listView->setItemDelegate(new ShowDelegate());
 
   if (true) {
     listView->setViewMode(QListView::IconMode);

@@ -28,8 +28,8 @@ void
 ShowDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option,
 		    const QModelIndex &index) const
 {
-  QStyledItemDelegate::paint(painter, option, index);
-  return ;
+  //QStyledItemDelegate::paint(painter, option, index);
+  //return ;
 
   if (!index.isValid() || index.column() != 0) {
     QStyledItemDelegate::paint(painter, option, index);
@@ -65,8 +65,8 @@ ShowDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option,
     .arg(index.data(ShowModel::Seasons).toInt())
     .arg(index.data(ShowModel::Episodes).toInt())
     .arg(index.data(ShowModel::EpisodesNotWatched).toInt())
-    .arg(index.data(ShowModel::EpisodesNotWatched).toDateTime().toString());
-
+    .arg(index.data(ShowModel::NextEpisode).toDateTime().toString());
+  qDebug() << status;
   painter->setPen("#7a8288");
   painter->drawText(r, Qt::AlignLeft | Qt::AlignBottom, status);
   painter->restore();

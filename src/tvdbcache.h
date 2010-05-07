@@ -26,7 +26,7 @@
 class TvDBCache
 {
 public:
-  enum BannerType { Poster, Banner, Search };
+  enum BannerType { Poster, Banner, Search, Episode };
 
   TvDBCache(const QString & name = QLatin1String(QSqlDatabase::defaultConnection));
   ~TvDBCache();
