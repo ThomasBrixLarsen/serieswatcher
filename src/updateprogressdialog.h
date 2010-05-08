@@ -49,7 +49,7 @@ public slots:
 
   void error(const QString & title, const QString &message);
 
-  void toggleDetails();
+  void toggleDetails(bool clicked);
 
   void accept();
   void reject();
