@@ -27,7 +27,6 @@
 EpisodeModel::EpisodeModel(TvDBCache *c, QObject *parent)
   : QSqlQueryModel(parent), cache(c)
 {
-  /* next episode, number of episode */
 }
 
 void
@@ -46,19 +45,26 @@ EpisodeModel::setSeason(int showId, int season)
 
 QVariant EpisodeModel::data(const QModelIndex &index, int role) const
 {
-  if (role >= Qt::UserRole) {
-    QSqlRecord rec = record(index.row());
-
-    if (role == EpisodeModel::Watched)
-      return rec.value("watched").toInt();
-  }
-
   QVariant value = QSqlQueryModel::data(index, role);
 
-  if (role == Qt::DisplayRole)
-    return value.toString();
-  if (role == Qt::DecorationRole)
-    return QIcon(cache->fetchBannerFile(record(index.row()).value("id").toInt(), TvDBCache::Episode));
+  if (role >= Qt::UserRole || role == Qt::DecorationRole || role == Qt::DisplayRole)
+    return data(index.row(), role, value);
   return value;
+}
+
+QVariant EpisodeModel::data(int row, int role, QVariant fallback) const
+{
+  QSqlRecord rec = record(row);
+
+  if (role == EpisodeModel::Watched)
+    return rec.value("watched").toInt();
+  if (role == Qt::DisplayRole)
+    return rec.value("name").toString();
+  if (role == Qt::DecorationRole) {
+    qint64 id = rec.value("id").toInt();
+
+    return QIcon(cache->fetchBannerFile(id, TvDBCache::Episode));
+  }
+  return fallback;
 }
 

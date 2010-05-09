@@ -31,7 +31,6 @@ ShowModel::ShowModel(TvDBCache *c, QObject *parent)
 {
   QString query;
 
-  /* next episode, number of season */
   query = "SELECT shows.name, shows.id, COUNT(DISTINCT episodes.id) as episodesNb, "
     "COUNT(DISTINCT episodes.season) as seasons, "
     "SUM(episodes_extra.watched) as episodesWatched, "
@@ -46,41 +45,45 @@ ShowModel::ShowModel(TvDBCache *c, QObject *parent)
 
 QVariant ShowModel::data(const QModelIndex &index, int role) const
 {
-  if (role >= Qt::UserRole) {
-    QSqlRecord rec = record(index.row());
-
-    if (role == ShowModel::Id)
-      return rec.value("id").toInt();
-    if (role == ShowModel::Seasons)
-      return rec.value("seasons").toInt();
-    if (role == ShowModel::NextEpisode) {
-      QDateTime date;
-      qDebug() << rec.value("nextAirs");
-      date.setTime_t(rec.value("nextAirs").toInt());
-      return date;
-    }
-    if (role == ShowModel::Episodes)
-      return rec.value("episodesNb").toInt();
-    if (role == ShowModel::EpisodesNotWatched)
-      return rec.value("episodesNb").toInt() - rec.value("episodesWatched").toInt();
-  }
-
   QVariant value = QSqlQueryModel::data(index, role);
 
+  if (role >= Qt::UserRole || role == Qt::DecorationRole || role == Qt::DisplayRole)
+    return data(index.row(), role, value);
+  return value;
+}
+
+QVariant ShowModel::data(int row, int role, QVariant fallback) const
+{
+  QSqlRecord rec = record(row);
+
+  if (role == ShowModel::Id)
+    return rec.value("id").toInt();
+  if (role == ShowModel::Seasons)
+    return rec.value("seasons").toInt();
+  if (role == ShowModel::NextEpisode) {
+    QDateTime date;
+    qDebug() << rec.value("nextAirs");
+    date.setTime_t(rec.value("nextAirs").toInt());
+    return date;
+  }
+  if (role == ShowModel::Episodes)
+    return rec.value("episodesNb").toInt();
+  if (role == ShowModel::EpisodesNotWatched)
+    return rec.value("episodesNb").toInt() - rec.value("episodesWatched").toInt();
   if (role == Qt::DisplayRole)
-    return value.toString();
+    return rec.value("name").toString();
   if (role == Qt::DecorationRole) {
     QString sql;
 
     sql = "SELECT banners.id as bannerId FROM banners ";
     sql += "WHERE (banners.type = 'poster' AND banners.language = 'en') ";
-    sql += QString("AND banners.showId = %1").arg(record(index.row()).value("id").toInt());
+    sql += QString("AND banners.showId = %1").arg(rec.value("id").toInt());
 
     QSqlQuery query(sql);
-
     query.next();
-    return QIcon(cache->fetchBannerFile(query.record().value("bannerId").toInt(), TvDBCache::Poster));
-  }
-  return value;
-}
 
+    qint64 id = query.record().value("bannerId").toInt();
+    return QIcon(cache->fetchBannerFile(id, TvDBCache::Poster));
+  }
+  return fallback;
+}

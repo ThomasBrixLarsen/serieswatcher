@@ -44,15 +44,28 @@ private slots:
   void aboutQt();
   void error(const QString & title, const QString & message);
   void threadStarted();
+  void itemClicked(const QModelIndex & index);
+  void itemEntered(const QModelIndex & index);
+  void itemDoubleClicked(const QModelIndex & index);
+  void treeItemCollapsed(QTreeWidgetItem * item);
+  void treeItemExpanded(QTreeWidgetItem * item);
+  void treeItemActivated(QTreeWidgetItem  * item, int column);
 
 private:
   void setupTvDB();
   void createWorkers();
   void createActions();
   void createSearchDialog();
+  void setupCache();
   void setupList();
+  void setupTree();
+  void displayShows();
+  void displayShow(qint64 showId);
+  void displaySeason(qint64 showId, int season);
 
 private:
+  enum TreeType { Home, Show, Season, Episode };
+
   UpdateProgressDialog *progress;
   SearchDialog *searchDialog;
   WorkerThread *thread;

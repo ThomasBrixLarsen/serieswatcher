@@ -36,6 +36,8 @@ public:
   ShowModel(TvDBCache *cache, QObject *parent = 0);
 
   QVariant data(const QModelIndex &item, int role) const;
+  QVariant data(int row, int role, QVariant fallback = QVariant()) const;
+
 private:
   TvDBCache *cache;
 };

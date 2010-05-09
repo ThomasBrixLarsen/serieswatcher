@@ -19,6 +19,7 @@
 #include <QDebug>
 #include <QtGui/QMessageBox>
 #include <QtSql/QSqlDatabase>
+#include <QtSql/QSqlRecord>
 
 #include "config.h"
 
@@ -43,7 +44,9 @@ MainWindow::MainWindow()
   createWorkers();
   createActions();
   createSearchDialog();
+  setupCache();
   setupList();
+  setupTree();
 }
 
 void
@@ -125,17 +128,66 @@ MainWindow::createSearchDialog()
 }
 
 void
-MainWindow::setupList()
+MainWindow::setupCache()
 {
   cache = new TvDBCache();
+}
 
+void
+MainWindow::setupTree()
+{
+  QTreeWidgetItem *home;
+
+  home = new QTreeWidgetItem(treeWidget, Home);
+  home->setText(0, tr("Index"));
+  home->setIcon(0, style()->standardIcon(QStyle::SP_DirHomeIcon));
+
+  for (int i = 0; i < shows->rowCount(); ++i) {
+    QTreeWidgetItem *show;
+
+    show = new QTreeWidgetItem(treeWidget, Show);
+    show->setData(0, ShowModel::Id, shows->data(i, ShowModel::Id));
+    show->setData(0, Qt::DisplayRole, shows->data(i, Qt::DisplayRole));
+    //show->setData(0, Qt::DecorationRole, shows->data(i, Qt::DecorationRole));
+    show->setIcon(0, style()->standardIcon(QStyle::SP_DirClosedIcon));
+
+    seasons->setShowId(shows->data(i, ShowModel::Id).toInt());
+
+    for (int j = 0; j < seasons->rowCount(); ++j) {
+      QTreeWidgetItem *season;
+
+      seasons->setShowId(shows->data(i, ShowModel::Id).toInt());
+      season = new QTreeWidgetItem(show, Season);
+      season->setData(0, SeasonModel::Id, seasons->data(j, SeasonModel::Id));
+      season->setData(0, SeasonModel::ShowId, seasons->data(j, SeasonModel::ShowId));
+      season->setData(0, Qt::DisplayRole, seasons->data(j, Qt::DisplayRole));
+      //season->setData(0, Qt::DecorationRole, seasons->data(j, Qt::DecorationRole));
+      season->setIcon(0, style()->standardIcon(QStyle::SP_FileIcon));
+    }
+  }
+
+  connect(treeWidget, SIGNAL(itemCollapsed(QTreeWidgetItem *)),
+	  this, SLOT(treeItemCollapsed(QTreeWidgetItem *)));
+  connect(treeWidget, SIGNAL(itemExpanded(QTreeWidgetItem *)),
+	  this, SLOT(treeItemExpanded(QTreeWidgetItem *)));
+  connect(treeWidget, SIGNAL(itemActivated(QTreeWidgetItem  *, int )),
+	  this, SLOT(treeItemActivated(QTreeWidgetItem  *, int )));
+}
+
+void
+MainWindow::setupList()
+{
   shows = new ShowModel(cache, listView);
   seasons = new SeasonModel(cache, listView);
   episodes = new EpisodeModel(cache, listView);
-  seasons->setShowId(73739);
-  episodes->setSeason(73739, 1);
-  listView->setModel(seasons);
   //listView->setItemDelegate(new ShowDelegate());
+
+  connect(listView, SIGNAL(clicked(const QModelIndex &)),
+	  this, SLOT(itemClicked(const QModelIndex &)));
+  connect(listView, SIGNAL(entered(const QModelIndex &)),
+	  this, SLOT(itemEntered(const QModelIndex &)));
+  connect(listView, SIGNAL(doubleClicked(const QModelIndex &)),
+	  this, SLOT(itemDoubleClicked(const QModelIndex &)));
 
   if (true) {
     listView->setViewMode(QListView::IconMode);
@@ -150,6 +202,65 @@ MainWindow::~MainWindow()
 {
   QSqlDatabase::database("default").close();
   QSqlDatabase::removeDatabase("default");
+}
+
+void
+MainWindow::itemClicked(const QModelIndex & item)
+{
+}
+
+void
+MainWindow::itemEntered(const QModelIndex & item)
+{
+}
+
+void
+MainWindow::itemDoubleClicked(const QModelIndex & item)
+{
+}
+
+void
+MainWindow::treeItemCollapsed(QTreeWidgetItem * item)
+{
+  item->setIcon(0, style()->standardIcon(QStyle::SP_DirClosedIcon));
+}
+
+void
+MainWindow::treeItemExpanded(QTreeWidgetItem * item)
+{
+  item->setIcon(0, style()->standardIcon(QStyle::SP_DirOpenIcon));
+}
+
+void
+MainWindow::treeItemActivated(QTreeWidgetItem  * item, int column)
+{
+  if (item->type() == Show)
+    displayShow(item->data(0, ShowModel::Id).toInt());
+  else if (item->type() == Season)
+    displaySeason(item->data(0, SeasonModel::ShowId).toInt(),
+		  item->data(0, SeasonModel::Id).toInt());
+  else
+    displayShows();
+}
+
+void
+MainWindow::displayShows()
+{
+  listView->setModel(shows);
+}
+
+void
+MainWindow::displayShow(qint64 showId)
+{
+  seasons->setShowId(showId);
+  listView->setModel(seasons);
+}
+
+void
+MainWindow::displaySeason(qint64 showId, int season)
+{
+  episodes->setSeason(showId, season);
+  listView->setModel(episodes);
 }
 
 void

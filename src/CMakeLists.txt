@@ -21,6 +21,7 @@ SET(serieswatcher_SRCS
   tvdb.cpp
   tvdbcache.cpp
   searchlistwidget.cpp
+  maintreewidget.cpp
   updateworker.cpp
   updateprogressdialog.cpp
   settings.cpp
@@ -36,6 +37,7 @@ SET(serieswatcher_MOC_HDRS
   mainwindow.h
   searchdialog.h
   searchlistwidget.h
+  maintreewidget.h
   updateworker.h
   downloadworker.h
   workerthread.h

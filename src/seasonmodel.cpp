@@ -28,7 +28,6 @@
 SeasonModel::SeasonModel(TvDBCache *c, QObject *parent)
   : QSqlQueryModel(parent), cache(c)
 {
-  /* next episode, number of season */
 }
 
 void
@@ -49,25 +48,29 @@ SeasonModel::setShowId(int showId)
 
 QVariant SeasonModel::data(const QModelIndex &index, int role) const
 {
-  if (role >= Qt::UserRole) {
-    QSqlRecord rec = record(index.row());
-
-    if (role == SeasonModel::Id)
-      return rec.value("season").toInt();
-    if (role == SeasonModel::ShowId)
-      return rec.value("showId").toInt();
-    if (role == SeasonModel::NextEpisode)
-      return QDateTime();
-    if (role == SeasonModel::Episodes)
-      return rec.value("episodes").toInt();
-    if (role == SeasonModel::EpisodesNotWatched)
-      return rec.value("episodes").toInt();
-  }
-
   QVariant value = QSqlQueryModel::data(index, role);
 
+  if (role >= Qt::UserRole || role == Qt::DecorationRole || role == Qt::DisplayRole)
+    return data(index.row(), role, value);
+  return value;
+}
+
+QVariant SeasonModel::data(int row, int role, QVariant fallback) const
+{
+  QSqlRecord rec = record(row);
+
+  if (role == SeasonModel::Id)
+    return rec.value("season").toInt();
+  if (role == SeasonModel::ShowId)
+    return rec.value("showId").toInt();
+  if (role == SeasonModel::NextEpisode)
+    return QDateTime();
+  if (role == SeasonModel::Episodes)
+    return rec.value("episodes").toInt();
+  if (role == SeasonModel::EpisodesNotWatched)
+    return rec.value("episodes").toInt();
   if (role == Qt::DisplayRole) {
-    int season = value.toInt();
+    int season = rec.value("season").toInt();
 
     if (season)
       return tr("Season %1").arg(season);
@@ -75,7 +78,6 @@ QVariant SeasonModel::data(const QModelIndex &index, int role) const
   }
   if (role == Qt::DecorationRole) {
     QString sql;
-    QSqlRecord rec = record(index.row());
 
     sql = "SELECT banners.id as bannerId FROM banners ";
     sql += "WHERE banners.type = 'season' AND banners.type2 = 'season' ";
@@ -87,10 +89,10 @@ QVariant SeasonModel::data(const QModelIndex &index, int role) const
       .arg(rec.value("showId").toInt());
 
     QSqlQuery query(sql);
-
     query.next();
-    return QIcon(cache->fetchBannerFile(query.record().value("bannerId").toInt(), TvDBCache::Poster));
-  }
-  return value;
-}
 
+    qint64 id = query.record().value("bannerId").toInt();
+    return QIcon(cache->fetchBannerFile(id, TvDBCache::Poster));
+  }
+  return fallback;
+}

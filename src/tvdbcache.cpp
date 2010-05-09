@@ -194,13 +194,21 @@ TvDBCache::storeBanners(QList < QtTvDB::Banner * > banners, qint64 showId)
 }
 
 QtTvDB::Show *
-TvDBCache::fetchShow()
+TvDBCache::fetchShow(qint64 id)
 {
+  QSqlQuery query("SELECT * FROM", db);
+
   return NULL;
 }
 
+QList < QtTvDB::Show * >
+TvDBCache::fetchShows()
+{
+  return QList < QtTvDB::Show * >();
+}
+
 QtTvDB::Episode *
-TvDBCache::fetchEpisode()
+TvDBCache::fetchEpisode(qint64 id)
 {
   return NULL;
 }
