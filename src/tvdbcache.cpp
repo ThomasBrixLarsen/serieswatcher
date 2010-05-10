@@ -22,6 +22,7 @@
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 #include <QtGui/QPixmap>
+#include <QtGui/QPixmapCache>
 
 #include "settings.h"
 #include "tvdbcache.h"
@@ -277,7 +278,14 @@ TvDBCache::hasBannerFile(qint64 id, BannerType type)
 QPixmap
 TvDBCache::fetchBannerFile(qint64 id, BannerType type)
 {
-  return QPixmap(bannerPath(id, type));
+  QPixmap pix;
+  QString key = QString("tvdbcache-%1-%2").arg(id).arg(type);
+
+  if (QPixmapCache::find(key, &pix))
+    return pix;
+  pix = QPixmap(bannerPath(id, type));
+  QPixmapCache::insert(key, pix);
+  return pix;
 }
 
 void
