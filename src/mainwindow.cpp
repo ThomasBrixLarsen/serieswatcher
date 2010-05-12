@@ -171,13 +171,7 @@ MainWindow::setupList()
   connect(listView, SIGNAL(doubleClicked(const QModelIndex &)),
 	  this, SLOT(itemDoubleClicked(const QModelIndex &)));
 
-  if (true) {
-    listView->setViewMode(QListView::IconMode);
-    listView->setIconSize(QSize(100, 120));
-    listView->setGridSize(QSize(150, 150));
-  } else {
-    listView->setIconSize(QSize(100, 120));
-  }
+  displayShows();
 }
 
 MainWindow::~MainWindow()
@@ -240,6 +234,9 @@ void
 MainWindow::displayShows()
 {
   listView->setModel(shows);
+  listView->setViewMode(QListView::IconMode);
+  listView->setIconSize(QSize(100, 120));
+  listView->setGridSize(QSize(150, 150));
 }
 
 void
@@ -248,6 +245,9 @@ MainWindow::displayShow(qint64 showId)
   treeWidget->setCurrentItem(showId);
   seasons->setShowId(showId);
   listView->setModel(seasons);
+  listView->setViewMode(QListView::IconMode);
+  listView->setIconSize(QSize(100, 120));
+  listView->setGridSize(QSize(150, 150));
 }
 
 void
@@ -256,6 +256,9 @@ MainWindow::displaySeason(qint64 showId, int season)
   treeWidget->setCurrentItem(showId, season);
   episodes->setSeason(showId, season);
   listView->setModel(episodes);
+  listView->setViewMode(QListView::ListMode);
+  listView->setIconSize(QSize(100, 56));
+  listView->setGridSize(QSize(110, 60));
 }
 
 void
