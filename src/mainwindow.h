@@ -30,6 +30,7 @@ class ShowModel;
 class SeasonModel;
 class EpisodeModel;
 class TvDBCache;
+class QTreeWidgetItem;
 
 class MainWindow : public QMainWindow, private Ui_mainWindow {
   Q_OBJECT
@@ -73,6 +74,9 @@ private:
   SeasonModel *seasons;
   EpisodeModel *episodes;
   TvDBCache *cache;
+
+  QMap < int, QTreeWidgetItem * > showsItems;
+  QMap < int , QMap < int , QTreeWidgetItem * > > seasonsItems;
 };
 
 #endif

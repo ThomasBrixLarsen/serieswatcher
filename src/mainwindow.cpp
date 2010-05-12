@@ -138,31 +138,42 @@ MainWindow::setupTree()
 {
   QTreeWidgetItem *home;
 
+  showsItems.clear();
+  seasonsItems.clear();
+  treeWidget->clear();
+
   home = new QTreeWidgetItem(treeWidget, Home);
   home->setText(0, tr("Index"));
   home->setIcon(0, style()->standardIcon(QStyle::SP_DirHomeIcon));
+  home->setData(0, ShowModel::Id, 0);
+
+  showsItems[0] = home;
 
   for (int i = 0; i < shows->rowCount(); ++i) {
     QTreeWidgetItem *show;
+    qint64 showId = shows->data(i, ShowModel::Id).toInt();
 
     show = new QTreeWidgetItem(treeWidget, Show);
-    show->setData(0, ShowModel::Id, shows->data(i, ShowModel::Id));
+    show->setData(0, ShowModel::Id, showId);
     show->setData(0, Qt::DisplayRole, shows->data(i, Qt::DisplayRole));
     //show->setData(0, Qt::DecorationRole, shows->data(i, Qt::DecorationRole));
     show->setIcon(0, style()->standardIcon(QStyle::SP_DirClosedIcon));
 
-    seasons->setShowId(shows->data(i, ShowModel::Id).toInt());
+    showsItems[showId] = show;
+    seasons->setShowId(showId);
 
     for (int j = 0; j < seasons->rowCount(); ++j) {
       QTreeWidgetItem *season;
+      qint64 seasonId = seasons->data(j, SeasonModel::Id).toInt();
 
-      seasons->setShowId(shows->data(i, ShowModel::Id).toInt());
       season = new QTreeWidgetItem(show, Season);
-      season->setData(0, SeasonModel::Id, seasons->data(j, SeasonModel::Id));
-      season->setData(0, SeasonModel::ShowId, seasons->data(j, SeasonModel::ShowId));
+      season->setData(0, SeasonModel::Id, seasonId);
+      season->setData(0, SeasonModel::ShowId, showId);
       season->setData(0, Qt::DisplayRole, seasons->data(j, Qt::DisplayRole));
       //season->setData(0, Qt::DecorationRole, seasons->data(j, Qt::DecorationRole));
       season->setIcon(0, style()->standardIcon(QStyle::SP_FileIcon));
+
+      seasonsItems[showId][seasonId] = season;
     }
   }
 
@@ -252,6 +263,7 @@ MainWindow::displayShows()
 void
 MainWindow::displayShow(qint64 showId)
 {
+  treeWidget->setCurrentItem(showsItems[showId]);
   seasons->setShowId(showId);
   listView->setModel(seasons);
 }
@@ -259,6 +271,7 @@ MainWindow::displayShow(qint64 showId)
 void
 MainWindow::displaySeason(qint64 showId, int season)
 {
+  treeWidget->setCurrentItem(seasonsItems[showId][season]);
   episodes->setSeason(showId, season);
   listView->setModel(episodes);
 }
