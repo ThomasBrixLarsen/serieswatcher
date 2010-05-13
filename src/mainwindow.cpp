@@ -142,6 +142,15 @@ MainWindow::setupTree()
   seasonsItems.clear();
   treeWidget->clear();
 
+  treeWidget->setContextMenuPolicy(Qt::ActionsContextMenu);
+  treeWidget->addAction(updateShowAction);
+  treeWidget->addAction(deleteShowAction);
+  treeWidget->addAction(markWatchedAction);
+  treeWidget->addAction(amazonAction);
+  treeWidget->addAction(podnapisiAction);
+  treeWidget->addAction(opensubtitlesAction);
+  treeWidget->addAction(torrentzAction);
+
   home = new QTreeWidgetItem(treeWidget, Home);
   home->setText(0, tr("Index"));
   home->setIcon(0, style()->standardIcon(QStyle::SP_DirHomeIcon));
