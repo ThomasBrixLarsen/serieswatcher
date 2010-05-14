@@ -35,6 +35,7 @@
 #include "episodemodel.h"
 #include "showdelegate.h"
 #include "tvdbcache.h"
+#include "settingsdialog.h"
 
 MainWindow::MainWindow()
 {
@@ -56,15 +57,23 @@ MainWindow::createActions()
   updateShowAction->setIcon(QIcon::fromTheme("download"));
   deleteShowAction->setIcon(QIcon::fromTheme("edit-delete"));
   addShowAction->setIcon(QIcon::fromTheme("bookmark-new"));
-  settingsAction->setIcon(QIcon::fromTheme("configure"));
   importAction->setIcon(QIcon::fromTheme("document-import"));
   exportAction->setIcon(QIcon::fromTheme("document-export"));
   markWatchedAction->setIcon(QIcon::fromTheme("checkbox"));
   aboutAction->setIcon(QIcon::fromTheme("dialog-information"));
+  settingsAction->setIcon(QIcon::fromTheme("preferences-other"));
 
   connect(addShowAction, SIGNAL(triggered()), this, SLOT(addShow()));
   connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
+  connect(settingsAction, SIGNAL(triggered()), this, SLOT(settings()));
   connect(aboutQtAction, SIGNAL(triggered()), this, SLOT(aboutQt()));
+}
+
+void
+MainWindow::reloadActions()
+{
+  // Remove custom actions
+  // Add custom actions
 }
 
 void
@@ -146,10 +155,6 @@ MainWindow::setupTree()
   treeWidget->addAction(updateShowAction);
   treeWidget->addAction(deleteShowAction);
   treeWidget->addAction(markWatchedAction);
-  treeWidget->addAction(amazonAction);
-  treeWidget->addAction(podnapisiAction);
-  treeWidget->addAction(opensubtitlesAction);
-  treeWidget->addAction(torrentzAction);
 
   home = new QTreeWidgetItem(treeWidget, Home);
   home->setText(0, tr("Index"));
@@ -289,6 +294,15 @@ void
 MainWindow::addShow()
 {
   searchDialog->exec();
+}
+
+void
+MainWindow::settings()
+{
+  SettingsDialog dlg(this);
+
+  dlg.exec();
+  reloadActions();
 }
 
 void

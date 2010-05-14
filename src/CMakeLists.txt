@@ -29,9 +29,18 @@ SET(serieswatcher_SRCS
   showmodel.cpp
   seasonmodel.cpp
   episodemodel.cpp
-  showdelegate.cpp)
+  showdelegate.cpp
+  settingsdialog.cpp
+  actiondialog.cpp
+  seriesaction.cpp)
 
-SET(serieswatcher_UIS mainwindow.ui searchdialog.ui updateprogressdialog.ui)
+SET(serieswatcher_UIS
+  mainwindow.ui
+  searchdialog.ui
+  updateprogressdialog.ui
+  settingsdialog.ui
+  actiondialog.ui)
+
 SET(serieswatcher_MOC_HDRS
   mainwindow.h
   searchdialog.h
@@ -44,7 +53,10 @@ SET(serieswatcher_MOC_HDRS
   showmodel.h
   seasonmodel.h
   episodemodel.h
-  showdelegate.h)
+  showdelegate.h
+  settingsdialog.h
+  actiondialog.h
+  seriesaction.h)
 SET(serieswatcher_RCS serieswatcher.qrc)
 
 QT4_WRAP_CPP(MOC_SOURCE ${serieswatcher_MOC_HDRS})

@@ -42,6 +42,7 @@ private slots:
   void addShow();
   void addShow(const QString & name, qint64 id);
   void about();
+  void settings();
   void aboutQt();
   void error(const QString & title, const QString & message);
   void threadStarted();
@@ -56,7 +57,9 @@ private:
   void setupTvDB();
   void createWorkers();
   void createActions();
+  void reloadActions();
   void createSearchDialog();
+  void createSettingsDialog();
   void setupCache();
   void setupList();
   void setupTree();

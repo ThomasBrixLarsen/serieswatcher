@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>989</width>
-    <height>581</height>
+    <width>1047</width>
+    <height>578</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -29,7 +29,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>989</width>
+     <width>1047</width>
      <height>20</height>
     </rect>
    </property>
@@ -42,6 +42,13 @@
     <addaction name="separator"/>
     <addaction name="quitAction"/>
    </widget>
+   <widget class="QMenu" name="menu_Edit">
+    <property name="title">
+     <string>&amp;Help</string>
+    </property>
+    <addaction name="aboutQtAction"/>
+    <addaction name="aboutAction"/>
+   </widget>
    <widget class="QMenu" name="menu_Help">
     <property name="title">
      <string>&amp;Edit</string>
@@ -50,13 +57,8 @@
     <addaction name="deleteShowAction"/>
     <addaction name="updateShowAction"/>
     <addaction name="markWatchedAction"/>
-   </widget>
-   <widget class="QMenu" name="menu_Edit">
-    <property name="title">
-     <string>&amp;Help</string>
-    </property>
-    <addaction name="aboutQtAction"/>
-    <addaction name="aboutAction"/>
+    <addaction name="separator"/>
+    <addaction name="settingsAction"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Help"/>
@@ -78,10 +80,6 @@
    <addaction name="updateShowAction"/>
    <addaction name="markWatchedAction"/>
    <addaction name="separator"/>
-   <addaction name="amazonAction"/>
-   <addaction name="torrentzAction"/>
-   <addaction name="opensubtitlesAction"/>
-   <addaction name="podnapisiAction"/>
   </widget>
   <widget class="QDockWidget" name="infoDock">
    <attribute name="dockWidgetArea">
@@ -180,42 +178,6 @@
   <action name="settingsAction">
    <property name="text">
     <string>&amp;Settings...</string>
-   </property>
-  </action>
-  <action name="amazonAction">
-   <property name="icon">
-    <iconset resource="serieswatcher.qrc">
-     <normaloff>:/res/amazon.png</normaloff>:/res/amazon.png</iconset>
-   </property>
-   <property name="text">
-    <string>&amp;Buy on Amazon</string>
-   </property>
-  </action>
-  <action name="torrentzAction">
-   <property name="icon">
-    <iconset resource="serieswatcher.qrc">
-     <normaloff>:/res/torrentz.png</normaloff>:/res/torrentz.png</iconset>
-   </property>
-   <property name="text">
-    <string>Search on &amp;Torrentz.com</string>
-   </property>
-  </action>
-  <action name="opensubtitlesAction">
-   <property name="icon">
-    <iconset resource="serieswatcher.qrc">
-     <normaloff>:/res/opensubtitles.png</normaloff>:/res/opensubtitles.png</iconset>
-   </property>
-   <property name="text">
-    <string>Subtitles &amp;OpenSubtitles.org</string>
-   </property>
-  </action>
-  <action name="podnapisiAction">
-   <property name="icon">
-    <iconset resource="serieswatcher.qrc">
-     <normaloff>:/res/podnapisi.png</normaloff>:/res/podnapisi.png</iconset>
-   </property>
-   <property name="text">
-    <string>Subtitles on &amp;Podnapisi.net</string>
    </property>
   </action>
  </widget>
