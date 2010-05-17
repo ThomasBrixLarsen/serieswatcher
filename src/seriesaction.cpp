@@ -68,6 +68,7 @@ SeriesAction::fromSettings(void)
 
     action->setText(settings.value("text").toString());
     action->setIcon(QPixmap(settings.value("icon").toString()));
+    action->setIconPath(settings.value("icon").toString());
     action->setShowUrl(settings.value("showUrl").toString());
     action->setSeasonUrl(settings.value("seasonUrl").toString());
     action->setEpisodeUrl(settings.value("episodeUrl").toString());
@@ -95,20 +96,31 @@ SeriesAction::addToSettings(QList < SeriesAction * > actions)
   settings.endArray();
 }
 
-void
-SeriesAction::addToSettings(SeriesAction *action)
-{
-}
-
-void
-SeriesAction::removeFromSettings(SeriesAction *action)
-{
-}
-
-
 QUrl
 SeriesAction::replaceModifiers(QUrl url, QtTvDB::Show *show,
 			       int season, QtTvDB::Episode *episode) const
 {
-  return url;
+  /*
+   * %S current show name        (MyShow)
+   * %E current episode name     (Pilot)
+   * %n current season number   (1)
+   * %e current episode number  (1)
+   * %b formated episode number (E01)
+   * %m formated season number (S01)
+   */
+  QString str = url.toString();
+
+  if (show) {
+    str.replace("%S", show->name());
+  }
+  if (season >= 0) {
+    str.replace("%n", QString("%1").arg(season));
+    str.replace("%m", QString("S%1").arg(episode->episode(), 2, 10, QLatin1Char('0')));
+  }
+  if (episode) {
+    str.replace("%E", episode->name());
+    str.replace("%e", QString("%1").arg(episode->episode()));
+    str.replace("%b", QString("E%1").arg(episode->episode(), 2, 10, QLatin1Char('0')));
+  }
+  return str;
 }

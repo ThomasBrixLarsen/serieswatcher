@@ -46,8 +46,6 @@ public:
 
   static QList < SeriesAction * > fromSettings(void);
   static void addToSettings(QList < SeriesAction * > actions);
-  static void addToSettings(SeriesAction *action);
-  static void removeFromSettings(SeriesAction *action);
 
 private:
   QUrl replaceModifiers(QUrl url, QtTvDB::Show *show = NULL,

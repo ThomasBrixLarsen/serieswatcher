@@ -38,6 +38,10 @@ SettingsDialog::SettingsDialog(QWidget * parent)
   connect(addButton, SIGNAL(clicked()), this, SLOT(addAction()));
   connect(editButton, SIGNAL(clicked()), this, SLOT(editAction()));
   connect(delButton, SIGNAL(clicked()), this, SLOT(delAction()));
+  connect(treeWidget, SIGNAL(itemActivated(QTreeWidgetItem *, int)),
+	  this, SLOT(editAction()));
+  connect(treeWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)),
+	  this, SLOT(editAction()));
 
   populateActions();
 
@@ -80,6 +84,11 @@ SettingsDialog::editAction()
 void
 SettingsDialog::delAction()
 {
+  foreach (QTreeWidgetItem *item, treeWidget->selectedItems()) {
+    delete actions[item];
+    actions.remove(item);
+    delete item;
+  }
 }
 
 void
