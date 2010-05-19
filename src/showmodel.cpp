@@ -56,6 +56,8 @@ QVariant ShowModel::data(int row, int role, QVariant fallback) const
 {
   QSqlRecord rec = record(row);
 
+  if (role == ShowModel::Type)
+    return QString("show");
   if (role == ShowModel::Id)
     return rec.value("id").toInt();
   if (role == ShowModel::Seasons)

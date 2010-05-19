@@ -17,6 +17,7 @@
  */
 
 #include <QtCore/QList>
+#include <QtGui/QDesktopServices>
 
 #include "seriesaction.h"
 #include "settings.h"
@@ -35,6 +36,29 @@ SeriesAction::~SeriesAction()
 {
 }
 
+void
+SeriesAction::actUrl(const QUrl & url) const
+{
+  QDesktopServices::openUrl(url);
+}
+
+void
+SeriesAction::actShow(QtTvDB::Show *show) const
+{
+  actUrl(buildShowUrl(show));
+}
+
+void
+SeriesAction::actSeason(QtTvDB::Show *show, int season) const
+{
+  actUrl(buildSeasonUrl(show, season));
+}
+
+void
+SeriesAction::actEpisode(QtTvDB::Show *show, int season, QtTvDB::Episode *episode) const
+{
+  actUrl(buildEpisodeUrl(show, season, episode));
+}
 
 QUrl
 SeriesAction::buildShowUrl(QtTvDB::Show *show) const

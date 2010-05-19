@@ -16,27 +16,31 @@
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef EPISODE_MODEL_H
-# define EPISODE_MODEL_H
+#ifndef SERIESMENUS_H
+# define SERIESMENUS_H
 
-#include <QtSql/QSqlQueryModel>
+#include <QtGui/QMenu>
+#include <QtCore/QModelIndex>
 
+class SeriesAction;
 class TvDBCache;
 
-class EpisodeModel : public QSqlQueryModel
-{
-  Q_OBJECT
-public:
-  enum Role { Type = Qt::UserRole, Id, Watched };
+class SeriesMenus {
+ public:
+  SeriesMenus();
+  ~SeriesMenus();
 
-  EpisodeModel(TvDBCache *cache, QObject *parent = 0);
+  void buildMenus(QWidget *parent);
 
-  void setSeason(int showId, int season);
-  QVariant data(const QModelIndex &item, int role) const;
-  QVariant data(int row, int role, QVariant fallback = QVariant()) const;
+  void seriesAction(TvDBCache *cache, const QModelIndex & index, SeriesAction *action);
+  QAction *execMenu(const QModelIndex & index, const QPoint & pos);
 
-private:
+ private:
   TvDBCache *cache;
+  QWidget *parent;
+  QMenu *episodeMenu;
+  QMenu *seasonMenu;
+  QMenu *showMenu;
 };
 
 #endif

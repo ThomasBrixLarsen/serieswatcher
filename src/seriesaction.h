@@ -30,6 +30,11 @@ public:
   SeriesAction(QAction * action);
   ~SeriesAction();
 
+  void actUrl(const QUrl & url) const;
+  void actShow(QtTvDB::Show *show) const;
+  void actSeason(QtTvDB::Show *show, int season) const;
+  void actEpisode(QtTvDB::Show *show, int season, QtTvDB::Episode *episode) const;
+
   QUrl buildShowUrl(QtTvDB::Show *show) const;
   QUrl buildSeasonUrl(QtTvDB::Show *show, int season) const;
   QUrl buildEpisodeUrl(QtTvDB::Show *show, int season, QtTvDB::Episode *episode) const;

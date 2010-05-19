@@ -16,27 +16,41 @@
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef EPISODE_MODEL_H
-# define EPISODE_MODEL_H
+#ifndef MAINTREEWIDGET_H
+# define MAINTREEWIDGET_H
 
-#include <QtSql/QSqlQueryModel>
+#include <QtGui/QTreeWidget>
 
+#include "seriesmenus.h"
+
+class ShowModel;
+class SeasonModel;
 class TvDBCache;
 
-class EpisodeModel : public QSqlQueryModel
-{
+class MainTreeWidget : public QTreeWidget, private SeriesMenus {
   Q_OBJECT
 public:
-  enum Role { Type = Qt::UserRole, Id, Watched };
+  MainTreeWidget(QWidget *parent = 0);
+  virtual ~MainTreeWidget();
 
-  EpisodeModel(TvDBCache *cache, QObject *parent = 0);
+  void buildMenus();
+  void buildTree(ShowModel *shows, SeasonModel *model);
 
-  void setSeason(int showId, int season);
-  QVariant data(const QModelIndex &item, int role) const;
-  QVariant data(int row, int role, QVariant fallback = QVariant()) const;
+  void setCurrentItem(int showId);
+  void setCurrentItem(int showId, int seasonId);
+
+protected:
+  virtual void contextMenuEvent(QContextMenuEvent * event);
+
+private slots:
+  void seriesAction();
 
 private:
   TvDBCache *cache;
+
+  QMap < int, QTreeWidgetItem * > showsItems;
+  QMap < int , QMap < int , QTreeWidgetItem * > > seasonsItems;
 };
 
 #endif
+

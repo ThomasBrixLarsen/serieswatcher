@@ -16,27 +16,46 @@
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef EPISODE_MODEL_H
-# define EPISODE_MODEL_H
+#include <QtGui/QContextMenuEvent>
 
-#include <QtSql/QSqlQueryModel>
+#include "mainlistview.h"
+#include "seriesaction.h"
+#include "tvdbcache.h"
 
-class TvDBCache;
-
-class EpisodeModel : public QSqlQueryModel
+MainListView::MainListView(QWidget *parent)
+  : QListView(parent)
 {
-  Q_OBJECT
-public:
-  enum Role { Type = Qt::UserRole, Id, Watched };
+  cache = new TvDBCache();
+  buildMenus();
+}
 
-  EpisodeModel(TvDBCache *cache, QObject *parent = 0);
+MainListView::~MainListView()
+{
+  delete cache;
+}
 
-  void setSeason(int showId, int season);
-  QVariant data(const QModelIndex &item, int role) const;
-  QVariant data(int row, int role, QVariant fallback = QVariant()) const;
+void
+MainListView::buildMenus()
+{
+  SeriesMenus::buildMenus(this);
+}
 
-private:
-  TvDBCache *cache;
-};
+void
+MainListView::seriesAction()
+{
+  SeriesAction *action = dynamic_cast<SeriesAction *>(sender());
 
-#endif
+  if (!action)
+    return ;
+
+  foreach (QModelIndex index, selectedIndexes())
+    SeriesMenus::seriesAction(cache, index, action);
+}
+
+void
+MainListView::contextMenuEvent(QContextMenuEvent * event)
+{
+  QModelIndex index = indexAt(event->pos());
+
+  execMenu(index, event->globalPos());
+}

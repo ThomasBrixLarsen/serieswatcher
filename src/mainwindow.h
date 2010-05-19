@@ -68,8 +68,6 @@ private:
   void displaySeason(qint64 showId, int season);
 
 private:
-  enum TreeType { Home, Show, Season, Episode };
-
   UpdateProgressDialog *progress;
   SearchDialog *searchDialog;
   WorkerThread *thread;
@@ -77,9 +75,6 @@ private:
   SeasonModel *seasons;
   EpisodeModel *episodes;
   TvDBCache *cache;
-
-  QMap < int, QTreeWidgetItem * > showsItems;
-  QMap < int , QMap < int , QTreeWidgetItem * > > seasonsItems;
 };
 
 #endif

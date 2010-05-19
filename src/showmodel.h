@@ -27,7 +27,8 @@ class ShowModel : public QSqlQueryModel
 {
   Q_OBJECT
 public:
-  enum Role { Id = Qt::UserRole,
+  enum Role { Type = Qt::UserRole,
+	      Id,
 	      Seasons,
 	      Episodes,
 	      EpisodesNotWatched,

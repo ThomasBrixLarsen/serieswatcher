@@ -32,7 +32,10 @@ SET(serieswatcher_SRCS
   showdelegate.cpp
   settingsdialog.cpp
   actiondialog.cpp
-  seriesaction.cpp)
+  seriesaction.cpp
+  mainlistview.cpp
+  maintreewidget.cpp
+  seriesmenus.cpp)
 
 SET(serieswatcher_UIS
   mainwindow.ui
@@ -56,7 +59,10 @@ SET(serieswatcher_MOC_HDRS
   showdelegate.h
   settingsdialog.h
   actiondialog.h
+  mainlistview.h
+  maintreewidget.h
   seriesaction.h)
+
 SET(serieswatcher_RCS serieswatcher.qrc)
 
 QT4_WRAP_CPP(MOC_SOURCE ${serieswatcher_MOC_HDRS})

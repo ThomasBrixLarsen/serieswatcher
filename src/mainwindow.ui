@@ -20,7 +20,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
-     <widget class="QListView" name="listView"/>
+     <widget class="MainListView" name="listView"/>
     </item>
    </layout>
   </widget>
@@ -30,7 +30,7 @@
      <x>0</x>
      <y>0</y>
      <width>1047</width>
-     <height>20</height>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -94,7 +94,7 @@
    <widget class="QWidget" name="treeDockContent">
     <layout class="QGridLayout" name="gridLayout_2">
      <item row="0" column="0">
-      <widget class="QTreeWidget" name="treeWidget">
+      <widget class="MainTreeWidget" name="treeWidget">
        <property name="showDropIndicator" stdset="0">
         <bool>false</bool>
        </property>
@@ -181,6 +181,18 @@
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>MainListView</class>
+   <extends>QListView</extends>
+   <header>mainlistview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>MainTreeWidget</class>
+   <extends>QTreeWidget</extends>
+   <header>maintreewidget.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="serieswatcher.qrc"/>
  </resources>

@@ -56,6 +56,10 @@ QVariant EpisodeModel::data(int row, int role, QVariant fallback) const
 {
   QSqlRecord rec = record(row);
 
+  if (role == EpisodeModel::Type)
+    return QString("episode");
+  if (role == EpisodeModel::Id)
+    return rec.value("id").toInt();
   if (role == EpisodeModel::Watched)
     return rec.value("watched").toInt();
   if (role == Qt::DisplayRole)
