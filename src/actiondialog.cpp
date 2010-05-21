@@ -94,11 +94,11 @@ ActionDialog::accept()
   action->setEpisodeUrl(QUrl());
 
   if (showCheckBox->isChecked())
-    action->setShowUrl(showLineEdit->text());
+    action->setShowUrl(QUrl::fromUserInput(showLineEdit->text()));
   if (seasonCheckBox->isChecked())
-    action->setSeasonUrl(seasonLineEdit->text());
+    action->setSeasonUrl(QUrl::fromUserInput(seasonLineEdit->text()));
   if (episodeCheckBox->isChecked())
-    action->setEpisodeUrl(episodeLineEdit->text());
+    action->setEpisodeUrl(QUrl::fromUserInput(episodeLineEdit->text()));
 
   QDialog::accept();
 }

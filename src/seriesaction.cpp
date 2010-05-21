@@ -93,9 +93,9 @@ SeriesAction::fromSettings(void)
     action->setText(settings.value("text").toString());
     action->setIcon(QPixmap(settings.value("icon").toString()));
     action->setIconPath(settings.value("icon").toString());
-    action->setShowUrl(settings.value("showUrl").toString());
-    action->setSeasonUrl(settings.value("seasonUrl").toString());
-    action->setEpisodeUrl(settings.value("episodeUrl").toString());
+    action->setShowUrl(QUrl::fromUserInput(settings.value("showUrl").toString()));
+    action->setSeasonUrl(QUrl::fromUserInput(settings.value("seasonUrl").toString()));
+    action->setEpisodeUrl(QUrl::fromUserInput(settings.value("episodeUrl").toString()));
     actions.append(action);
   }
 
@@ -135,16 +135,18 @@ SeriesAction::replaceModifiers(QUrl url, QtTvDB::Show *show,
   QString str = url.toString();
 
   if (show) {
-    str.replace("%S", show->name());
+    str.replace("%S", QUrl::toPercentEncoding(show->name()));
   }
   if (season >= 0) {
-    str.replace("%n", QString("%1").arg(season));
-    str.replace("%m", QString("S%1").arg(episode->episode(), 2, 10, QLatin1Char('0')));
+    str.replace("%n", QUrl::toPercentEncoding(QString("%1").arg(season)));
+    str.replace("%m", QUrl::toPercentEncoding(QString("S%1").arg(season, 2, 10, QLatin1Char('0'))));
   }
   if (episode) {
-    str.replace("%E", episode->name());
-    str.replace("%e", QString("%1").arg(episode->episode()));
-    str.replace("%b", QString("E%1").arg(episode->episode(), 2, 10, QLatin1Char('0')));
+    str.replace("%E", QUrl::toPercentEncoding(episode->name()));
+    str.replace("%e", QUrl::toPercentEncoding(QString("%1").arg(episode->episode())));
+    str.replace("%b", QUrl::toPercentEncoding(QString("E%1").arg(episode->episode(), 2, 10, QLatin1Char('0'))));
   }
-  return str;
+  QUrl ret;
+  ret.setEncodedUrl(str.toUtf8());
+  return ret;
 }
