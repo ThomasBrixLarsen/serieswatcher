@@ -18,6 +18,7 @@
 
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlQuery>
+#include <QtSql/QSqlRecord>
 #include <QtSql/QSqlError>
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
@@ -197,39 +198,142 @@ TvDBCache::storeBanners(QList < QtTvDB::Banner * > banners, qint64 showId)
 QtTvDB::Show *
 TvDBCache::fetchShow(qint64 id)
 {
-  QSqlQuery query("SELECT * FROM", db);
+  QSqlQuery query(QString("SELECT * FROM shows WHERE id = %1").arg(id), db);
+  query.next();
 
-  return NULL;
+  return showFromRecord(query.record());
 }
 
 QList < QtTvDB::Show * >
 TvDBCache::fetchShows()
 {
-  return QList < QtTvDB::Show * >();
+  QSqlQuery query("SELECT * FROM shows", db);
+  QList < QtTvDB::Show * > list;
+
+  while (query.next())
+    list.append(showFromRecord(query.record()));
+  return list;
 }
 
 QtTvDB::Episode *
 TvDBCache::fetchEpisode(qint64 id)
 {
-  return NULL;
+  QSqlQuery query(QString("SELECT * FROM episodes WHERE id = %1").arg(id), db);
+  query.next();
+
+  return episodeFromRecord(query.record());
 }
 
 QList < QtTvDB::Episode * >
 TvDBCache::fetchEpisodes(qint64 showId, qint64 seasonId)
 {
-  return QList < QtTvDB::Episode * >();
+  QSqlQuery query(QString("SELECT * FROM episodes WHERE showId = %1 AND season = %2").arg(showId).arg(seasonId), db);
+  QList < QtTvDB::Episode * > list;
+
+  while (query.next())
+    list.append(episodeFromRecord(query.record()));
+  return list;
 }
 
 QtTvDB::Banner *
 TvDBCache::fetchBanner(qint64 id)
 {
-  return NULL;
+  QSqlQuery query(QString("SELECT * FROM banners WHERE id = %1").arg(id), db);
+  query.next();
+
+  return bannerFromRecord(query.record());
 }
 
 QList < QtTvDB::Banner * >
 TvDBCache::fetchBanners(qint64 showId)
 {
-  return QList < QtTvDB::Banner * >();
+  QSqlQuery query(QString("SELECT * FROM banners WHERE showId = %1").arg(showId), db);
+  QList < QtTvDB::Banner * > list;
+
+  while (query.next())
+    list.append(bannerFromRecord(query.record()));
+  return list;
+}
+
+QtTvDB::Show *
+TvDBCache::showFromRecord(QSqlRecord record)
+{
+  QtTvDB::Show *show = new QtTvDB::Show();
+
+  show->setId(record.value("id").toULongLong());
+  show->setName(record.value("name").toString());
+  show->setOverview(record.value("overview").toString());
+  show->setGenre(record.value("genre").toString().split("|"));
+  show->setActors(record.value("actors").toString().split("|"));
+  show->setNetwork(record.value("network").toString());
+  show->setLanguage(record.value("language").toString());
+  show->setContentRating(record.value("contentRating").toString());
+  show->setRating(record.value("rating").toString());
+  show->setStatus(record.value("status").toString());
+  show->setRuntime(QTime::fromString(record.value("runtime").toString(), "m"));
+  show->setAirsDay(record.value("airsDay").toString());
+  show->setFirstAired(QDateTime::fromString(record.value("firstAired").toString()));
+  show->setBanner(record.value("banner").toString());
+  show->setPoster(record.value("poster").toString());
+  show->setFanArt(record.value("fanart").toString());
+  show->setImdbId(record.value("imdbId").toString());
+  show->setSeriesId(record.value("seriesID").toString());
+  show->setZap2ItId(record.value("zap2ItId").toString());
+  show->setLastUpdated(QDateTime::fromTime_t(record.value("lastUpdated").toUInt()));
+
+  return show;
+}
+
+QtTvDB::Episode *
+TvDBCache::episodeFromRecord(QSqlRecord record)
+{
+  QtTvDB::Episode *episode = new QtTvDB::Episode();
+
+  episode->setId(record.value("id").toULongLong());
+  episode->setName(record.value("name").toString());
+  episode->setShowId(record.value("showId").toULongLong());
+  episode->setOverview(record.value("overview").toString());
+  episode->setSeason(record.value("season").toUInt());
+  episode->setEpisode(record.value("episode").toUInt());
+  episode->setDirector(record.value("director").toString());
+  episode->setGuestStars(record.value("guestStars").toString()); /* | */
+  episode->setLanguage(record.value("language").toString());
+  episode->setProductionCode(record.value("productionCode").toString());
+  episode->setRating(record.value("rating").toString());
+  episode->setWriter(record.value("writer").toString()); /* | */
+  episode->setFirstAired(QDateTime::fromTime_t(record.value("firstAired").toUInt()));
+  episode->setDvdChapter(record.value("dvdChapter").toString());
+  episode->setDvdDiscId(record.value("dvdDiscid").toString());
+  episode->setDvdEpisodeNumber(record.value("dvdEpisodeNumber").toString());
+  episode->setDvdSeason(record.value("dvdSeason").toString());
+  episode->setImage(record.value("image").toString());
+  episode->setAirsAfterSeason(record.value("airsAfterAeason").toString());
+  episode->setAirsBeforeSeason(record.value("airsBeforeSeason").toString());
+  episode->setAirsBeforeEpisode(record.value("airsBeforeEpisode").toString());
+  episode->setCombinedEpisode(record.value("combinedEpisode").toUInt());
+  episode->setCombinedSeason(record.value("combinedSeason").toUInt());
+  episode->setAbsoluteNumber(record.value("absoluteNumber").toUInt());
+  episode->setSeasonId(record.value("seasonId").toUInt());
+  episode->setEpImgFlag(record.value("epImgFlag").toString());
+  episode->setImdbId(record.value("imdbId").toString());
+  episode->setLastUpdated(QDateTime::fromTime_t(record.value("lastUpdated").toUInt()));
+
+  return episode;
+}
+
+QtTvDB::Banner *
+TvDBCache::bannerFromRecord(QSqlRecord record)
+{
+  QtTvDB::Banner *banner = new QtTvDB::Banner();
+
+  banner->setId(record.value("id").toULongLong());
+  banner->setPath(record.value("path").toString());
+  banner->setType(record.value("type").toString());
+  banner->setType2(record.value("type2").toString());
+  banner->setLanguage(record.value("language").toString());
+  banner->setSeason(record.value("season").toString());
+
+  return banner;
 }
 
 QString
@@ -291,9 +395,11 @@ TvDBCache::fetchBannerFile(qint64 id, BannerType type)
 void
 TvDBCache::sync()
 {
+#ifndef Q_WS_WIN
   QFile file(db.databaseName());
 
-//fsync(file.handle());
+  fsync(file.handle());
+#endif
 }
 
 QString

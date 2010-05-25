@@ -27,25 +27,6 @@ class TvDBCache
 {
 public:
   enum BannerType { Poster, Banner, Search, Episode };
-  /*  struct Episode {
-    QString name;
-    QIcon icon;
-    QDateTime date;
-  };
-  struct Season {
-    QString name;
-    QIcon icon;
-    int episodes;
-    int episodesWatched;
-    QList < Episodes > episodes;
-  };
-  struct Show {
-    QString name;
-    QIcon icon;
-    int episodes;
-    int episodesWatched;
-    QList < Season > seasons;
-    };*/
 
   TvDBCache(const QString & name = QLatin1String(QSqlDatabase::defaultConnection));
   ~TvDBCache();
@@ -74,6 +55,9 @@ public:
 
  private:
   bool connectDb(const QString & name = QLatin1String(QSqlDatabase::defaultConnection));
+  QtTvDB::Show *showFromRecord(QSqlRecord record);
+  QtTvDB::Episode *episodeFromRecord(QSqlRecord record);
+  QtTvDB::Banner *bannerFromRecord(QSqlRecord record);
 
  private:
   QString bannerPath(qint64 id, BannerType type);
