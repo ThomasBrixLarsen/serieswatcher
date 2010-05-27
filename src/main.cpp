@@ -22,8 +22,7 @@ int main(int argc, char *argv[])
 {
   QApplication app(argc, argv);
 
-  QCoreApplication::setOrganizationDomain("iksaif.net");
-  QCoreApplication::setOrganizationName("iksaif.net");
+  QCoreApplication::setOrganizationName("SeriesWatcher");
   QCoreApplication::setApplicationName("SeriesWatcher");
 
   MainWindow window;
