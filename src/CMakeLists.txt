@@ -35,14 +35,18 @@ SET(serieswatcher_SRCS
   seriesaction.cpp
   mainlistview.cpp
   maintreewidget.cpp
-  seriesmenus.cpp)
+  seriesmenus.cpp
+  episodedialog.cpp
+  showdialog.cpp)
 
 SET(serieswatcher_UIS
   mainwindow.ui
   searchdialog.ui
   updateprogressdialog.ui
   settingsdialog.ui
-  actiondialog.ui)
+  actiondialog.ui
+  episodedialog.ui
+  showdialog.ui)
 
 SET(serieswatcher_MOC_HDRS
   mainwindow.h
@@ -61,7 +65,10 @@ SET(serieswatcher_MOC_HDRS
   actiondialog.h
   mainlistview.h
   maintreewidget.h
-  seriesaction.h)
+  seriesaction.h
+  seriesmenus.h
+  episodedialog.h
+  showdialog.h)
 
 SET(serieswatcher_RCS serieswatcher.qrc)
 

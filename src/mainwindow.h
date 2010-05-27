@@ -41,17 +41,26 @@ public:
 private slots:
   void addShow();
   void addShow(const QString & name, qint64 id);
+
   void about();
   void settings();
   void aboutQt();
   void error(const QString & title, const QString & message);
+
   void threadStarted();
+
   void itemClicked(const QModelIndex & index);
   void itemEntered(const QModelIndex & index);
   void itemDoubleClicked(const QModelIndex & index);
-  void treeItemCollapsed(QTreeWidgetItem * item);
-  void treeItemExpanded(QTreeWidgetItem * item);
+
   void treeItemActivated(QTreeWidgetItem  * item, int column);
+
+  void updateShow(qint64 showId);
+  void deleteShow(qint64 showId);
+  void episodesWatched(qint64 showId, int season);
+  void episodeWatched(qint64 id);
+  void episodeDetails(qint64 id);
+  void showDetails(qint64 id);
 
 private:
   void setupTvDB();
@@ -60,6 +69,7 @@ private:
   void reloadActions();
   void createSearchDialog();
   void createSettingsDialog();
+  void connectSeriesMenus(const SeriesMenus *menus);
   void setupCache();
   void setupList();
   void setupTree();

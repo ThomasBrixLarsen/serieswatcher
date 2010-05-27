@@ -27,7 +27,7 @@ class ShowModel;
 class SeasonModel;
 class TvDBCache;
 
-class MainTreeWidget : public QTreeWidget, private SeriesMenus {
+class MainTreeWidget : public QTreeWidget {
   Q_OBJECT
 public:
   MainTreeWidget(QWidget *parent = 0);
@@ -39,13 +39,19 @@ public:
   void setCurrentItem(int showId);
   void setCurrentItem(int showId, int seasonId);
 
+  const SeriesMenus *getMenus() const { return menus; }
+
+/* Needed by SeriesMenus */
+private slots:
+  void seriesAction();
+  void treeItemCollapsed(QTreeWidgetItem * item);
+  void treeItemExpanded(QTreeWidgetItem * item);
+
 protected:
   virtual void contextMenuEvent(QContextMenuEvent * event);
 
-private slots:
-  void seriesAction();
-
 private:
+  SeriesMenus *menus;
   TvDBCache *cache;
 
   QMap < int, QTreeWidgetItem * > showsItems;

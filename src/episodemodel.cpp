@@ -34,7 +34,7 @@ EpisodeModel::setSeason(int showId, int season)
 {
   QString query;
 
-  query = "SELECT episodes.name, episodes.id, episodes_extra.watched ";
+  query = "SELECT episodes.name, episodes.id, episodes_extra.watched, episodes.showId, episodes.season ";
   query += "FROM episodes ";
   query += "LEFT JOIN episodes_extra ";
   query += "ON episodes.id = episodes_extra.id ";
@@ -60,6 +60,10 @@ QVariant EpisodeModel::data(int row, int role, QVariant fallback) const
     return QString("episode");
   if (role == EpisodeModel::Id)
     return rec.value("id").toInt();
+  if (role == EpisodeModel::ShowId)
+    return rec.value("showId").toInt();
+  if (role == EpisodeModel::Season)
+    return rec.value("season").toInt();
   if (role == EpisodeModel::Watched)
     return rec.value("watched").toInt();
   if (role == Qt::DisplayRole)

@@ -16,34 +16,23 @@
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef MAINLISTVIEW_H
-# define MAINLISTVIEW_H
+#ifndef SHOWDIALOG_H
+# define SHOWDIALOG_H
 
-#include <QtGui/QListView>
+#include <QtTvDB>
 
-#include "seriesmenus.h"
+#include "ui_showdialog.h"
 
 class TvDBCache;
 
-class MainListView : public QListView {
+class ShowDialog : public QDialog, private Ui_ShowDialog
+{
   Q_OBJECT
 public:
-  MainListView(QWidget *parent = 0);
-  virtual ~MainListView();
+  ShowDialog(QWidget * parent = 0);
+  ~ShowDialog();
 
-  void buildMenus();
-  const SeriesMenus *getMenus() const { return menus; }
-
-protected:
-  virtual void contextMenuEvent(QContextMenuEvent * event);
-
-private slots:
-  void seriesAction();
-
-private:
-  SeriesMenus *menus;
-  TvDBCache *cache;
+  void setShow(QtTvDB::Show *show, TvDBCache *cache);
 };
 
 #endif
-

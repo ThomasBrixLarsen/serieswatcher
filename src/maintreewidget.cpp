@@ -29,29 +29,52 @@ MainTreeWidget::MainTreeWidget(QWidget *parent)
   : QTreeWidget(parent)
 {
   cache = new TvDBCache();
+  menus = new SeriesMenus(this);
+
+  connect(this, SIGNAL(itemCollapsed(QTreeWidgetItem *)),
+	  this, SLOT(treeItemCollapsed(QTreeWidgetItem *)));
+  connect(this, SIGNAL(itemExpanded(QTreeWidgetItem *)),
+	  this, SLOT(treeItemExpanded(QTreeWidgetItem *)));
 }
 
 MainTreeWidget::~MainTreeWidget()
 {
   delete cache;
+  delete menus;
 }
 
 void
 MainTreeWidget::buildMenus()
 {
-  SeriesMenus::buildMenus(this);
+  menus->buildMenus();
+}
+
+void
+MainTreeWidget::treeItemCollapsed(QTreeWidgetItem * item)
+{
+  item->setIcon(0, style()->standardIcon(QStyle::SP_DirClosedIcon));
+}
+
+void
+MainTreeWidget::treeItemExpanded(QTreeWidgetItem * item)
+{
+  item->setIcon(0, style()->standardIcon(QStyle::SP_DirOpenIcon));
 }
 
 void
 MainTreeWidget::seriesAction()
 {
-  SeriesAction *action = dynamic_cast<SeriesAction *>(sender());
+  QAction *action = dynamic_cast<QAction *>(sender());
+  SeriesAction *saction = dynamic_cast<SeriesAction *>(action);
 
-  if (!action)
+  if (!saction && !action)
     return ;
 
   foreach (QModelIndex index, selectedIndexes())
-    SeriesMenus::seriesAction(cache, index, action);
+    if (saction)
+      menus->seriesAction(cache, index, saction);
+    else
+      menus->miscAction(cache, index, action);
 }
 
 void
@@ -59,7 +82,7 @@ MainTreeWidget::contextMenuEvent(QContextMenuEvent * event)
 {
   QModelIndex index = indexAt(event->pos());
 
-  execMenu(index, event->globalPos());
+  menus->exec(index, event->globalPos());
 }
 
 void

@@ -27,7 +27,7 @@ class EpisodeModel : public QSqlQueryModel
 {
   Q_OBJECT
 public:
-  enum Role { Type = Qt::UserRole, Id, Watched };
+  enum Role { Type = Qt::UserRole, Id, ShowId, Season, Watched };
 
   EpisodeModel(TvDBCache *cache, QObject *parent = 0);
 

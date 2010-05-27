@@ -26,30 +26,36 @@ MainListView::MainListView(QWidget *parent)
   : QListView(parent)
 {
   cache = new TvDBCache();
+  menus = new SeriesMenus(this);
   buildMenus();
 }
 
 MainListView::~MainListView()
 {
   delete cache;
+  delete menus;
 }
 
 void
 MainListView::buildMenus()
 {
-  SeriesMenus::buildMenus(this);
+  menus->buildMenus();
 }
 
 void
 MainListView::seriesAction()
 {
-  SeriesAction *action = dynamic_cast<SeriesAction *>(sender());
+  QAction *action = dynamic_cast<QAction *>(sender());
+  SeriesAction *saction = dynamic_cast<SeriesAction *>(action);
 
-  if (!action)
+  if (!saction && !action)
     return ;
 
   foreach (QModelIndex index, selectedIndexes())
-    SeriesMenus::seriesAction(cache, index, action);
+    if (saction)
+      menus->seriesAction(cache, index, saction);
+    else
+      menus->miscAction(cache, index, action);
 }
 
 void
@@ -57,5 +63,5 @@ MainListView::contextMenuEvent(QContextMenuEvent * event)
 {
   QModelIndex index = indexAt(event->pos());
 
-  execMenu(index, event->globalPos());
+  menus->exec(index, event->globalPos());
 }

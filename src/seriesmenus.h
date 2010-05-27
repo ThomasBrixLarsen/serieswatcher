@@ -25,15 +25,24 @@
 class SeriesAction;
 class TvDBCache;
 
-class SeriesMenus {
- public:
-  SeriesMenus();
+class SeriesMenus : public QObject {
+ Q_OBJECT
+public:
+  SeriesMenus(QWidget *parent = 0);
   ~SeriesMenus();
 
-  void buildMenus(QWidget *parent);
-
+  void buildMenus();
+  void miscAction(TvDBCache *cache, const QModelIndex & index, QAction *action);
   void seriesAction(TvDBCache *cache, const QModelIndex & index, SeriesAction *action);
-  QAction *execMenu(const QModelIndex & index, const QPoint & pos);
+  QAction *exec(const QModelIndex & index, const QPoint & pos);
+
+ signals:
+  void updateShow(qint64 showId);
+  void deleteShow(qint64 showId);
+  void episodesWatched(qint64 showId, int season);
+  void episodeWatched(qint64 id);
+  void episodeDetails(qint64 id);
+  void showDetails(qint64 id);
 
  private:
   TvDBCache *cache;
@@ -41,6 +50,10 @@ class SeriesMenus {
   QMenu *episodeMenu;
   QMenu *seasonMenu;
   QMenu *showMenu;
+  QAction *updateShowAction;
+  QAction *deleteShowAction;
+  QAction *markWatchedAction;
+  QAction *detailsAction;
 };
 
 #endif

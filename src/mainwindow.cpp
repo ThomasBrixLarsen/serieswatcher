@@ -36,6 +36,8 @@
 #include "showdelegate.h"
 #include "tvdbcache.h"
 #include "settingsdialog.h"
+#include "episodedialog.h"
+#include "showdialog.h"
 
 MainWindow::MainWindow()
 {
@@ -49,6 +51,12 @@ MainWindow::MainWindow()
   setupList();
   setupTree();
   displayShows();
+}
+
+MainWindow::~MainWindow()
+{
+  QSqlDatabase::database("default").close();
+  QSqlDatabase::removeDatabase("default");
 }
 
 void
@@ -148,12 +156,9 @@ MainWindow::setupTree()
 {
   treeWidget->buildTree(shows, seasons);
 
-  connect(treeWidget, SIGNAL(itemCollapsed(QTreeWidgetItem *)),
-	  this, SLOT(treeItemCollapsed(QTreeWidgetItem *)));
-  connect(treeWidget, SIGNAL(itemExpanded(QTreeWidgetItem *)),
-	  this, SLOT(treeItemExpanded(QTreeWidgetItem *)));
   connect(treeWidget, SIGNAL(itemActivated(QTreeWidgetItem  *, int )),
 	  this, SLOT(treeItemActivated(QTreeWidgetItem  *, int )));
+  connectSeriesMenus(treeWidget->getMenus());
 }
 
 void
@@ -171,13 +176,19 @@ MainWindow::setupList()
   connect(listView, SIGNAL(doubleClicked(const QModelIndex &)),
 	  this, SLOT(itemDoubleClicked(const QModelIndex &)));
 
+  connectSeriesMenus(listView->getMenus());
   displayShows();
 }
 
-MainWindow::~MainWindow()
+void
+MainWindow::connectSeriesMenus(const SeriesMenus *menus)
 {
-  QSqlDatabase::database("default").close();
-  QSqlDatabase::removeDatabase("default");
+  connect(menus, SIGNAL(updateShow(qint64)), this, SLOT(updateShow(qint64)));
+  connect(menus, SIGNAL(deleteShow(qint64)), this, SLOT(deleteShow(qint64)));
+  connect(menus, SIGNAL(episodesWatched(qint64, int)), this, SLOT(episodesWatched(qint64, int)));
+  connect(menus, SIGNAL(episodeWatched(qint64)), this, SLOT(episodeWatched(qint64)));
+  connect(menus, SIGNAL(episodeDetails(qint64)), this, SLOT(episodeDetails(qint64)));
+  connect(menus, SIGNAL(showDetails(qint64)), this, SLOT(showDetails(qint64)));
 }
 
 void
@@ -202,18 +213,6 @@ MainWindow::itemDoubleClicked(const QModelIndex & item)
 		  item.data(SeasonModel::Id).toInt());
   else
     return ;
-}
-
-void
-MainWindow::treeItemCollapsed(QTreeWidgetItem * item)
-{
-  item->setIcon(0, style()->standardIcon(QStyle::SP_DirClosedIcon));
-}
-
-void
-MainWindow::treeItemExpanded(QTreeWidgetItem * item)
-{
-  item->setIcon(0, style()->standardIcon(QStyle::SP_DirOpenIcon));
 }
 
 void
@@ -317,3 +316,57 @@ MainWindow::aboutQt()
 {
   QMessageBox::aboutQt(this);
 }
+
+void
+MainWindow::updateShow(qint64 showId)
+{
+}
+
+void
+MainWindow::deleteShow(qint64 showId)
+{
+}
+
+void
+MainWindow::episodesWatched(qint64 showId, int season)
+{
+}
+
+void
+MainWindow::episodeWatched(qint64 id)
+{
+  // mark watched in cache
+  // mark watched in .ini
+  // reload tree && list ?
+}
+
+void
+MainWindow::episodeDetails(qint64 id)
+{
+  QtTvDB::Episode *episode = cache->fetchEpisode(id);
+
+  if (episode && !episode->isNull()) {
+    EpisodeDialog dialog(this);
+
+    dialog.setEpisode(episode, cache);
+    dialog.exec();
+  }
+
+  delete episode;
+}
+
+void
+MainWindow::showDetails(qint64 id)
+{
+  QtTvDB::Show *show = cache->fetchShow(id);
+
+  if (show && !show->isNull()) {
+    ShowDialog dialog(this);
+
+    dialog.setShow(show, cache);
+    dialog.exec();
+  }
+
+  delete show;
+}
+

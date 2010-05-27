@@ -16,34 +16,23 @@
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef MAINLISTVIEW_H
-# define MAINLISTVIEW_H
+#ifndef EPISODEDIALOG_H
+# define EPISODEDIALOG_H
 
-#include <QtGui/QListView>
+#include <QtTvDB>
 
-#include "seriesmenus.h"
+#include "ui_episodedialog.h"
 
 class TvDBCache;
 
-class MainListView : public QListView {
+class EpisodeDialog : public QDialog, private Ui_EpisodeDialog
+{
   Q_OBJECT
 public:
-  MainListView(QWidget *parent = 0);
-  virtual ~MainListView();
+  EpisodeDialog(QWidget * parent = 0);
+  ~EpisodeDialog();
 
-  void buildMenus();
-  const SeriesMenus *getMenus() const { return menus; }
-
-protected:
-  virtual void contextMenuEvent(QContextMenuEvent * event);
-
-private slots:
-  void seriesAction();
-
-private:
-  SeriesMenus *menus;
-  TvDBCache *cache;
+  void setEpisode(QtTvDB::Episode *episode, TvDBCache *cache);
 };
 
 #endif
-
