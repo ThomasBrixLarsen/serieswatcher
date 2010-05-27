@@ -71,7 +71,7 @@ QVariant EpisodeModel::data(int row, int role, QVariant fallback) const
   if (role == Qt::DecorationRole) {
     qint64 id = rec.value("id").toInt();
 
-    return QIcon(cache->fetchBannerFile(id, TvDBCache::Episode));
+    return QIcon(cache->fetchBannerFile(id, TvDBCache::Episode, QSize(120, 150)));
   }
   return fallback;
 }

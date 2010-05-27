@@ -94,7 +94,7 @@ QVariant SeasonModel::data(int row, int role, QVariant fallback) const
     query.next();
 
     qint64 id = query.record().value("bannerId").toInt();
-    return QIcon(cache->fetchBannerFile(id, TvDBCache::Poster));
+    return QIcon(cache->fetchBannerFile(id, TvDBCache::Poster, QSize(120, 150)));
   }
   return fallback;
 }

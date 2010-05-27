@@ -337,7 +337,7 @@ TvDBCache::bannerFromRecord(QSqlRecord record)
 }
 
 QString
-TvDBCache::bannerPath(qint64 id, BannerType type)
+TvDBCache::bannerPath(qint64 id, BannerType type, QSize size)
 {
   QString path = Settings::path();
   QDir dir(path);
@@ -359,13 +359,17 @@ TvDBCache::bannerPath(qint64 id, BannerType type)
   if (!dir.exists(subdir))
     dir.mkdir(subdir);
   dir.cd(subdir);
-  return dir.filePath(QString("%1").arg(id));
+
+  if (size.isEmpty())
+    return dir.filePath(QString("%1").arg(id));
+  else
+    return dir.filePath(QString("%1-%2x%3").arg(id).arg(size.width()).arg(size.height()));
 }
 
 void
-TvDBCache::storeBannerFile(qint64 id, BannerType type, const QByteArray &data)
+TvDBCache::storeBannerFile(qint64 id, BannerType type, const QByteArray &data, QSize size)
 {
-  QFile file(bannerPath(id, type));
+  QFile file(bannerPath(id, type, size));
 
   if (!file.open(QIODevice::WriteOnly))
     return;
@@ -380,14 +384,40 @@ TvDBCache::hasBannerFile(qint64 id, BannerType type)
 }
 
 QPixmap
-TvDBCache::fetchBannerFile(qint64 id, BannerType type)
+TvDBCache::fetchBannerFile(qint64 id, BannerType type, QSize size)
 {
   QPixmap pix;
-  QString key = QString("tvdbcache-%1-%2").arg(id).arg(type);
+  QString key;
+  QString path;
+  bool dothumb = false;
+
+  if (size.isEmpty())
+    key = QString("tvdbcache-%1-%2").arg(id).arg(type);
+  else
+    key = QString("tvdbcache-%1-%2-%3x%4").arg(id).arg(type).arg(size.width()).arg(size.height());
 
   if (QPixmapCache::find(key, &pix))
     return pix;
-  pix = QPixmap(bannerPath(id, type));
+
+  path = bannerPath(id, type, size);
+
+  if (!size.isEmpty()) {
+    if (!QFileInfo(path).exists()) {
+      path = bannerPath(id, type);
+      dothumb = true;
+    }
+  }
+
+  if (!QFileInfo(path).exists())
+    return QPixmap();
+
+  pix = QPixmap(path);
+
+  if (!size.isEmpty() && dothumb) {
+    pix = pix.scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    pix.save(bannerPath(id, type, size), "JPEG");
+  }
+
   QPixmapCache::insert(key, pix);
   return pix;
 }
