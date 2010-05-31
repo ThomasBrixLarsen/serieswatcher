@@ -11,10 +11,10 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Updating Database</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0" colspan="5">
+   <item row="0" column="2">
     <widget class="QLabel" name="label">
      <property name="font">
       <font>
@@ -32,34 +32,41 @@
     </widget>
    </item>
    <item row="1" column="0" colspan="5">
-    <widget class="QLabel" name="downloadLabel">
-     <property name="text">
-      <string/>
+    <widget class="QProgressBar" name="globalBar">
+     <property name="value">
+      <number>0</number>
      </property>
     </widget>
    </item>
-   <item row="2" column="0" colspan="5">
+   <item row="2" column="0" colspan="3">
+    <widget class="QLabel" name="downloadLabel">
+     <property name="text">
+      <string>Downloading:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="3" colspan="2">
     <widget class="QProgressBar" name="downloadBar">
      <property name="value">
       <number>0</number>
      </property>
     </widget>
    </item>
-   <item row="3" column="0" colspan="5">
+   <item row="3" column="0" colspan="3">
     <widget class="QLabel" name="parseLabel">
      <property name="text">
-      <string/>
+      <string>Parsing:</string>
      </property>
     </widget>
    </item>
-   <item row="4" column="0" colspan="5">
+   <item row="3" column="3" colspan="2">
     <widget class="QProgressBar" name="parseBar">
      <property name="value">
       <number>0</number>
      </property>
     </widget>
    </item>
-   <item row="5" column="0" colspan="3">
+   <item row="4" column="0">
     <widget class="QPushButton" name="detailsButton">
      <property name="text">
       <string>Show Details...</string>
@@ -69,7 +76,7 @@
      </property>
     </widget>
    </item>
-   <item row="5" column="3">
+   <item row="4" column="2">
     <spacer name="horizontalSpacer">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -85,8 +92,14 @@
      </property>
     </spacer>
    </item>
-   <item row="5" column="4">
+   <item row="4" column="4">
     <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
@@ -95,8 +108,15 @@
      </property>
     </widget>
    </item>
-   <item row="6" column="0" colspan="5">
+   <item row="5" column="0" colspan="5">
     <widget class="QListWidget" name="listWidget"/>
+   </item>
+   <item row="4" column="1">
+    <widget class="QPushButton" name="hideButton">
+     <property name="text">
+      <string>Hide</string>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>
@@ -147,6 +167,22 @@
     <hint type="destinationlabel">
      <x>249</x>
      <y>279</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>hideButton</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>UpdateProgressDialog</receiver>
+   <slot>hide()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>407</x>
+     <y>111</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>267</x>
+     <y>169</y>
     </hint>
    </hints>
   </connection>

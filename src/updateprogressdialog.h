@@ -34,6 +34,8 @@ public:
   UpdateProgressDialog(QWidget * parent = 0);
   ~UpdateProgressDialog();
 
+  bool isWorking();
+
 public slots:
   void newJob(Job *job);
 
@@ -69,6 +71,7 @@ private:
   QMap < Job::State, QIcon > icons;
   QMap < Job *, bool > done;
   bool abording;
+  bool working;
 };
 
 #endif
