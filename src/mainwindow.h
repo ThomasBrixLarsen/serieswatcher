@@ -31,6 +31,7 @@ class SeasonModel;
 class EpisodeModel;
 class TvDBCache;
 class QTreeWidgetItem;
+class QProgressBar;
 
 class MainWindow : public QMainWindow, private Ui_mainWindow {
   Q_OBJECT
@@ -55,12 +56,17 @@ private slots:
 
   void treeItemActivated(QTreeWidgetItem  * item, int column);
 
-  void updateShow(qint64 showId);
+  void updateShow(qint64 showId = -1);
   void deleteShow(qint64 showId);
   void episodesWatched(qint64 showId, int season);
   void episodeWatched(qint64 id);
   void episodeDetails(qint64 id);
   void showDetails(qint64 id);
+
+  void updateStarted();
+  void updateFinished();
+  void updateProgress(qint64 done, qint64 total);
+  void reload();
 
 private:
   void setupTvDB();
@@ -79,6 +85,7 @@ private:
 
 private:
   UpdateProgressDialog *progress;
+  QProgressBar *updateBar;
   SearchDialog *searchDialog;
   WorkerThread *thread;
   ShowModel *shows;

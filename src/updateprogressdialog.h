@@ -60,10 +60,11 @@ signals:
   void abord();
   void finished();
   void started();
+  void progress(qint64 done, qint64 total);
 
 private:
-  void reset();
   void updateItem(Job *job);
+  void reset();
 
 private:
   QList < Job * > jobs;

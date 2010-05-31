@@ -80,13 +80,16 @@ UpdateProgressDialog::updateItem(Job *job)
   if (done.size() == jobs.size()) {
     buttonBox->setStandardButtons(QDialogButtonBox::Ok);
     working = false;
-    emit finished();
-
     globalBar->setRange(0, 1);
     globalBar->setValue(1);
+    emit finished();
+
+    if (!isVisible())
+      reset();
   } else {
     globalBar->setRange(0, jobs.size());
     globalBar->setValue(done.size());
+    emit progress(done.size(), jobs.size());
   }
 }
 
@@ -109,7 +112,7 @@ UpdateProgressDialog::newJob(Job *job)
 void
 UpdateProgressDialog::parseStarted(Job *job)
 {
-  if (abording)
+  if (abording || items.find(job) == items.end())
     return;
 
   parseLabel->setText(tr("Parsing: ") + job->url.toString());
@@ -120,7 +123,7 @@ UpdateProgressDialog::parseStarted(Job *job)
 void
 UpdateProgressDialog::parseProgress(Job *job, qint64 done, qint64 total)
 {
-  if (abording)
+  if (abording || items.find(job) == items.end())
     return;
 
   parseLabel->setText(tr("Parsing: ") + job->url.toString());
@@ -138,7 +141,7 @@ UpdateProgressDialog::parseProgress(Job *job, qint64 done, qint64 total)
 void
 UpdateProgressDialog::parseFailed(Job *job)
 {
-  if (abording)
+  if (abording || items.find(job) == items.end())
     return;
 
   updateItem(job);
@@ -147,7 +150,7 @@ UpdateProgressDialog::parseFailed(Job *job)
 void
 UpdateProgressDialog::parseFinished(Job *job)
 {
-  if (abording)
+  if (abording || items.find(job) == items.end())
     return;
 
   parseLabel->setText(tr("Parsing: none"));
@@ -161,6 +164,9 @@ UpdateProgressDialog::parseFinished(Job *job)
 void
 UpdateProgressDialog::downloadStarted(Job *job)
 {
+  if (abording || items.find(job) == items.end())
+    return;
+
   downloadLabel->setText(tr("Downloading: ") + job->url.toString());
 
   updateItem(job);
@@ -169,12 +175,18 @@ UpdateProgressDialog::downloadStarted(Job *job)
 void
 UpdateProgressDialog::downloadFailed(Job *job, const QString & error)
 {
+  if (items.find(job) == items.end())
+    return ;
+
   updateItem(job);
 }
 
 void
 UpdateProgressDialog::downloadProgress(Job *job, qint64 done, qint64 total)
 {
+  if (abording || items.find(job) == items.end())
+    return;
+
   downloadLabel->setText(tr("Downloading: ") + job->url.toString());
 
   if (total == -1)
@@ -188,6 +200,9 @@ UpdateProgressDialog::downloadProgress(Job *job, qint64 done, qint64 total)
 void
 UpdateProgressDialog::downloadFinished(Job *job)
 {
+  if (abording || items.find(job) == items.end())
+    return;
+
   downloadLabel->setText(tr("Downloading: none"));
   downloadBar->reset();
   downloadBar->setRange(0, 1);

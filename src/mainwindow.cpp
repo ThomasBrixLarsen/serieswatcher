@@ -76,13 +76,14 @@ MainWindow::createActions()
   connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
   connect(settingsAction, SIGNAL(triggered()), this, SLOT(settings()));
   connect(aboutQtAction, SIGNAL(triggered()), this, SLOT(aboutQt()));
+  connect(updateShowAction, SIGNAL(triggered()), this, SLOT(updateShow()));
 }
 
 void
 MainWindow::reloadActions()
 {
-  // Remove custom actions
-  // Add custom actions
+  treeWidget->buildMenus();
+  listView->buildMenus();
 }
 
 void
@@ -97,17 +98,19 @@ MainWindow::createWorkers()
 {
   thread = new WorkerThread();
   progress = new UpdateProgressDialog(this);
+  updateBar = new QProgressBar();
+  updateBar->hide();
+
+  statusBar()->addPermanentWidget(updateBar, 0);
 
   connect(thread, SIGNAL(started()), this, SLOT(threadStarted()));
   connect(progress, SIGNAL(abord()), thread, SLOT(abord()));
 
   thread->start(QThread::LowPriority);
 
-/*
-  connect(thread, SIGNAL(databaseUpdated()), this, SLOT(databaseUpdated()));
-  connect(thread, SIGNAL(started()), this, SLOT(updateStarted()));
-  connect(thread, SIGNAL(finished()), this, SLOT(updateFinished()));
-*/
+  connect(progress, SIGNAL(started()), this, SLOT(updateStarted()));
+  connect(progress, SIGNAL(finished()), this, SLOT(updateFinished()));
+  connect(progress, SIGNAL(progress(qint64, qint64)), this, SLOT(updateProgress(qint64, qint64)));
 }
 
 void
@@ -272,7 +275,7 @@ MainWindow::settings()
   SettingsDialog dlg(this);
 
   dlg.exec();
-  reloadActions();
+  reload();
 }
 
 void
@@ -320,6 +323,17 @@ MainWindow::aboutQt()
 void
 MainWindow::updateShow(qint64 showId)
 {
+  if (showId >= 0)
+    thread->downloadWorker()->updateShow(showId);
+  else {
+    QList < QtTvDB::Show * > shows = cache->fetchShows();
+
+    foreach(QtTvDB::Show *show, shows)
+      thread->downloadWorker()->updateShow(show->id());
+
+    qDeleteAll(shows);
+  }
+  //progress->show();
 }
 
 void
@@ -368,5 +382,38 @@ MainWindow::showDetails(qint64 id)
   }
 
   delete show;
+}
+
+void
+MainWindow::updateStarted()
+{
+  statusBar()->showMessage(tr("Updating database"));
+  updateBar->show();
+  //updateBar->resize(QSize(50, updateBar->size().height()));
+  updateBar->setRange(0, 1);
+  updateBar->setValue(0);
+}
+
+void
+MainWindow::updateFinished()
+{
+  updateBar->hide();
+  statusBar()->clearMessage();
+  reload();
+}
+
+void
+MainWindow::updateProgress(qint64 done, qint64 total)
+{
+  updateBar->setRange(0, total);
+  updateBar->setValue(done);
+}
+
+void
+MainWindow::reload()
+{
+  treeWidget->buildTree(shows, seasons);
+  listView->reset();
+  reloadActions();
 }
 
