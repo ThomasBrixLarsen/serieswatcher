@@ -29,6 +29,12 @@
 ShowModel::ShowModel(TvDBCache *c, QObject *parent)
   : QSqlQueryModel(parent), cache(c)
 {
+  refresh();
+}
+
+void
+ShowModel::refresh()
+{
   QString query;
 
   query = "SELECT shows.name, shows.id, COUNT(DISTINCT episodes.id) as episodesNb, "

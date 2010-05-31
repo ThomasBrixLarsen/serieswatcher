@@ -84,6 +84,10 @@ private:
   void displaySeason(qint64 showId, int season);
 
 private:
+  int currentShowId;
+  int currentSeason;
+  int currentEpisodeId;
+
   UpdateProgressDialog *progress;
   QProgressBar *updateBar;
   SearchDialog *searchDialog;

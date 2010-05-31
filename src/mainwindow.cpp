@@ -239,6 +239,8 @@ MainWindow::displayShows()
   listView->setViewMode(QListView::IconMode);
   listView->setIconSize(QSize(100, 120));
   listView->setGridSize(QSize(150, 150));
+
+  currentShowId = currentSeason = currentEpisodeId = -1;
 }
 
 void
@@ -250,6 +252,9 @@ MainWindow::displayShow(qint64 showId)
   listView->setViewMode(QListView::IconMode);
   listView->setIconSize(QSize(100, 120));
   listView->setGridSize(QSize(150, 150));
+
+  currentShowId = showId;
+  currentSeason = currentEpisodeId = -1;
 }
 
 void
@@ -261,6 +266,10 @@ MainWindow::displaySeason(qint64 showId, int season)
   listView->setViewMode(QListView::ListMode);
   listView->setIconSize(QSize(100, 56));
   listView->setGridSize(QSize(110, 60));
+
+  currentShowId = showId;
+  currentSeason = season;
+  currentEpisodeId = -1;
 }
 
 void
@@ -412,8 +421,15 @@ MainWindow::updateProgress(qint64 done, qint64 total)
 void
 MainWindow::reload()
 {
+  qDebug() << "reload";
+  shows->refresh();
+  if (currentShowId != -1) {
+    if (currentSeason != -1)
+      episodes->setSeason(currentShowId, currentSeason);
+    else
+      seasons->setShowId(currentShowId);
+  }
   treeWidget->buildTree(shows, seasons);
-  listView->reset();
   reloadActions();
 }
 

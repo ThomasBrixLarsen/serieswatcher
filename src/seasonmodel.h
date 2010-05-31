@@ -36,9 +36,11 @@ public:
 
   SeasonModel(TvDBCache *cache, QObject *parent = 0);
 
-  void setShowId(int showId);
   QVariant data(const QModelIndex &item, int role) const;
   QVariant data(int row, int role, QVariant fallback = QVariant()) const;
+
+public slots:
+  void setShowId(int showId);
 
 private:
   TvDBCache *cache;

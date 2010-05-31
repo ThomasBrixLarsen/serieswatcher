@@ -82,10 +82,12 @@ UpdateProgressDialog::updateItem(Job *job)
     working = false;
     globalBar->setRange(0, 1);
     globalBar->setValue(1);
-    emit finished();
 
     if (!isVisible())
-      reset();
+      reset(); // Will emit finished
+    else
+      emit finished();
+
   } else {
     globalBar->setRange(0, jobs.size());
     globalBar->setValue(done.size());

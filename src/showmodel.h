@@ -39,6 +39,9 @@ public:
   QVariant data(const QModelIndex &item, int role) const;
   QVariant data(int row, int role, QVariant fallback = QVariant()) const;
 
+public slots:
+  void refresh();
+
 private:
   TvDBCache *cache;
 };
