@@ -20,6 +20,7 @@
 #include <QtCore/QFileInfo>
 #include <QtCore/QDir>
 
+#include "seriesaction.h"
 #include "settings.h"
 
 Settings::Settings(QObject *parent)
@@ -40,6 +41,29 @@ Settings::instance()
 {
   if (!instance_) {
     instance_ = new Settings();
+
+    if (instance_->value("version").isNull()) {
+      QList < SeriesAction * > actions;
+      SeriesAction *action = new SeriesAction();
+
+      action->setText(tr("Search on Torrentz.com"));
+      action->setShowUrl(QString("http://torrentz.com/search?q=%S"));
+      action->setSeasonUrl(QString("http://torrentz.com/search?q=%S season %n"));
+      action->setEpisodeUrl(QString("http://torrentz.com/search?q=%S %m%b"));
+      action->setIconPath(":/res/torrentz.png");
+      actions << action;
+
+      action = new SeriesAction();
+      action->setText(tr("Buy on Amazon"));
+      action->setShowUrl(QString("http://www.amazon.com/s/?url=search-alias%3Ddvd&field-keywords=%S"));
+      action->setSeasonUrl(QString("http://www.amazon.com/s/?url=search-alias%3Ddvd&field-keywords=%S season %n"));
+      action->setIconPath(":/res/amazon.png");
+      actions << action;
+
+      SeriesAction::addToSettings(actions);
+      qDeleteAll(actions);
+    }
+
     instance_->setValue("version", QCoreApplication::applicationVersion());
     instance_->sync();
   }

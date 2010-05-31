@@ -24,6 +24,7 @@ int main(int argc, char *argv[])
 
   QCoreApplication::setOrganizationName("SeriesWatcher");
   QCoreApplication::setApplicationName("SeriesWatcher");
+  QCoreApplication::setApplicationVersion("0.1");
 
   MainWindow window;
 
