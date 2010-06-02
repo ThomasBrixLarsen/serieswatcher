@@ -71,6 +71,7 @@ MainWindow::createActions()
   markWatchedAction->setIcon(QIcon::fromTheme("checkbox"));
   aboutAction->setIcon(QIcon::fromTheme("dialog-information"));
   settingsAction->setIcon(QIcon::fromTheme("preferences-other"));
+  aboutQtAction->setIcon(QPixmap(":/trolltech/qmessagebox/images/qtlogo-64.png"));
 
   connect(addShowAction, SIGNAL(triggered()), this, SLOT(addShow()));
   connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));

@@ -147,10 +147,6 @@
    </property>
   </action>
   <action name="aboutQtAction">
-   <property name="icon">
-    <iconset resource="serieswatcher.qrc">
-     <normaloff>:/res/qt.png</normaloff>:/res/qt.png</iconset>
-   </property>
    <property name="text">
     <string>About Qt...</string>
    </property>
