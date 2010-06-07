@@ -354,14 +354,15 @@ MainWindow::deleteShow(qint64 showId)
 void
 MainWindow::episodesWatched(qint64 showId, int season)
 {
+  cache->episodesWatched(showId, season, true);
+  reload();
 }
 
 void
 MainWindow::episodeWatched(qint64 id)
 {
-  // mark watched in cache
-  // mark watched in .ini
-  // reload tree && list ?
+  cache->episodeWatched(id, true);
+  reload();
 }
 
 void

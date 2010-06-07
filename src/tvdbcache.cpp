@@ -68,6 +68,43 @@ TvDBCache::connectDb(const QString & name)
 }
 
 void
+TvDBCache::episodesWatched(qint64 showId, int season, bool watched)
+{
+  QString sql;
+  QSqlQuery query(db);
+
+  sql = "INSERT INTO episodes_extra ";
+  sql += QString("(SELECT id, %1 FROM episodes ").arg((int)watched);
+  if (showId >= 0) {
+    sql += QString("WHERE showId = %1 ").arg(showId);
+    if (season >= 0)
+      sql += QString("AND season = %1 ").arg(season);
+  }
+  sql += ")";
+
+  query.prepare(sql);
+  if (!query.exec()) {
+    qWarning() << query.executedQuery();
+    qWarning() << query.lastError();
+  }
+}
+
+void
+TvDBCache::episodeWatched(qint64 id, bool watched)
+{
+  QString sql;
+  QSqlQuery query(db);
+
+  sql = QString("INSERT INTO episodes_extra VALUES (%1, %2)").arg(id).arg((int)watched);
+
+  query.prepare(sql);
+  if (!query.exec()) {
+    qWarning() << query.executedQuery();
+    qWarning() << query.lastError();
+  }
+}
+
+void
 TvDBCache::storeShow(QtTvDB::Show *show)
 {
   QString sql;

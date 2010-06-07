@@ -32,6 +32,8 @@ public:
   EpisodeModel(TvDBCache *cache, QObject *parent = 0);
 
 
+  Qt::ItemFlags flags(const QModelIndex & index) const;
+  bool setData (const QModelIndex & index, const QVariant & value, int role = Qt::EditRole);
   QVariant data(const QModelIndex &item, int role) const;
   QVariant data(int row, int role, QVariant fallback = QVariant()) const;
 
@@ -40,6 +42,8 @@ public slots:
 
 private:
   TvDBCache *cache;
+  int showId;
+  int season;
 };
 
 #endif

@@ -30,11 +30,15 @@ EpisodeModel::EpisodeModel(TvDBCache *c, QObject *parent)
 }
 
 void
-EpisodeModel::setSeason(int showId, int season)
+EpisodeModel::setSeason(int show, int seas)
 {
   QString query;
 
-  query = "SELECT episodes.name, episodes.id, episodes_extra.watched, episodes.showId, episodes.season ";
+  showId = show;
+  season = seas;
+
+  query = "SELECT episodes.name, episodes.id, episodes_extra.watched, episodes.showId, episodes.season, ";
+  query += " episodes.firstAired ";
   query += "FROM episodes ";
   query += "LEFT JOIN episodes_extra ";
   query += "ON episodes.id = episodes_extra.id ";
@@ -43,19 +47,61 @@ EpisodeModel::setSeason(int showId, int season)
   setQuery(query);
 }
 
-QVariant EpisodeModel::data(const QModelIndex &index, int role) const
+QVariant
+EpisodeModel::data(const QModelIndex &index, int role) const
 {
   QVariant value = QSqlQueryModel::data(index, role);
 
-  if (role >= Qt::UserRole || role == Qt::DecorationRole || role == Qt::DisplayRole)
+  if (role >= Qt::UserRole || role == Qt::DecorationRole || role == Qt::DisplayRole ||
+      role == Qt::CheckStateRole || role == Qt::TextColorRole)
     return data(index.row(), role, value);
   return value;
 }
 
-QVariant EpisodeModel::data(int row, int role, QVariant fallback) const
+Qt::ItemFlags
+EpisodeModel::flags(const QModelIndex & index) const
+{
+  Qt::ItemFlags ret = QSqlQueryModel::flags(index);
+
+  return ret | Qt::ItemIsUserCheckable;
+}
+
+bool
+EpisodeModel::setData(const QModelIndex & index, const QVariant & value, int role)
+{
+  if (!index.isValid())
+    return false;
+
+  if (role == Qt::CheckStateRole) {
+    QSqlRecord rec = record(index.row());
+    bool val = false;
+
+    if (value.toInt() == Qt::Checked)
+      val = true;
+    cache->episodeWatched(rec.value("id").toInt(), val);
+    setSeason(showId, season); // Reload SQL data
+    emit dataChanged(index, index);
+    emit layoutChanged();
+    return true;
+  }
+  return false;
+}
+
+QVariant
+EpisodeModel::data(int row, int role, QVariant fallback) const
 {
   QSqlRecord rec = record(row);
 
+  if (role == Qt::CheckStateRole)
+    return rec.value("watched").toBool() ? Qt::Checked : Qt::Unchecked;
+  if (role == Qt::TextColorRole) {
+    QDateTime airs = QDateTime::fromTime_t(rec.value("firstAired").toULongLong());
+
+    if (!airs.isNull() && airs < QDateTime::currentDateTime() &&
+	!rec.value("watched").toBool())
+      return Qt::blue;
+    return fallback;
+  }
   if (role == EpisodeModel::Type)
     return QString("episode");
   if (role == EpisodeModel::Id)
