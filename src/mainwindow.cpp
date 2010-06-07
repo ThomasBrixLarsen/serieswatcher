@@ -422,7 +422,6 @@ MainWindow::updateProgress(qint64 done, qint64 total)
 void
 MainWindow::reload()
 {
-  qDebug() << "reload";
   shows->refresh();
   if (currentShowId != -1) {
     if (currentSeason != -1)

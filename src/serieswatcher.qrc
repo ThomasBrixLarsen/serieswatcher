@@ -4,7 +4,6 @@
     <file>../res/torrentz.png</file>
     <file>../res/podnapisi.png</file>
     <file>../res/opensubtitles.png</file>
-    <file>../res/qt.png</file>
     <file>../res/serieswatcher.png</file>
   </qresource>
 </RCC>
