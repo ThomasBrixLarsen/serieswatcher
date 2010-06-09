@@ -93,7 +93,7 @@ void
 MainWindow::setupTvDB()
 {
   QtTvDB::Mirrors *m = TvDB::mirrors();
-  m->setKey("FAD75AF31E1B1577");
+  m->setKey("304DD0AD0616125B");
 }
 
 void
