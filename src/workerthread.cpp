@@ -16,6 +16,8 @@
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#include <QtGui/QApplication>
+
 #include "workerthread.h"
 #include "updateworker.h"
 #include "downloadworker.h"
@@ -46,6 +48,8 @@ WorkerThread::run()
 {
   dworker = new DownloadWorker(); /* Download in main thread */
   uworker = new UpdateWorker();
+
+  dworker->moveToThread(QApplication::instance()->thread());
   uworker->moveToThread(this);
 
   connect(uworker, SIGNAL(newJob(Job *)), dworker, SLOT(startJob(Job *)));
