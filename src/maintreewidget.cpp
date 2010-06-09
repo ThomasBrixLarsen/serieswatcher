@@ -52,13 +52,13 @@ MainTreeWidget::buildMenus()
 void
 MainTreeWidget::treeItemCollapsed(QTreeWidgetItem * item)
 {
-  item->setIcon(0, style()->standardIcon(QStyle::SP_DirClosedIcon));
+  item->setIcon(0, QIcon::fromTheme("folder-video"));
 }
 
 void
 MainTreeWidget::treeItemExpanded(QTreeWidgetItem * item)
 {
-  item->setIcon(0, style()->standardIcon(QStyle::SP_DirOpenIcon));
+  item->setIcon(0, QIcon::fromTheme("folder-open"));
 }
 
 void
@@ -98,6 +98,38 @@ MainTreeWidget::setCurrentItem(int showId, int season)
 }
 
 void
+MainTreeWidget::updateTree(ShowModel *shows, SeasonModel *seasons)
+{
+  for (int i = 0; i < shows->rowCount(); ++i) {
+    qint64 showId = shows->data(i, ShowModel::Id).toInt();
+    QTreeWidgetItem *show = showsItems[showId];
+
+    if (!show)
+      continue ;
+
+    show->setData(0, ShowModel::Id, showId);
+    show->setData(0, Qt::DisplayRole, shows->data(i, Qt::DisplayRole));
+    show->setData(0, ShowModel::Type, "show");
+    //show->setData(0, Qt::DecorationRole, shows->data(i, Qt::DecorationRole));
+    show->setIcon(0, QIcon::fromTheme("folder-video"));
+
+    seasons->setShowId(showId);
+
+    for (int j = 0; j < seasons->rowCount(); ++j) {
+      qint64 seasonId = seasons->data(j, SeasonModel::Id).toInt();
+      QTreeWidgetItem *season = seasonsItems[showId][seasonId];
+
+      season->setData(0, SeasonModel::Id, seasonId);
+      season->setData(0, SeasonModel::ShowId, showId);
+      season->setData(0, SeasonModel::Type, "season");
+      season->setData(0, Qt::DisplayRole, seasons->data(j, Qt::DisplayRole));
+      //season->setData(0, Qt::DecorationRole, seasons->data(j, Qt::DecorationRole));
+      season->setIcon(0, QIcon::fromTheme("video-x-generic"));
+    }
+  }
+}
+
+void
 MainTreeWidget::buildTree(ShowModel *shows, SeasonModel *seasons)
 {
   QTreeWidgetItem *home;
@@ -120,12 +152,6 @@ MainTreeWidget::buildTree(ShowModel *shows, SeasonModel *seasons)
     qint64 showId = shows->data(i, ShowModel::Id).toInt();
 
     show = new QTreeWidgetItem(this);
-    show->setData(0, ShowModel::Id, showId);
-    show->setData(0, Qt::DisplayRole, shows->data(i, Qt::DisplayRole));
-    show->setData(0, ShowModel::Type, "show");
-
-    //show->setData(0, Qt::DecorationRole, shows->data(i, Qt::DecorationRole));
-    show->setIcon(0, style()->standardIcon(QStyle::SP_DirClosedIcon));
 
     showsItems[showId] = show;
     seasons->setShowId(showId);
@@ -135,15 +161,10 @@ MainTreeWidget::buildTree(ShowModel *shows, SeasonModel *seasons)
       qint64 seasonId = seasons->data(j, SeasonModel::Id).toInt();
 
       season = new QTreeWidgetItem(show);
-      season->setData(0, SeasonModel::Id, seasonId);
-      season->setData(0, SeasonModel::ShowId, showId);
-      season->setData(0, SeasonModel::Type, "season");
-      season->setData(0, Qt::DisplayRole, seasons->data(j, Qt::DisplayRole));
-      //season->setData(0, Qt::DecorationRole, seasons->data(j, Qt::DecorationRole));
-      season->setIcon(0, style()->standardIcon(QStyle::SP_FileIcon));
 
       seasonsItems[showId][seasonId] = season;
     }
   }
+  updateTree(shows, seasons);
 }
 

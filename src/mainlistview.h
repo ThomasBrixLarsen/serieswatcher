@@ -33,6 +33,7 @@ public:
 
   void buildMenus();
   const SeriesMenus *getMenus() const { return menus; }
+  QModelIndexList selectedIndexes() { return QListView::selectedIndexes(); }
 
 protected:
   virtual void contextMenuEvent(QContextMenuEvent * event);

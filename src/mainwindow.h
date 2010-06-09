@@ -58,6 +58,8 @@ private slots:
 
   void updateShow(qint64 showId = -1);
   void deleteShow(qint64 showId);
+
+  void markWatched();
   void episodesWatched(qint64 showId, int season);
   void episodeWatched(qint64 id);
   void episodeDetails(qint64 id);
@@ -67,6 +69,7 @@ private slots:
   void updateFinished();
   void updateProgress(qint64 done, qint64 total);
   void reload();
+  void update();
 
 private:
   void setupTvDB();

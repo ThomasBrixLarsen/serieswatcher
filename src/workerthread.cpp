@@ -23,13 +23,10 @@
 WorkerThread::WorkerThread(QObject *parent)
   : QThread(parent)
 {
-  dworker = new DownloadWorker(); /* Download in main thread */
 }
 
 WorkerThread::~WorkerThread()
 {
-  delete dworker;
-  delete uworker;
 }
 
 DownloadWorker *
@@ -47,6 +44,7 @@ WorkerThread::updateWorker()
 void
 WorkerThread::run()
 {
+  dworker = new DownloadWorker(); /* Download in main thread */
   uworker = new UpdateWorker();
   uworker->moveToThread(this);
 
@@ -54,6 +52,8 @@ WorkerThread::run()
   connect(dworker, SIGNAL(downloadFinished(Job *)), uworker, SLOT(startJob(Job *)));
 
   exec();
+  delete dworker;
+  delete uworker;
 }
 
 void

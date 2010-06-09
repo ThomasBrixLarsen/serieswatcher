@@ -73,6 +73,7 @@ MainWindow::createActions()
   settingsAction->setIcon(QIcon::fromTheme("preferences-other"));
   aboutQtAction->setIcon(QPixmap(":/trolltech/qmessagebox/images/qtlogo-64.png"));
 
+  connect(markWatchedAction, SIGNAL(triggered()), this, SLOT(markWatched()));
   connect(addShowAction, SIGNAL(triggered()), this, SLOT(addShow()));
   connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
   connect(settingsAction, SIGNAL(triggered()), this, SLOT(settings()));
@@ -104,6 +105,7 @@ MainWindow::createWorkers()
 
   statusBar()->addPermanentWidget(updateBar, 0);
 
+  connect(this, SIGNAL(destroyed(QObject *)), thread, SLOT(quit()));
   connect(thread, SIGNAL(started()), this, SLOT(threadStarted()));
   connect(progress, SIGNAL(abord()), thread, SLOT(abord()));
 
@@ -355,14 +357,33 @@ void
 MainWindow::episodesWatched(qint64 showId, int season)
 {
   cache->episodesWatched(showId, season, true);
-  reload();
+  update();
+}
+
+void
+MainWindow::markWatched()
+{
+  QModelIndexList list = listView->selectedIndexes();
+
+  foreach (QModelIndex item, list) {
+    QString type = item.data(Qt::UserRole).toString();
+
+    if (type == "show")
+      cache->episodesWatched(item.data(ShowModel::Id).toLongLong(), -1, true);
+    if (type == "season")
+      cache->episodesWatched(item.data(SeasonModel::Id).toLongLong(),
+			     item.data(SeasonModel::Id).toLongLong(), true);
+    if (type == "episode")
+      cache->episodeWatched(item.data(EpisodeModel::Id).toLongLong(), true);
+  }
+  update();
 }
 
 void
 MainWindow::episodeWatched(qint64 id)
 {
   cache->episodeWatched(id, true);
-  reload();
+  update();
 }
 
 void
@@ -421,6 +442,19 @@ MainWindow::updateProgress(qint64 done, qint64 total)
 }
 
 void
+MainWindow::update()
+{
+  shows->refresh();
+  if (currentShowId != -1) {
+    if (currentSeason != -1)
+      episodes->setSeason(currentShowId, currentSeason);
+    else
+      seasons->setShowId(currentShowId);
+  }
+  treeWidget->updateTree(shows, seasons);
+}
+
+void
 MainWindow::reload()
 {
   shows->refresh();
@@ -430,7 +464,16 @@ MainWindow::reload()
     else
       seasons->setShowId(currentShowId);
   }
+
   treeWidget->buildTree(shows, seasons);
+
+  if (currentShowId != -1) {
+    if (currentSeason != -1)
+      treeWidget->setCurrentItem(currentShowId, currentSeason);
+    else
+      treeWidget->setCurrentItem(currentShowId);
+  }
+
   reloadActions();
 }
 

@@ -35,6 +35,7 @@ public:
 
   void buildMenus();
   void buildTree(ShowModel *shows, SeasonModel *model);
+  void updateTree(ShowModel *shows, SeasonModel *model);
 
   void setCurrentItem(int showId);
   void setCurrentItem(int showId, int seasonId);

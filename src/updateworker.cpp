@@ -35,10 +35,10 @@ UpdateWorker::UpdateWorker(QObject *parent)
 
 UpdateWorker::~UpdateWorker()
 {
+  delete cache;
+
   QSqlDatabase::database("updateworker").close();
   QSqlDatabase::removeDatabase("updateworker");
-
-  delete cache;
 }
 
 /* This method is should be called from another thread */
