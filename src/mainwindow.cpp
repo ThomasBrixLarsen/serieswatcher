@@ -101,9 +101,15 @@ MainWindow::createWorkers()
   thread = new WorkerThread();
   progress = new UpdateProgressDialog(this);
   updateBar = new QProgressBar();
+  updateButton = new QPushButton(QIcon::fromTheme("download"), tr("Show update progress"));
+
   updateBar->hide();
+  updateButton->hide();
 
   statusBar()->addPermanentWidget(updateBar, 0);
+  statusBar()->addPermanentWidget(updateButton, 0);
+
+  connect(updateButton, SIGNAL(clicked(bool)), progress, SLOT(show()));
 
   connect(this, SIGNAL(destroyed(QObject *)), thread, SLOT(quit()));
   connect(thread, SIGNAL(started()), this, SLOT(threadStarted()));
@@ -421,6 +427,7 @@ MainWindow::updateStarted()
 {
   statusBar()->showMessage(tr("Updating database"));
   updateBar->show();
+  updateButton->show();
   //updateBar->resize(QSize(50, updateBar->size().height()));
   updateBar->setRange(0, 1);
   updateBar->setValue(0);
@@ -430,6 +437,7 @@ void
 MainWindow::updateFinished()
 {
   updateBar->hide();
+  updateButton->hide();
   statusBar()->clearMessage();
   reload();
 }

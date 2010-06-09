@@ -79,6 +79,7 @@ UpdateProgressDialog::updateItem(Job *job)
     done[job] = true;
   if (done.size() == jobs.size()) {
     buttonBox->setStandardButtons(QDialogButtonBox::Ok);
+    hideButton->hide();
     working = false;
     globalBar->setRange(0, 1);
     globalBar->setValue(1);
@@ -102,6 +103,7 @@ UpdateProgressDialog::newJob(Job *job)
 
   if (jobs.size() == 0) {
     buttonBox->setStandardButtons(QDialogButtonBox::Cancel);
+    hideButton->show();
     working = true;
     emit started();
   }

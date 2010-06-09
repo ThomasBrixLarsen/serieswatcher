@@ -32,6 +32,7 @@ class EpisodeModel;
 class TvDBCache;
 class QTreeWidgetItem;
 class QProgressBar;
+class QPushButton;
 
 class MainWindow : public QMainWindow, private Ui_mainWindow {
   Q_OBJECT
@@ -93,6 +94,7 @@ private:
 
   UpdateProgressDialog *progress;
   QProgressBar *updateBar;
+  QPushButton *updateButton;
   SearchDialog *searchDialog;
   WorkerThread *thread;
   ShowModel *shows;
