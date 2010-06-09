@@ -58,6 +58,7 @@ private slots:
   void treeItemActivated(QTreeWidgetItem  * item, int column);
 
   void updateShow(qint64 showId = -1);
+  void deleteShow();
   void deleteShow(qint64 showId);
 
   void markWatched();

@@ -74,6 +74,7 @@ MainWindow::createActions()
   aboutQtAction->setIcon(QPixmap(":/trolltech/qmessagebox/images/qtlogo-64.png"));
 
   connect(markWatchedAction, SIGNAL(triggered()), this, SLOT(markWatched()));
+  connect(deleteShowAction, SIGNAL(triggered()), this, SLOT(deleteShow()));
   connect(addShowAction, SIGNAL(triggered()), this, SLOT(addShow()));
   connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
   connect(settingsAction, SIGNAL(triggered()), this, SLOT(settings()));
@@ -355,8 +356,24 @@ MainWindow::updateShow(qint64 showId)
 }
 
 void
+MainWindow::deleteShow()
+{
+  QModelIndexList list = listView->selectedIndexes();
+
+  foreach (QModelIndex item, list) {
+    QString type = item.data(Qt::UserRole).toString();
+
+    if (type == "show")
+      cache->deleteShow(item.data(ShowModel::Id).toLongLong());
+  }
+  reload();
+}
+
+void
 MainWindow::deleteShow(qint64 showId)
 {
+  cache->deleteShow(showId);
+  reload();
 }
 
 void

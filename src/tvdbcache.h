@@ -34,6 +34,7 @@ public:
 
   void episodesWatched(qint64 showId, int season, bool watched);
   void episodeWatched(qint64 id, bool watched);
+  void deleteShow(qint64 showId);
 
   void storeShow(QtTvDB::Show *show);
   void storeShows(QList < QtTvDB::Show * > shows);

@@ -68,6 +68,37 @@ TvDBCache::connectDb(const QString & name)
 }
 
 void
+TvDBCache::deleteShow(qint64 showId)
+{
+  QString sql;
+  QSqlQuery query(db);
+
+  sql = QString("DELETE FROM shows WHERE id = %1").arg(showId);
+
+  query.prepare(sql);
+  if (!query.exec()) {
+    qWarning() << query.executedQuery();
+    qWarning() << query.lastError();
+  }
+
+  sql = QString("DELETE FROM episodes WHERE showId = %1").arg(showId);
+
+  query.prepare(sql);
+  if (!query.exec()) {
+    qWarning() << query.executedQuery();
+    qWarning() << query.lastError();
+  }
+
+  sql = QString("DELETE FROM banners WHERE showId = %1").arg(showId);
+
+  query.prepare(sql);
+  if (!query.exec()) {
+    qWarning() << query.executedQuery();
+    qWarning() << query.lastError();
+  }
+}
+
+void
 TvDBCache::episodesWatched(qint64 showId, int season, bool watched)
 {
   QString sql;
