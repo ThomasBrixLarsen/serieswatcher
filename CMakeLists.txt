@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 2.6)
 
 project(serieswatcher)
 
+include(CMakeDependentOption)
+
 set(VERSION_MAJOR "0")
 set(VERSION_MINOR "0")
 set(VERSION_PATCH "1")
@@ -16,6 +18,9 @@ find_package(QtTvDB REQUIRED)
 find_package(Quazip)
 
 set(HAVE_QUAZIP ${QUAZIP_FOUND})
+
+cmake_dependent_option(WITH_QUAZIP "With quazip support [default: on]" ON "QUAZIP_FOUND" OFF)
+option(WITH_BUILTIN_ICONS  "Include icon theme in built-in ressources" ON)
 
 ## GCC  ##
 set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O2")

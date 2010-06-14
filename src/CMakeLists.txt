@@ -72,9 +72,13 @@ SET(serieswatcher_MOC_HDRS
 
 SET(serieswatcher_RCS serieswatcher.qrc)
 
+if(WITH_BUILTIN_ICONS)
+  SET(serieswatcher_RCS ../res/icons/icons.qrc)
+endif()
+
 QT4_WRAP_CPP(MOC_SOURCE ${serieswatcher_MOC_HDRS})
 QT4_WRAP_UI(UI_HDRS ${serieswatcher_UIS})
-QT4_ADD_RESOURCES(RC_SRCS ${serieswatcher_RCS} )
+QT4_ADD_RESOURCES(RC_SRCS ${serieswatcher_RCS})
 
 ADD_EXECUTABLE(
 	serieswatcher
