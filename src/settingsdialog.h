@@ -41,6 +41,7 @@ private slots:
   void addAction();
   void editAction();
   void delAction();
+  void setStartupCheck(int state);
 
 private:
   void populateActions();

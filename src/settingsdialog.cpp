@@ -19,15 +19,20 @@
 #include "settingsdialog.h"
 #include "actiondialog.h"
 #include "seriesaction.h"
+#include "settings.h"
 #include "tvdb.h"
 
 SettingsDialog::SettingsDialog(QWidget * parent)
   : QDialog(parent)
 {
+  Settings settings;
+
   setupUi(this);
 
   tabWidget->setTabIcon(0, QIcon::fromTheme("folder-video"));
   tabWidget->setTabIcon(1, QIcon::fromTheme("preferences-other"));
+  tabWidget->setTabIcon(2, QIcon::fromTheme("server-database"));
+
   addButton->setIcon(QIcon::fromTheme("list-add"));
   delButton->setIcon(QIcon::fromTheme("list-remove"));
   editButton->setIcon(QIcon::fromTheme("edit-rename"));
@@ -35,6 +40,9 @@ SettingsDialog::SettingsDialog(QWidget * parent)
   apiLineEdit->setText(TvDB::mirrors()->key());
   apiLineEdit->setEnabled(false);
 
+  databaseCheckBox->setChecked(settings.value("updateOnStartup").toBool() ? Qt::Checked : Qt::Unchecked);
+
+  connect(databaseCheckBox, SIGNAL(stateChanged(int)), this, SLOT(setStartupCheck(int)));
   connect(addButton, SIGNAL(clicked()), this, SLOT(addAction()));
   connect(editButton, SIGNAL(clicked()), this, SLOT(editAction()));
   connect(delButton, SIGNAL(clicked()), this, SLOT(delAction()));
@@ -52,6 +60,13 @@ SettingsDialog::~SettingsDialog()
 {
 }
 
+void
+SettingsDialog::setStartupCheck(int state)
+{
+  Settings settings;
+
+  settings.setValue("updateOnStartup", !!state);
+}
 
 void
 SettingsDialog::addAction()
