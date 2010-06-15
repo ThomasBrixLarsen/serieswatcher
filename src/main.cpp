@@ -16,6 +16,9 @@
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#include <QtGui/QIcon>
+#include <QDebug>
+
 #include "mainwindow.h"
 
 int main(int argc, char *argv[])
@@ -25,6 +28,7 @@ int main(int argc, char *argv[])
   QCoreApplication::setOrganizationName("SeriesWatcher");
   QCoreApplication::setApplicationName("SeriesWatcher");
   QCoreApplication::setApplicationVersion("0.1");
+  QIcon::setThemeName("serieswatcher");
 
   MainWindow window;
 

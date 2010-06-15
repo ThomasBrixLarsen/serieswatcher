@@ -191,6 +191,7 @@
  </customwidgets>
  <resources>
   <include location="serieswatcher.qrc"/>
+  <include location="../res/icons/icons.qrc"/>
  </resources>
  <connections>
   <connection>
