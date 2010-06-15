@@ -73,7 +73,7 @@ SET(serieswatcher_MOC_HDRS
 SET(serieswatcher_RCS serieswatcher.qrc)
 
 if(WITH_BUILTIN_ICONS)
-  SET(serieswatcher_RCS ../res/icons/icons.qrc)
+  SET(serieswatcher_RCS ${serieswatcher_RCS} ../res/icons/icons.qrc)
 endif()
 
 QT4_WRAP_CPP(MOC_SOURCE ${serieswatcher_MOC_HDRS})
