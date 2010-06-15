@@ -38,6 +38,7 @@
 #include "settingsdialog.h"
 #include "episodedialog.h"
 #include "showdialog.h"
+#include "settings.h"
 
 MainWindow::MainWindow()
 {
@@ -126,6 +127,7 @@ MainWindow::createWorkers()
 void
 MainWindow::threadStarted()
 {
+    Settings settings;
     DownloadWorker *dworker = thread->downloadWorker();
     UpdateWorker *uworker = thread->updateWorker();
 
@@ -147,6 +149,9 @@ MainWindow::threadStarted()
     connect(dworker, SIGNAL(downloadFinished(Job *)), progress, SLOT(downloadFinished(Job *)));
     connect(dworker, SIGNAL(error(const QString &, const QString &)),
             this, SLOT(error(const QString &, const QString &)));
+
+    if (settings.value("updateOnStartup").toBool())
+	updateShow(-1);
 }
 
 void
