@@ -7,6 +7,7 @@
 <file>./128x128/folder-video.png</file>
 <file>./128x128/list-remove.png</file>
 <file>./128x128/preferences-other.png</file>
+<file>./128x128/server-database.png</file>
 <file>./128x128/video-x-generic.png</file>
 <file>./16x16/bookmark-new.png</file>
 <file>./16x16/checkbox.png</file>
@@ -26,6 +27,7 @@
 <file>./16x16/list-remove.png</file>
 <file>./16x16/preferences-other.png</file>
 <file>./16x16/run-build.png</file>
+<file>./16x16/server-database.png</file>
 <file>./16x16/video-x-generic.png</file>
 <file>./16x16/view-list-details.png</file>
 <file>./16x16/window-close.png</file>
@@ -47,6 +49,7 @@
 <file>./22x22/list-remove.png</file>
 <file>./22x22/preferences-other.png</file>
 <file>./22x22/run-build.png</file>
+<file>./22x22/server-database.png</file>
 <file>./22x22/video-x-generic.png</file>
 <file>./22x22/view-list-details.png</file>
 <file>./22x22/window-close.png</file>
@@ -68,6 +71,7 @@
 <file>./32x32/list-remove.png</file>
 <file>./32x32/preferences-other.png</file>
 <file>./32x32/run-build.png</file>
+<file>./32x32/server-database.png</file>
 <file>./32x32/video-x-generic.png</file>
 <file>./32x32/view-list-details.png</file>
 <file>./32x32/window-close.png</file>
@@ -88,6 +92,7 @@
 <file>./48x48/list-remove.png</file>
 <file>./48x48/preferences-other.png</file>
 <file>./48x48/run-build.png</file>
+<file>./48x48/server-database.png</file>
 <file>./48x48/video-x-generic.png</file>
 <file>./48x48/view-list-details.png</file>
 <file>./48x48/window-close.png</file>
@@ -98,6 +103,7 @@
 <file>./64x64/folder-video.png</file>
 <file>./64x64/list-remove.png</file>
 <file>./64x64/preferences-other.png</file>
+<file>./64x64/server-database.png</file>
 <file>./64x64/video-x-generic.png</file>
 <file>./icons.qrc</file>
 </qresource>
