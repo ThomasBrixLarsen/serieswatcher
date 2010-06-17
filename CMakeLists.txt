@@ -34,7 +34,7 @@ if(HAVE_LIBZIP OR HAVE_QUAZIP)
 endif()
 
 # Disabled because it does not always work
-cmake_dependent_option(WITH_ZIP "With zip support [default: off]" OFF "HAVE_ZIP" OFF)
+cmake_dependent_option(WITH_ZIP "With zip support [default: off]" ON "HAVE_ZIP" OFF)
 option(WITH_BUILTIN_ICONS  "Include icon theme in built-in ressources" ON)
 
 ## GCC  ##

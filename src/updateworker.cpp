@@ -88,6 +88,7 @@ UpdateWorker::parseShowAndEpisodesZip(Job *job)
 
   file.open();
   file.write(job->data);
+  file.flush();
 
   struct zip *zip = zip_open(file.fileName().toLatin1().constData(), 0, &err);
 
@@ -149,6 +150,7 @@ UpdateWorker::parseShowAndEpisodesZip(Job *job)
 
   file.open();
   file.write(job->data);
+  file.flush();
 
   QuaZip zip(file.fileName());
 
