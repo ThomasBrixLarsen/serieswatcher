@@ -16,10 +16,20 @@
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#include "config.h"
+
 #include <QtCore/QTimer>
+#include <QtCore/QTemporaryFile>
 #include <QtSql/QSqlDatabase>
 
 #include <QtTvDB>
+
+#ifdef HAVE_LIBZIP
+#include <zip.h>
+#elif defined(HAVE_QUAZIP)
+#include <quazip/quazip.h>
+#include <quazip/quazipfile.h>
+#endif
 
 #include "downloadworker.h"
 #include "updateworker.h"
@@ -69,10 +79,110 @@ UpdateWorker::startJob(Job *job)
   emit parseFinished(job);
 }
 
+#ifdef HAVE_LIBZIP
+void
+UpdateWorker::parseShowAndEpisodesZip(Job *job)
+{
+  int err = 0;
+  QTemporaryFile file;
+
+  file.open();
+  file.write(job->data);
+
+  struct zip *zip = zip_open(file.fileName().toLatin1().constData(), 0, &err);
+
+  if (!zip) {
+    emit error(tr("Error"), tr("Zip open error: %1").arg(err));
+    return ;
+  }
+
+  int files = zip_get_num_files(zip);
+
+  for (int index = 0; index < files; ++index) {
+    const char *filename = zip_get_name(zip, index, 0);
+    struct zip_stat st;
+    struct zip_file *fp;
+
+    if (!filename)
+      continue;
+    if (QLatin1String(filename) == QLatin1String("actors.xml"))
+      continue;
+
+    zip_stat_index(zip, index, 0, &st);
+    fp = zip_fopen_index(zip, index, 0);
+
+    if (!fp) {
+      emit error(tr("Error"), tr("Zip error: %1").arg(zip_file_strerror(fp)));
+      zip_close(zip);
+      return ;
+    }
+
+    job->data = QByteArray();
+    ssize_t bytes = 0;
+    while (bytes < st.size) {
+      char buf[2048];
+      ssize_t ret = zip_fread(fp, buf, sizeof (buf));
+
+      if (ret == -1) {
+	emit error(tr("Error"), tr("Zip error: %1").arg(zip_file_strerror(fp)));
+	zip_close(zip);
+	return ;
+      }
+      job->data.append(buf, ret);
+      bytes += ret;
+    }
+
+    if (QLatin1String(filename) == QLatin1String("banners.xml"))
+      parseBannersXml(job);
+    else
+      parseShowAndEpisodesXml(job);
+
+    zip_fclose(fp);
+  }
+  zip_close(zip);
+}
+#elif defined(HAVE_QUAZIP)
+void
+UpdateWorker::parseShowAndEpisodesZip(Job *job)
+{
+  QTemporaryFile file;
+
+  file.open();
+  file.write(job->data);
+
+  QuaZip zip(file.fileName());
+
+  if (!zip.open(QuaZip::mdUnzip)) {
+    emit error(tr("Error"), tr("Zip error: %1").arg(zip.getZipError()));
+    return ;
+  }
+  if (!zip.isOpen()) {
+    emit error(tr("Error"), tr("Zip open error: %1").arg(zip.getZipError()));
+    return ;
+  }
+  for(bool more = zip.goToFirstFile(); more; more = zip.goToNextFile()) {
+    if (zip.getCurrentFileName() == "actors.xml")
+      continue;
+
+    QuaZipFile file(&zip);
+    file.open(QIODevice::ReadOnly);
+    job->data = file.readAll();
+    if (zip.getCurrentFileName() == "banners.xml")
+      parseBannersXml(job);
+    else
+      parseShowAndEpisodesXml(job);
+    file.close();
+  }
+  if(zip.getZipError() != UNZ_OK) {
+    emit error(tr("Error"), tr("Zip error: %1").arg(zip.getZipError()));
+  }
+}
+#else
 void
 UpdateWorker::parseShowAndEpisodesZip(Job *job)
 {
 }
+#endif
 
 void
 UpdateWorker::parseBanner(Job *job)

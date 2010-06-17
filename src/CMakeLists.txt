@@ -12,6 +12,7 @@ INCLUDE_DIRECTORIES(
 	${CMAKE_CURRENT_BINARY_DIR}
 	${serieswatcher_BINARY_DIR}
 	${QTTVDB_INCLUDE_DIR}
+	${ZIP_INCLUDE_DIR}
 )
 
 SET(serieswatcher_SRCS
@@ -92,6 +93,7 @@ TARGET_LINK_LIBRARIES(
 	serieswatcher
 	${QT_LIBRARIES}
 	${QTTVDB_LIBRARIES}
+	${ZIP_LIBRARIES}
 )
 
 install(TARGETS serieswatcher

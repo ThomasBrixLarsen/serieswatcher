@@ -16,6 +16,8 @@
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#include "config.h"
+
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtCore/QTimer>
 #include <QtSql/QSqlDatabase>
@@ -43,12 +45,12 @@ DownloadWorker::~DownloadWorker()
 void
 DownloadWorker::updateShow(qint64 id)
 {
-  //#if HAVE_QUAZIP
-  //  startJob(id, mirrors->showAndEpisodesUrlZip(id), Job::ShowAndEpisodesZip);
-  //#else
+#ifdef HAVE_ZIP
+  startJob(id, mirrors->showAndEpisodesUrlZip(id, "en"), Job::ShowAndEpisodesZip);
+#else
   startJob(id, mirrors->bannersUrl(id), Job::BannersXml);
-  startJob(id, mirrors->showAndEpisodesUrl(id), Job::ShowAndEpisodesXml);
-  //#endif
+  startJob(id, mirrors->showAndEpisodesUrl(id, "en"), Job::ShowAndEpisodesXml);
+#endif
 }
 
 void

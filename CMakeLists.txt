@@ -16,10 +16,25 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/mod
 find_package(Qt4 REQUIRED)
 find_package(QtTvDB REQUIRED)
 find_package(Quazip)
+find_package(LibZip)
 
 set(HAVE_QUAZIP ${QUAZIP_FOUND})
+set(HAVE_LIBZIP ${LIBZIP_FOUND})
 
-cmake_dependent_option(WITH_QUAZIP "With quazip support [default: on]" ON "QUAZIP_FOUND" OFF)
+if(HAVE_LIBZIP)
+  set(ZIP_INCLUDE_DIR ${LIBZIP_INCLUDE_DIR})
+  set(ZIP_LIBRARIES   ${LIBZIP_LIBRARIES})
+elseif(HAVE_QUAZIP)
+  set(ZIP_INCLUDE_DIR ${QUAZIP_INCLUDE_DIR})
+  set(ZIP_LIBRARIES   ${QUAZIP_LIBRARIES})
+endif()
+
+if(HAVE_LIBZIP OR HAVE_QUAZIP)
+  set(HAVE_ZIP 1)
+endif()
+
+# Disabled because it does not always work
+cmake_dependent_option(WITH_ZIP "With zip support [default: off]" OFF "HAVE_ZIP" OFF)
 option(WITH_BUILTIN_ICONS  "Include icon theme in built-in ressources" ON)
 
 ## GCC  ##

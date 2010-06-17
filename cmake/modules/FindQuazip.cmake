@@ -1,4 +1,4 @@
-# Find QUAZIP - WEBDAV handling library for Qt
+# Find QUAZIP
 #
 # This module defines
 #  QUAZIP_FOUND - whether the qsjon library was found
