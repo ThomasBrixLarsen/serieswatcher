@@ -81,12 +81,6 @@
    <addaction name="markWatchedAction"/>
    <addaction name="separator"/>
   </widget>
-  <widget class="QDockWidget" name="infoDock">
-   <attribute name="dockWidgetArea">
-    <number>2</number>
-   </attribute>
-   <widget class="QWidget" name="infosDockContent"/>
-  </widget>
   <widget class="QDockWidget" name="treeDock">
    <attribute name="dockWidgetArea">
     <number>1</number>
