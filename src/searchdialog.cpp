@@ -168,8 +168,10 @@ SearchDialog::setItemIcon(QListWidgetItem *item, QtTvDB::Show *show)
 
       connect(r, SIGNAL(downloadProgress(qint64, qint64)),
 	      this, SLOT(downloadProgress(qint64, qint64)));
-      connect(r, SIGNAL(error(QNetworkReply::NetworkError)),
+      /*
+	connect(r, SIGNAL(error(QNetworkReply::NetworkError)),
 	      this, SLOT(error(QNetworkReply::NetworkError)));
+      */
 
       iconReplies[r] = item;
     }
