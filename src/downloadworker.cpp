@@ -45,7 +45,7 @@ DownloadWorker::~DownloadWorker()
 void
 DownloadWorker::updateShow(qint64 id)
 {
-#ifdef HAVE_ZIP
+#ifdef WITH_ZIP
   startJob(id, mirrors->showAndEpisodesUrlZip(id, "en"), Job::ShowAndEpisodesZip);
 #else
   startJob(id, mirrors->bannersUrl(id), Job::BannersXml);
