@@ -15,6 +15,10 @@ INCLUDE_DIRECTORIES(
 	${ZIP_INCLUDE_DIR}
 )
 
+LINK_DIRECTORIES(
+	${QTTVDB_LIBRARY_DIRS}
+)
+
 SET(serieswatcher_SRCS
   main.cpp
   mainwindow.cpp
