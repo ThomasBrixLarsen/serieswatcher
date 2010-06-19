@@ -40,6 +40,9 @@ public:
 public slots:
   void setSeason(int showId, int season);
 
+signals:
+  void episodeChanged();
+
 private:
   TvDBCache *cache;
   int showId;

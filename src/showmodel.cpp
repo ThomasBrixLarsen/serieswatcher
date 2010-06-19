@@ -76,6 +76,8 @@ QVariant ShowModel::data(int row, int role, QVariant fallback) const
   }
   if (role == ShowModel::Episodes)
     return rec.value("episodesNb").toInt();
+  if (role == ShowModel::EpisodesWatched)
+    return rec.value("episodesWatched").toInt();
   if (role == ShowModel::EpisodesNotWatched)
     return rec.value("episodesNb").toInt() - rec.value("episodesWatched").toInt();
   if (role == Qt::DisplayRole)

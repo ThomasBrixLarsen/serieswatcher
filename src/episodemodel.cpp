@@ -82,6 +82,7 @@ EpisodeModel::setData(const QModelIndex & index, const QVariant & value, int rol
     setSeason(showId, season); // Reload SQL data
     emit dataChanged(index, index);
     emit layoutChanged();
+    emit episodeChanged();
     return true;
   }
   return false;

@@ -194,6 +194,8 @@ MainWindow::setupList()
   connect(listView, SIGNAL(doubleClicked(const QModelIndex &)),
 	  this, SLOT(itemDoubleClicked(const QModelIndex &)));
 
+  connect(episodes, SIGNAL(episodeChanged()), this, SLOT(update()));
+
   connectSeriesMenus(listView->getMenus());
   displayShows();
 }
@@ -475,12 +477,9 @@ void
 MainWindow::update()
 {
   shows->refresh();
-  if (currentShowId != -1) {
-    if (currentSeason != -1)
-      episodes->setSeason(currentShowId, currentSeason);
-    else
-      seasons->setShowId(currentShowId);
-  }
+  episodes->setSeason(currentShowId, currentSeason);
+  seasons->setShowId(currentShowId);
+  shows->refresh();
   treeWidget->updateTree(shows, seasons);
 }
 

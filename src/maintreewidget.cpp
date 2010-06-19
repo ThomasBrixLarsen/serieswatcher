@@ -17,6 +17,7 @@
  */
 
 #include <QtGui/QContextMenuEvent>
+#include <QtGui/QHeaderView>
 
 #include "maintreewidget.h"
 #include "seriesaction.h"
@@ -109,6 +110,9 @@ MainTreeWidget::updateTree(ShowModel *shows, SeasonModel *seasons)
 
     show->setData(0, ShowModel::Id, showId);
     show->setData(0, Qt::DisplayRole, shows->data(i, Qt::DisplayRole));
+    show->setData(1, Qt::DisplayRole, shows->data(i, ShowModel::EpisodesNotWatched));
+    show->setData(2, Qt::DisplayRole, shows->data(i, ShowModel::Episodes));
+
     show->setData(0, ShowModel::Type, "show");
     //show->setData(0, Qt::DecorationRole, shows->data(i, Qt::DecorationRole));
     show->setIcon(0, QIcon::fromTheme("folder-video"));
@@ -123,6 +127,8 @@ MainTreeWidget::updateTree(ShowModel *shows, SeasonModel *seasons)
       season->setData(0, SeasonModel::ShowId, showId);
       season->setData(0, SeasonModel::Type, "season");
       season->setData(0, Qt::DisplayRole, seasons->data(j, Qt::DisplayRole));
+      season->setData(1, Qt::DisplayRole, seasons->data(j, SeasonModel::EpisodesNotWatched));
+      season->setData(2, Qt::DisplayRole, seasons->data(j, SeasonModel::Episodes));
       //season->setData(0, Qt::DecorationRole, seasons->data(j, Qt::DecorationRole));
       season->setIcon(0, QIcon::fromTheme("video-x-generic"));
     }
@@ -166,5 +172,7 @@ MainTreeWidget::buildTree(ShowModel *shows, SeasonModel *seasons)
     }
   }
   updateTree(shows, seasons);
+
+  header()->resizeSections(QHeaderView::ResizeToContents);
 }
 

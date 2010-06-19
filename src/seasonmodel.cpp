@@ -69,8 +69,10 @@ QVariant SeasonModel::data(int row, int role, QVariant fallback) const
     return QDateTime();
   if (role == SeasonModel::Episodes)
     return rec.value("episodes").toInt();
+  if (role == SeasonModel::EpisodesWatched)
+    return rec.value("episodesWatched").toInt();
   if (role == SeasonModel::EpisodesNotWatched)
-    return rec.value("episodes").toInt();
+    return rec.value("episodes").toInt() - rec.value("episodesWatched").toInt();
   if (role == Qt::DisplayRole) {
     int season = rec.value("season").toInt();
 

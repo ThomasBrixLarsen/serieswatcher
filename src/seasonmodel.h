@@ -31,6 +31,7 @@ public:
 	      Id,
 	      ShowId,
 	      Episodes,
+	      EpisodesWatched,
 	      EpisodesNotWatched,
 	      NextEpisode };
 
