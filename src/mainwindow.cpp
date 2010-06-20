@@ -70,6 +70,7 @@ MainWindow::createActions()
   importAction->setIcon(QIcon::fromTheme("document-import"));
   exportAction->setIcon(QIcon::fromTheme("document-export"));
   markWatchedAction->setIcon(QIcon::fromTheme("checkbox"));
+  markNotWatchedAction->setIcon(QIcon::fromTheme("dialog-cancel"));
   aboutAction->setIcon(QIcon::fromTheme("dialog-information"));
   settingsAction->setIcon(QIcon::fromTheme("preferences-other"));
   aboutQtAction->setIcon(QPixmap(":/trolltech/qmessagebox/images/qtlogo-64.png"));

@@ -51,7 +51,7 @@ SeriesMenus::buildMenus()
   updateShowAction = new QAction(QIcon::fromTheme("download"), QObject::tr("Update Show"), parent);
   deleteShowAction = new QAction(QIcon::fromTheme("edit-delete"), QObject::tr("Delete Show"), parent);
   markWatchedAction = new QAction(QIcon::fromTheme("checkbox"), QObject::tr("Mark as watched"), parent);
-  markNotWatchedAction = new QAction(QIcon(), QObject::tr("Mark as not watched"), parent);
+  markNotWatchedAction = new QAction(QIcon::fromTheme("dialog-cancel"), QObject::tr("Mark as not watched"), parent);
   detailsAction = new QAction(QIcon::fromTheme("view-list-details"), QObject::tr("Details..."), parent);
 
   connect(updateShowAction, SIGNAL(triggered()), parent, SLOT(seriesAction()));
@@ -63,8 +63,8 @@ SeriesMenus::buildMenus()
   episodeMenu = new QMenu(parent);
   //episodeMenu->addAction(updateShowAction);
   //episodeMenu->addAction(deleteShowAction);
-  episodeMenu->addAction(markWatchedAction)
-;  episodeMenu->addAction(markNotWatchedAction);
+  episodeMenu->addAction(markWatchedAction);
+  episodeMenu->addAction(markNotWatchedAction);
   episodeMenu->addAction(detailsAction);
   episodeMenu->addSeparator();
 
@@ -79,6 +79,7 @@ SeriesMenus::buildMenus()
   showMenu = new QMenu(parent);
   showMenu->addAction(updateShowAction);
   showMenu->addAction(deleteShowAction);
+  showMenu->addSeparator();
   showMenu->addAction(markWatchedAction);
   showMenu->addAction(markNotWatchedAction);
   showMenu->addAction(detailsAction);
