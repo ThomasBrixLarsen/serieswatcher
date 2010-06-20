@@ -27,7 +27,8 @@ SeriesMenus::SeriesMenus(QWidget *p)
   : QObject(p), parent(p)
 {
   episodeMenu = seasonMenu = showMenu = NULL;
-  updateShowAction = deleteShowAction = markWatchedAction = detailsAction = NULL;
+  updateShowAction = deleteShowAction = markWatchedAction = NULL;
+  markNotWatchedAction = detailsAction = NULL;
 }
 
 SeriesMenus::~SeriesMenus()
@@ -44,22 +45,26 @@ SeriesMenus::buildMenus()
   delete updateShowAction;
   delete deleteShowAction;
   delete markWatchedAction;
+  delete markNotWatchedAction;
   delete detailsAction;
 
   updateShowAction = new QAction(QIcon::fromTheme("download"), QObject::tr("Update Show"), parent);
   deleteShowAction = new QAction(QIcon::fromTheme("edit-delete"), QObject::tr("Delete Show"), parent);
-  markWatchedAction = new QAction(QIcon::fromTheme("checkbox"), QObject::tr("Mark Watched"), parent);
+  markWatchedAction = new QAction(QIcon::fromTheme("checkbox"), QObject::tr("Mark as watched"), parent);
+  markNotWatchedAction = new QAction(QIcon(), QObject::tr("Mark as not watched"), parent);
   detailsAction = new QAction(QIcon::fromTheme("view-list-details"), QObject::tr("Details..."), parent);
 
   connect(updateShowAction, SIGNAL(triggered()), parent, SLOT(seriesAction()));
   connect(deleteShowAction, SIGNAL(triggered()), parent, SLOT(seriesAction()));
   connect(markWatchedAction, SIGNAL(triggered()), parent, SLOT(seriesAction()));
+  connect(markNotWatchedAction, SIGNAL(triggered()), parent, SLOT(seriesAction()));
   connect(detailsAction, SIGNAL(triggered()), parent, SLOT(seriesAction()));
 
   episodeMenu = new QMenu(parent);
   //episodeMenu->addAction(updateShowAction);
   //episodeMenu->addAction(deleteShowAction);
-  episodeMenu->addAction(markWatchedAction);
+  episodeMenu->addAction(markWatchedAction)
+;  episodeMenu->addAction(markNotWatchedAction);
   episodeMenu->addAction(detailsAction);
   episodeMenu->addSeparator();
 
@@ -67,6 +72,7 @@ SeriesMenus::buildMenus()
   //seasonMenu->addAction(updateShowAction);
   //seasonMenu->addAction(deleteShowAction);
   seasonMenu->addAction(markWatchedAction);
+  seasonMenu->addAction(markNotWatchedAction);
   //seasonMenu->addAction(detailsAction);
   seasonMenu->addSeparator();
 
@@ -74,6 +80,7 @@ SeriesMenus::buildMenus()
   showMenu->addAction(updateShowAction);
   showMenu->addAction(deleteShowAction);
   showMenu->addAction(markWatchedAction);
+  showMenu->addAction(markNotWatchedAction);
   showMenu->addAction(detailsAction);
   showMenu->addSeparator();
 
@@ -98,30 +105,35 @@ SeriesMenus::miscAction(TvDBCache *cache, const QModelIndex & index, QAction *ac
   int id = -1;
   int season = -1;
 
+  if (!index.isValid())
+    return ;
+
   if (type == "episode") {
     id = index.data(EpisodeModel::Id).toInt();
     showId = index.data(EpisodeModel::ShowId).toInt();
     season = index.data(EpisodeModel::Season).toInt();
-  }
-  if (type == "season") {
+  } else if (type == "season") {
     showId = index.data(SeasonModel::ShowId).toInt();
     season = index.data(SeasonModel::Id).toInt();
     id = season;
-  }
-  if (type == "show") {
+  } else if (type == "show") {
     showId = index.data(ShowModel::Id).toInt();
     id = showId;
+  } else {
+    return ;
   }
 
   if (action == updateShowAction)
     emit updateShow(showId);
   if (action == deleteShowAction)
     emit deleteShow(showId);
-  if (action == markWatchedAction) {
+  if (action == markWatchedAction || action == markNotWatchedAction) {
+    bool watched = action == markWatchedAction;
+
     if (type == "episode")
-      emit episodeWatched(id);
+      emit episodeWatched(id, watched);
     else
-      emit episodesWatched(showId, season);
+      emit episodesWatched(showId, season, watched);
   }
   if (action == detailsAction) {
     if (type == "episode")

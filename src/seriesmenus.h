@@ -39,8 +39,8 @@ public:
  signals:
   void updateShow(qint64 showId);
   void deleteShow(qint64 showId);
-  void episodesWatched(qint64 showId, int season);
-  void episodeWatched(qint64 id);
+  void episodesWatched(qint64 showId, int season, bool watched);
+  void episodeWatched(qint64 id, bool watched);
   void episodeDetails(qint64 id);
   void showDetails(qint64 id);
 
@@ -53,6 +53,7 @@ public:
   QAction *updateShowAction;
   QAction *deleteShowAction;
   QAction *markWatchedAction;
+  QAction *markNotWatchedAction;
   QAction *detailsAction;
 };
 

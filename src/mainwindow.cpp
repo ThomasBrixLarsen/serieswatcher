@@ -75,6 +75,7 @@ MainWindow::createActions()
   aboutQtAction->setIcon(QPixmap(":/trolltech/qmessagebox/images/qtlogo-64.png"));
 
   connect(markWatchedAction, SIGNAL(triggered()), this, SLOT(markWatched()));
+  connect(markNotWatchedAction, SIGNAL(triggered()), this, SLOT(markNotWatched()));
   connect(deleteShowAction, SIGNAL(triggered()), this, SLOT(deleteShow()));
   connect(addShowAction, SIGNAL(triggered()), this, SLOT(addShow()));
   connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
@@ -205,8 +206,9 @@ MainWindow::connectSeriesMenus(const SeriesMenus *menus)
 {
   connect(menus, SIGNAL(updateShow(qint64)), this, SLOT(updateShow(qint64)));
   connect(menus, SIGNAL(deleteShow(qint64)), this, SLOT(deleteShow(qint64)));
-  connect(menus, SIGNAL(episodesWatched(qint64, int)), this, SLOT(episodesWatched(qint64, int)));
-  connect(menus, SIGNAL(episodeWatched(qint64)), this, SLOT(episodeWatched(qint64)));
+  connect(menus, SIGNAL(episodesWatched(qint64, int, bool)),
+	  this, SLOT(episodesWatched(qint64, int, bool)));
+  connect(menus, SIGNAL(episodeWatched(qint64, bool)), this, SLOT(episodeWatched(qint64, bool)));
   connect(menus, SIGNAL(episodeDetails(qint64)), this, SLOT(episodeDetails(qint64)));
   connect(menus, SIGNAL(showDetails(qint64)), this, SLOT(showDetails(qint64)));
 }
@@ -384,14 +386,26 @@ MainWindow::deleteShow(qint64 showId)
 }
 
 void
-MainWindow::episodesWatched(qint64 showId, int season)
+MainWindow::episodesWatched(qint64 showId, int season, bool watched)
 {
-  cache->episodesWatched(showId, season, true);
+  cache->episodesWatched(showId, season, watched);
   update();
 }
 
 void
 MainWindow::markWatched()
+{
+  markWatched(true);
+}
+
+void
+MainWindow::markNotWatched()
+{
+  markWatched(false);
+}
+
+void
+MainWindow::markWatched(bool watched)
 {
   QModelIndexList list = listView->selectedIndexes();
 
@@ -399,20 +413,20 @@ MainWindow::markWatched()
     QString type = item.data(Qt::UserRole).toString();
 
     if (type == "show")
-      cache->episodesWatched(item.data(ShowModel::Id).toLongLong(), -1, true);
+      cache->episodesWatched(item.data(ShowModel::Id).toLongLong(), -1, watched);
     if (type == "season")
       cache->episodesWatched(item.data(SeasonModel::Id).toLongLong(),
-			     item.data(SeasonModel::Id).toLongLong(), true);
+			     item.data(SeasonModel::Id).toLongLong(), watched);
     if (type == "episode")
-      cache->episodeWatched(item.data(EpisodeModel::Id).toLongLong(), true);
+      cache->episodeWatched(item.data(EpisodeModel::Id).toLongLong(), watched);
   }
   update();
 }
 
 void
-MainWindow::episodeWatched(qint64 id)
+MainWindow::episodeWatched(qint64 id, bool watched)
 {
-  cache->episodeWatched(id, true);
+  cache->episodeWatched(id, watched);
   update();
 }
 

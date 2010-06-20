@@ -30,7 +30,7 @@
      <x>0</x>
      <y>0</y>
      <width>1047</width>
-     <height>19</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -78,8 +78,9 @@
    <addaction name="addShowAction"/>
    <addaction name="deleteShowAction"/>
    <addaction name="updateShowAction"/>
-   <addaction name="markWatchedAction"/>
    <addaction name="separator"/>
+   <addaction name="markWatchedAction"/>
+   <addaction name="markNotWatchedAction"/>
   </widget>
   <widget class="QDockWidget" name="treeDock">
    <attribute name="dockWidgetArea">
@@ -159,7 +160,7 @@
   </action>
   <action name="markWatchedAction">
    <property name="text">
-    <string>Mark Watched</string>
+    <string>Mark as watched</string>
    </property>
   </action>
   <action name="aboutQtAction">
@@ -190,6 +191,11 @@
   <action name="settingsAction">
    <property name="text">
     <string>&amp;Settings...</string>
+   </property>
+  </action>
+  <action name="markNotWatchedAction">
+   <property name="text">
+    <string>Mark as not watched</string>
    </property>
   </action>
  </widget>

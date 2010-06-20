@@ -62,8 +62,10 @@ private slots:
   void deleteShow(qint64 showId);
 
   void markWatched();
-  void episodesWatched(qint64 showId, int season);
-  void episodeWatched(qint64 id);
+  void markNotWatched();
+  void markWatched(bool watched);
+  void episodesWatched(qint64 showId, int season, bool watched);
+  void episodeWatched(qint64 id, bool watched);
   void episodeDetails(qint64 id);
   void showDetails(qint64 id);
 
