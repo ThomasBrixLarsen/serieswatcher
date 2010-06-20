@@ -51,7 +51,7 @@ EpisodeDialog::setEpisode(QtTvDB::Episode *episode, TvDBCache *cache)
     treeWidget->addTopLevelItem(item);
   }
 
-  QPixmap pixmap = cache->fetchBannerFile(episode->id(), TvDBCache::Episode, QSize(100, 120));
+  QPixmap pixmap = cache->fetchBannerFile(episode->id(), TvDBCache::Episode, QSize(160, 160));
   bannerLabel->setPixmap(pixmap);
 }
 

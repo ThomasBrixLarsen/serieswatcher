@@ -64,7 +64,7 @@ ShowDialog::setShow(QtTvDB::Show *show, TvDBCache *cache)
   query.next();
 
   qint64 id = query.record().value("bannerId").toInt();
-  QPixmap pixmap = cache->fetchBannerFile(id, TvDBCache::Poster, QSize(100, 120));
+  QPixmap pixmap = cache->fetchBannerFile(id, TvDBCache::Poster, QSize(160, 160));
   bannerLabel->setPixmap(pixmap);
 }
 
