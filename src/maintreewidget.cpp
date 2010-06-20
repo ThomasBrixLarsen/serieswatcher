@@ -133,6 +133,9 @@ MainTreeWidget::updateTree(ShowModel *shows, SeasonModel *seasons)
       season->setIcon(0, QIcon::fromTheme("video-x-generic"));
     }
   }
+
+  header()->resizeSections(QHeaderView::ResizeToContents);
+  header()->resizeSection(2, QHeaderView::ResizeToContents);
 }
 
 void
@@ -150,6 +153,8 @@ MainTreeWidget::buildTree(ShowModel *shows, SeasonModel *seasons)
   home->setText(0, tr("Index"));
   home->setIcon(0, style()->standardIcon(QStyle::SP_DirHomeIcon));
   home->setData(0, ShowModel::Id, 0);
+  home->setData(1, Qt::DisplayRole, "");
+  home->setData(2, Qt::DisplayRole, "");
 
   showsItems[0] = home;
 
@@ -172,7 +177,5 @@ MainTreeWidget::buildTree(ShowModel *shows, SeasonModel *seasons)
     }
   }
   updateTree(shows, seasons);
-
-  header()->resizeSections(QHeaderView::ResizeToContents);
 }
 
