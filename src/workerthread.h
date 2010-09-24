@@ -39,7 +39,7 @@ public:
   UpdateWorker *updateWorker();
 
 public slots:
-  void abord();
+  void abort();
 
 protected:
   void run();

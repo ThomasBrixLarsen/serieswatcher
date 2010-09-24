@@ -38,7 +38,7 @@ public:
   UpdateWorker(QObject *parent = 0);
   ~UpdateWorker();
 
-  void abord();
+  void abort();
 
 public slots:
   void startJob(Job *job);

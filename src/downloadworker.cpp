@@ -132,7 +132,7 @@ DownloadWorker::downloadError(QNetworkReply::NetworkError error)
 }
 
 void
-DownloadWorker::abord()
+DownloadWorker::abort()
 {
   foreach (QNetworkReply *reply, downloads.keys())
     reply->deleteLater();

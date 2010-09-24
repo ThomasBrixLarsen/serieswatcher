@@ -61,8 +61,8 @@ WorkerThread::run()
 }
 
 void
-WorkerThread::abord()
+WorkerThread::abort()
 {
-  dworker->abord();
-  uworker->abord();
+  dworker->abort();
+  uworker->abort();
 }

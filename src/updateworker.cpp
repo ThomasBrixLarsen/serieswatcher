@@ -260,7 +260,7 @@ UpdateWorker::bannerJob(qint64 id, TvDBCache::BannerType type, const QUrl & url)
 }
 
 void
-UpdateWorker::abord()
+UpdateWorker::abort()
 {
   QMutexLocker locker(&working);
 

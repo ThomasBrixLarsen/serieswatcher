@@ -57,7 +57,7 @@ public slots:
   void reject();
 
 signals:
-  void abord();
+  void abort();
   void finished();
   void started();
   void progress(qint64 done, qint64 total);
@@ -71,7 +71,7 @@ private:
   QMap < Job *, QListWidgetItem * > items;
   QMap < Job::State, QIcon > icons;
   QMap < Job *, bool > done;
-  bool abording;
+  bool aborting;
   bool working;
 };
 

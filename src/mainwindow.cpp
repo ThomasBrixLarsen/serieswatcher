@@ -117,7 +117,7 @@ MainWindow::createWorkers()
 
   connect(this, SIGNAL(destroyed(QObject *)), thread, SLOT(quit()));
   connect(thread, SIGNAL(started()), this, SLOT(threadStarted()));
-  connect(progress, SIGNAL(abord()), thread, SLOT(abord()));
+  connect(progress, SIGNAL(abort()), thread, SLOT(abort()));
 
   thread->start(QThread::LowPriority);
 

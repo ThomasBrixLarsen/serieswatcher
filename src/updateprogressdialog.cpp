@@ -35,7 +35,7 @@ UpdateProgressDialog::UpdateProgressDialog(QWidget * parent)
   connect(detailsButton, SIGNAL(toggled(bool)), this, SLOT(toggleDetails(bool)));
 
   working = false;
-  abording = false;
+  aborting = false;
   listWidget->hide();
   toggleDetails(false);
 }
@@ -99,7 +99,7 @@ UpdateProgressDialog::updateItem(Job *job)
 void
 UpdateProgressDialog::newJob(Job *job)
 {
-  abording = false;
+  aborting = false;
 
   if (jobs.size() == 0) {
     buttonBox->setStandardButtons(QDialogButtonBox::Cancel);
@@ -116,7 +116,7 @@ UpdateProgressDialog::newJob(Job *job)
 void
 UpdateProgressDialog::parseStarted(Job *job)
 {
-  if (abording || items.find(job) == items.end())
+  if (aborting || items.find(job) == items.end())
     return;
 
   parseLabel->setText(tr("Parsing: ") + job->url.toString());
@@ -127,7 +127,7 @@ UpdateProgressDialog::parseStarted(Job *job)
 void
 UpdateProgressDialog::parseProgress(Job *job, qint64 done, qint64 total)
 {
-  if (abording || items.find(job) == items.end())
+  if (aborting || items.find(job) == items.end())
     return;
 
   parseLabel->setText(tr("Parsing: ") + job->url.toString());
@@ -145,7 +145,7 @@ UpdateProgressDialog::parseProgress(Job *job, qint64 done, qint64 total)
 void
 UpdateProgressDialog::parseFailed(Job *job)
 {
-  if (abording || items.find(job) == items.end())
+  if (aborting || items.find(job) == items.end())
     return;
 
   updateItem(job);
@@ -154,7 +154,7 @@ UpdateProgressDialog::parseFailed(Job *job)
 void
 UpdateProgressDialog::parseFinished(Job *job)
 {
-  if (abording || items.find(job) == items.end())
+  if (aborting || items.find(job) == items.end())
     return;
 
   parseLabel->setText(tr("Parsing: none"));
@@ -168,7 +168,7 @@ UpdateProgressDialog::parseFinished(Job *job)
 void
 UpdateProgressDialog::downloadStarted(Job *job)
 {
-  if (abording || items.find(job) == items.end())
+  if (aborting || items.find(job) == items.end())
     return;
 
   downloadLabel->setText(tr("Downloading: ") + job->url.toString());
@@ -188,7 +188,7 @@ UpdateProgressDialog::downloadFailed(Job *job, const QString & error)
 void
 UpdateProgressDialog::downloadProgress(Job *job, qint64 done, qint64 total)
 {
-  if (abording || items.find(job) == items.end())
+  if (aborting || items.find(job) == items.end())
     return;
 
   downloadLabel->setText(tr("Downloading: ") + job->url.toString());
@@ -204,7 +204,7 @@ UpdateProgressDialog::downloadProgress(Job *job, qint64 done, qint64 total)
 void
 UpdateProgressDialog::downloadFinished(Job *job)
 {
-  if (abording || items.find(job) == items.end())
+  if (aborting || items.find(job) == items.end())
     return;
 
   downloadLabel->setText(tr("Downloading: none"));
@@ -248,8 +248,8 @@ UpdateProgressDialog::accept()
 void
 UpdateProgressDialog::reject()
 {
-  abording = true;
-  emit abord();
+  aborting = true;
+  emit abort();
   reset();
   QDialog::reject();
 }

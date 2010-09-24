@@ -35,7 +35,7 @@ public:
   DownloadWorker(QObject *parent = 0);
   ~DownloadWorker();
 
-  void abord();
+  void abort();
 
 public slots:
   void startJob(qint64 id, const QUrl & url, Job::Type type);
