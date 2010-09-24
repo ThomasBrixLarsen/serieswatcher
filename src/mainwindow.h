@@ -24,7 +24,8 @@
 #include "ui_mainwindow.h"
 
 class SearchDialog;
-class WorkerThread;
+class DownloadWorker;
+class UpdateWorker;
 class UpdateProgressDialog;
 class ShowModel;
 class SeasonModel;
@@ -95,11 +96,14 @@ private:
   int currentSeason;
   int currentEpisodeId;
 
+  QThread *updateThread;
+  DownloadWorker *downloadWorker;
+  UpdateWorker *updateWorker;
+
   UpdateProgressDialog *progress;
   QProgressBar *updateBar;
   QPushButton *updateButton;
   SearchDialog *searchDialog;
-  WorkerThread *thread;
   ShowModel *shows;
   SeasonModel *seasons;
   EpisodeModel *episodes;

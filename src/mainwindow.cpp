@@ -56,6 +56,11 @@ MainWindow::MainWindow()
 
 MainWindow::~MainWindow()
 {
+  updateThread->quit();
+  updateThread->wait();
+
+  delete updateWorker;
+
   QSqlDatabase::database("default").close();
   QSqlDatabase::removeDatabase("default");
 }
@@ -102,10 +107,12 @@ MainWindow::setupTvDB()
 void
 MainWindow::createWorkers()
 {
-  thread = new WorkerThread();
+  updateThread = new QThread(this);
   progress = new UpdateProgressDialog(this);
   updateBar = new QProgressBar();
   updateButton = new QPushButton(QIcon::fromTheme("download"), tr("Show update progress"));
+  updateWorker = new UpdateWorker();
+  downloadWorker = new DownloadWorker(this);
 
   updateBar->hide();
   updateButton->hide();
@@ -115,45 +122,48 @@ MainWindow::createWorkers()
 
   connect(updateButton, SIGNAL(clicked(bool)), progress, SLOT(show()));
 
-  connect(this, SIGNAL(destroyed(QObject *)), thread, SLOT(quit()));
-  connect(thread, SIGNAL(started()), this, SLOT(threadStarted()));
-  connect(progress, SIGNAL(abort()), thread, SLOT(abort()));
-
-  thread->start(QThread::LowPriority);
+  connect(this, SIGNAL(destroyed(QObject *)), updateThread, SLOT(quit()));
+  connect(updateThread, SIGNAL(started()), this, SLOT(threadStarted()));
+  connect(progress, SIGNAL(abort()), downloadWorker, SLOT(abort()));
+  connect(progress, SIGNAL(abort()), updateWorker, SLOT(abort()));
 
   connect(progress, SIGNAL(started()), this, SLOT(updateStarted()));
   connect(progress, SIGNAL(finished()), this, SLOT(updateFinished()));
   connect(progress, SIGNAL(progress(qint64, qint64)), this, SLOT(updateProgress(qint64, qint64)));
+
+  connect(updateWorker, SIGNAL(newJob(Job *)), downloadWorker, SLOT(startJob(Job *)));
+  connect(downloadWorker, SIGNAL(downloadFinished(Job *)), updateWorker, SLOT(startJob(Job *)));
+
+  connect(updateWorker, SIGNAL(newJob(Job *)), progress, SLOT(newJob(Job *)));
+  connect(updateWorker, SIGNAL(parseStarted(Job *)), progress, SLOT(parseStarted(Job *)));
+  connect(updateWorker, SIGNAL(parseProgress(Job *, qint64, qint64)),
+	  progress, SLOT(parseProgress(Job *, qint64, qint64)));
+  connect(updateWorker, SIGNAL(parseFailed(Job *)), progress, SLOT(parseFailed(Job *)));
+  connect(updateWorker, SIGNAL(parseFinished(Job *)), progress, SLOT(parseFinished(Job *)));
+  connect(updateWorker, SIGNAL(error(const QString &, const QString &)),
+	  this, SLOT(error(const QString &, const QString &)));
+
+  connect(downloadWorker, SIGNAL(newJob(Job *)), progress, SLOT(newJob(Job *)));
+  connect(downloadWorker, SIGNAL(downloadStarted(Job *)), progress, SLOT(downloadStarted(Job *)));
+  connect(downloadWorker, SIGNAL(downloadProgress(Job *, qint64, qint64)),
+	  progress, SLOT(downloadProgress(Job *, qint64, qint64)));
+  connect(downloadWorker, SIGNAL(downloadFailed(Job *, const QString &)),
+	  progress, SLOT(downloadFailed(Job *, const QString &)));
+  connect(downloadWorker, SIGNAL(downloadFinished(Job *)), progress, SLOT(downloadFinished(Job *)));
+  connect(downloadWorker, SIGNAL(error(const QString &, const QString &)),
+	  this, SLOT(error(const QString &, const QString &)));
+
+  updateThread->start(QThread::LowPriority);
+  updateWorker->moveToThread(updateThread);
 }
 
 void
 MainWindow::threadStarted()
 {
-    Settings settings;
-    DownloadWorker *dworker = thread->downloadWorker();
-    UpdateWorker *uworker = thread->updateWorker();
+  Settings settings;
 
-    connect(uworker, SIGNAL(newJob(Job *)), progress, SLOT(newJob(Job *)));
-    connect(uworker, SIGNAL(parseStarted(Job *)), progress, SLOT(parseStarted(Job *)));
-    connect(uworker, SIGNAL(parseProgress(Job *, qint64, qint64)),
-            progress, SLOT(parseProgress(Job *, qint64, qint64)));
-    connect(uworker, SIGNAL(parseFailed(Job *)), progress, SLOT(parseFailed(Job *)));
-    connect(uworker, SIGNAL(parseFinished(Job *)), progress, SLOT(parseFinished(Job *)));
-    connect(uworker, SIGNAL(error(const QString &, const QString &)),
-            this, SLOT(error(const QString &, const QString &)));
-
-    connect(dworker, SIGNAL(newJob(Job *)), progress, SLOT(newJob(Job *)));
-    connect(dworker, SIGNAL(downloadStarted(Job *)), progress, SLOT(downloadStarted(Job *)));
-    connect(dworker, SIGNAL(downloadProgress(Job *, qint64, qint64)),
-            progress, SLOT(downloadProgress(Job *, qint64, qint64)));
-    connect(dworker, SIGNAL(downloadFailed(Job *, const QString &)),
-            progress, SLOT(downloadFailed(Job *, const QString &)));
-    connect(dworker, SIGNAL(downloadFinished(Job *)), progress, SLOT(downloadFinished(Job *)));
-    connect(dworker, SIGNAL(error(const QString &, const QString &)),
-            this, SLOT(error(const QString &, const QString &)));
-
-    if (settings.value("updateOnStartup").toBool())
-	updateShow(-1);
+  if (settings.value("updateOnStartup").toBool())
+    updateShow(-1);
 }
 
 void
@@ -311,7 +321,7 @@ void
 MainWindow::addShow(const QString & name, qint64 id)
 {
   progress->show();
-  thread->downloadWorker()->updateShow(id);
+  downloadWorker->updateShow(id);
 }
 
 void
@@ -353,12 +363,12 @@ void
 MainWindow::updateShow(qint64 showId)
 {
   if (showId >= 0)
-    thread->downloadWorker()->updateShow(showId);
+    downloadWorker->updateShow(showId);
   else {
     QList < QtTvDB::Show * > shows = cache->fetchShows();
 
     foreach(QtTvDB::Show *show, shows)
-      thread->downloadWorker()->updateShow(show->id());
+      downloadWorker->updateShow(show->id());
 
     qDeleteAll(shows);
   }

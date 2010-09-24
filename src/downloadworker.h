@@ -35,15 +35,11 @@ public:
   DownloadWorker(QObject *parent = 0);
   ~DownloadWorker();
 
-  void abort();
-
 public slots:
   void startJob(qint64 id, const QUrl & url, Job::Type type);
   void startJob(Job *job);
   void updateShow(qint64 id);
-
-protected:
-  void run();
+  void abort();
 
 private slots:
   void downloadProgress(qint64 done, qint64 total);

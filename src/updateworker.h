@@ -38,10 +38,9 @@ public:
   UpdateWorker(QObject *parent = 0);
   ~UpdateWorker();
 
-  void abort();
-
 public slots:
   void startJob(Job *job);
+  void abort();
 
 private:
   void parseShowAndEpisodesZip(Job *job);

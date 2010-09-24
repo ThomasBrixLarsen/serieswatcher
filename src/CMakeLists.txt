@@ -30,7 +30,6 @@ SET(serieswatcher_SRCS
   updateprogressdialog.cpp
   settings.cpp
   downloadworker.cpp
-  workerthread.cpp
   showmodel.cpp
   seasonmodel.cpp
   episodemodel.cpp
@@ -59,7 +58,6 @@ SET(serieswatcher_MOC_HDRS
   searchlistwidget.h
   updateworker.h
   downloadworker.h
-  workerthread.h
   updateprogressdialog.h
   settings.h
   showmodel.h
