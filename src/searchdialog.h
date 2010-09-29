@@ -27,6 +27,7 @@
 
 class QNetworkAccessManager;
 class TvDBCache;
+class SearchModel;
 
 class SearchDialog : public QDialog, private Ui_searchDialog
 {
@@ -34,6 +35,7 @@ class SearchDialog : public QDialog, private Ui_searchDialog
 public:
   SearchDialog(QWidget * parent = 0);
   ~SearchDialog();
+
 signals:
   void showSelected(const QString & name, qint64 id);
 
@@ -46,18 +48,13 @@ protected:
 
 private slots:
   void search();
-  void requestFinished(QNetworkReply *rep);
   void downloadProgress(qint64 bytesReceived, qint64 bytesTotal);
   void error(QNetworkReply::NetworkError code);
 
 private:
   void clear();
-  void setItemIcon(QListWidgetItem *item, QtTvDB::Show *show);
-  QNetworkAccessManager *manager;
-  QMap < QNetworkReply *, QListWidgetItem * > iconReplies;
-  QMap < QListWidgetItem *, QtTvDB::Show * > itemsShows;
-  QPixmap blank;
-  TvDBCache *cache;
+
+  SearchModel *model;
 };
 
 #endif

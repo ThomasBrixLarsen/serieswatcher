@@ -42,6 +42,7 @@ private slots:
   void editAction();
   void delAction();
   void setStartupCheck(int state);
+  void setPrefetchBanners(int state);
 
 private:
   void populateActions();

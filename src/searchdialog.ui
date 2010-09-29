@@ -27,8 +27,25 @@
      </property>
     </widget>
    </item>
+   <item row="2" column="0">
+    <widget class="QProgressBar" name="progressBar">
+     <property name="value">
+      <number>0</number>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1" colspan="2">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
    <item row="1" column="0" colspan="3">
-    <widget class="SearchListWidget" name="listWidget">
+    <widget class="SearchListView" name="listView">
      <property name="font">
       <font>
        <weight>75</weight>
@@ -49,30 +66,13 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="0">
-    <widget class="QProgressBar" name="progressBar">
-     <property name="value">
-      <number>0</number>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="1" colspan="2">
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-     </property>
-    </widget>
-   </item>
   </layout>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>SearchListWidget</class>
-   <extends>QListWidget</extends>
-   <header>searchlistwidget.h</header>
+   <class>SearchListView</class>
+   <extends>QListView</extends>
+   <header>searchlistview.h</header>
   </customwidget>
  </customwidgets>
  <resources>

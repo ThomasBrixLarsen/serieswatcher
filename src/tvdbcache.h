@@ -42,7 +42,6 @@ public:
   void storeEpisodes(QList < QtTvDB::Episode * > episodes);
   void storeBanner(QtTvDB::Banner *banner, qint64 showId);
   void storeBanners(QList < QtTvDB::Banner * > banners, qint64 showId);
-  void storeBannerFile(qint64 id, BannerType type, const QByteArray &data, QSize size = QSize());
 
   QtTvDB::Show *fetchShow(qint64 id);
   QList < QtTvDB::Show * > fetchShows();
@@ -53,8 +52,6 @@ public:
   QtTvDB::Banner *fetchBanner(qint64 id);
   QList < QtTvDB::Banner * > fetchBanners(qint64 showId);
 
-  bool hasBannerFile(qint64 id, BannerType type);
-  QPixmap fetchBannerFile(qint64 id, BannerType type, QSize size = QSize());
   QString name();
   void sync();
 

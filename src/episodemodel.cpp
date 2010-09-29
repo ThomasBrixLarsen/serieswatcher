@@ -20,13 +20,18 @@
 #include <QtCore/QDateTime>
 #include <QtGui/QPixmap>
 #include <QtGui/QIcon>
+#include <QtNetwork/QNetworkReply>
 
 #include "tvdbcache.h"
 #include "episodemodel.h"
+#include "tvdb.h"
+#include "bannerloader.h"
 
 EpisodeModel::EpisodeModel(TvDBCache *c, QObject *parent)
   : QSqlQueryModel(parent), cache(c)
 {
+  bannerLoader = new BannerLoader(this);
+  connect(bannerLoader, SIGNAL(bannerReceived(int)), this, SLOT(bannerReceived(int)));
 }
 
 void
@@ -38,12 +43,13 @@ EpisodeModel::setSeason(int show, int seas)
   season = seas;
 
   query = "SELECT episodes.name, episodes.id, episodes_extra.watched, episodes.showId, episodes.season, ";
-  query += " episodes.firstAired ";
+  query += " episodes.firstAired, episodes.image ";
   query += "FROM episodes ";
   query += "LEFT JOIN episodes_extra ";
   query += "ON episodes.id = episodes_extra.id ";
   query += QString("WHERE episodes.showId = %1 AND episodes.season = %2").arg(showId).arg(season);
 
+  bannerLoader->clear();
   setQuery(query);
 }
 
@@ -79,7 +85,7 @@ EpisodeModel::setData(const QModelIndex & index, const QVariant & value, int rol
     if (value.toInt() == Qt::Checked)
       val = true;
     cache->episodeWatched(rec.value("id").toInt(), val);
-    setSeason(showId, season); // Reload SQL data
+    //setSeason(showId, season); // Reload SQL data
     emit dataChanged(index, index);
     emit layoutChanged();
     emit episodeChanged();
@@ -116,10 +122,26 @@ EpisodeModel::data(int row, int role, QVariant fallback) const
   if (role == Qt::DisplayRole)
     return rec.value("name").toString();
   if (role == Qt::DecorationRole) {
-    qint64 id = rec.value("id").toInt();
-
-    return QIcon(cache->fetchBannerFile(id, TvDBCache::Episode, QSize(120, 150)));
+    return fetchIcon(row, rec.value("image").toString());
   }
   return fallback;
 }
 
+QVariant
+EpisodeModel::fetchIcon(int row, const QString & image) const
+{
+  QtTvDB::Mirrors *mirrors = TvDB::mirrors();
+
+  if (bannerLoader->hasBanner(row))
+    return bannerLoader->banner(row);
+
+  bannerLoader->fetchBanner(row, mirrors->bannerUrl(image));
+  return QIcon::fromTheme("image-loading").pixmap(150);
+}
+
+void
+EpisodeModel::bannerReceived(int row)
+{
+  QModelIndex idx = index(row, 0);
+  emit dataChanged(idx, idx);
+}

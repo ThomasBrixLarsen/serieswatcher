@@ -35,6 +35,7 @@
 #include "updateworker.h"
 #include "tvdb.h"
 #include "tvdbcache.h"
+#include "settings.h"
 
 UpdateWorker::UpdateWorker(QObject *parent)
   : QObject(parent)
@@ -65,12 +66,15 @@ UpdateWorker::startJob(Job *job)
 
   if (job->type == Job::ShowAndEpisodesZip)
     parseShowAndEpisodesZip(job);
-  else if (job->type == Job::Banner)
-    parseBanner(job);
   else if (job->type == Job::BannersXml)
     parseBannersXml(job);
   else if (job->type == Job::ShowAndEpisodesXml)
     parseShowAndEpisodesXml(job);
+
+  if (job->type == Job::ShowAndEpisodesZip ||
+      job->type == Job::BannersXml ||
+      job->type == Job::ShowAndEpisodesXml)
+    emit databaseUpdated();
 
   emit parseProgress(job, 1, 1);
 
@@ -187,37 +191,35 @@ UpdateWorker::parseShowAndEpisodesZip(Job *job)
 #endif
 
 void
-UpdateWorker::parseBanner(Job *job)
-{
-  cache->storeBannerFile(job->id, job->bannerType, job->data);
-}
-
-void
 UpdateWorker::parseBannersXml(Job *job)
 {
+  Settings settings;
   QList < QtTvDB::Banner * > banners = QtTvDB::Banner::parseBanners(job->data);
+  bool prefetch = settings.value("prefetchBanners").toBool();
 
   cache->storeBanners(banners, job->id);
 
-  foreach ( QtTvDB::Banner * banner, banners) {
-    if (banner->language() != "en")
-      continue ;
-    if (banner->type() == "poster" ||
-	banner->type() == "series" ||
-	(banner->type() == "season" && banner->type2() == "season")) {
-      bannerJob(banner->id(), TvDBCache::Poster, mirrors->bannerUrl(banner->path()));
+  if (prefetch) {
+    foreach ( QtTvDB::Banner * banner, banners) {
+      if (banner->language() != "en")
+	continue ;
+      if (banner->type() == "poster" || banner->type() == "series" ||
+	  (banner->type() == "season" && banner->type2() == "season"))
+	bannerJob(banner->id(), TvDBCache::Poster, mirrors->bannerUrl(banner->path()));
     }
   }
-  qDeleteAll(banners);
 
+  qDeleteAll(banners);
   cache->sync();
 }
 
 void
 UpdateWorker::parseShowAndEpisodesXml(Job *job)
 {
+  Settings settings;
   QList < QtTvDB::Show * > shows = QtTvDB::Show::parseShows(job->data);
   QList < QtTvDB::Episode * > episodes = QtTvDB::Episode::parseEpisodes(job->data);
+  bool prefetch = settings.value("prefetchBanners").toBool();
 
   qint64 total = shows.size() + episodes.size();
   qint64 done = 0;
@@ -227,8 +229,9 @@ UpdateWorker::parseShowAndEpisodesXml(Job *job)
     emit parseProgress(job, done++, total);
   }
 
+
   foreach (QtTvDB::Episode *episode, episodes) {
-    if (episode->language() == "en" && !episode->image().isEmpty())
+    if (prefetch && episode->language() == "en" && !episode->image().isEmpty())
       bannerJob(episode->id(), TvDBCache::Episode, mirrors->bannerUrl(episode->image()));
 
     cache->storeEpisode(episode);
@@ -245,9 +248,6 @@ void
 UpdateWorker::bannerJob(qint64 id, TvDBCache::BannerType type, const QUrl & url)
 {
   Job *bjob;
-
-  if (cache->hasBannerFile(id, type))
-    return ;
 
   bjob = new Job();
 

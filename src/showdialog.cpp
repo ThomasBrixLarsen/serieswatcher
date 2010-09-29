@@ -21,9 +21,14 @@
 
 #include "tvdbcache.h"
 #include "showdialog.h"
+#include "bannerloader.h"
+#include "tvdb.h"
 
 ShowDialog::ShowDialog(QWidget * parent)
 {
+  bannerLoader = new BannerLoader(this);
+  connect(bannerLoader, SIGNAL(bannerReceived(int)), this, SLOT(bannerReceived()));
+
   setupUi(this);
   overviewEdit->viewport()->setAutoFillBackground(false);
 }
@@ -35,6 +40,7 @@ ShowDialog::~ShowDialog()
 void
 ShowDialog::setShow(QtTvDB::Show *show, TvDBCache *cache)
 {
+  QtTvDB::Mirrors *mirrors = TvDB::mirrors();
   QVariantMap map;
 
   nameLabel->setText(show->name());
@@ -56,15 +62,22 @@ ShowDialog::setShow(QtTvDB::Show *show, TvDBCache *cache)
 
   QString sql;
 
-  sql = "SELECT banners.id as bannerId FROM banners ";
+  sql = "SELECT banners.id as bannerId, banners.path FROM banners ";
   sql += "WHERE (banners.type = 'poster' AND banners.language = 'en') ";
   sql += QString("AND banners.showId = %1").arg(show->id());
 
   QSqlQuery query(sql);
-  query.next();
 
-  qint64 id = query.record().value("bannerId").toInt();
-  QPixmap pixmap = cache->fetchBannerFile(id, TvDBCache::Poster, QSize(160, 160));
-  bannerLabel->setPixmap(pixmap);
+  if (!query.next())
+    return ;
+
+  bannerLabel->setPixmap(QIcon::fromTheme("image-loading").pixmap(160));
+  bannerLoader->clear();
+  bannerLoader->fetchBanner(0, mirrors->bannerUrl(query.record().value("path").toString()));
 }
 
+void
+ShowDialog::bannerReceived(void)
+{
+  bannerLabel->setPixmap(bannerLoader->banner(0).pixmap(QSize(160, 160)));
+}

@@ -16,19 +16,43 @@
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef SEARCH_LIST_WIDGET_H
-# define SEARCH_LIST_WIDGET_H
+#ifndef BANNER_LOADER_H
+# define BANNER_LOADER_H
 
-#include <QtGui/QListWidget>
+#include <QtGui/QIcon>
+#include <QtCore/QMap>
+#include <QtCore/QUrl>
+#include <QtCore/QTimer>
 
-class SearchListWidget : public QListWidget
+class QIODevice;
+class QNetworkDiskCache;
+
+class BannerLoader : public QObject
 {
   Q_OBJECT
-public:
-  SearchListWidget(QWidget * parent = 0);
-  ~SearchListWidget();
-protected:
-  QStyleOptionViewItem viewOptions() const;
+ public:
+  BannerLoader(QObject *parent = NULL);
+  ~BannerLoader();
+
+  QIcon banner(int id);
+  bool hasBanner(int id);
+  void fetchBanner(int id, const QUrl & url);
+  void clear();
+
+ private slots:
+  void pendingTimeout();
+  void bannerReceived();
+  void bannerReceived(QIODevice *device);
+
+ signals:
+  void bannerReceived(int id);
+
+ private:
+  QNetworkDiskCache *diskCache;
+  QMap < QIODevice * , int > replies;
+  QMap < int, QIcon > banners;
+  QList < QIODevice * > pending;
+  QTimer timer;
 };
 
 #endif

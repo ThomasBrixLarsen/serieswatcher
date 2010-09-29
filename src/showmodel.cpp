@@ -25,10 +25,15 @@
 
 #include "tvdbcache.h"
 #include "showmodel.h"
+#include "tvdb.h"
+#include "bannerloader.h"
 
 ShowModel::ShowModel(TvDBCache *c, QObject *parent)
   : QSqlQueryModel(parent), cache(c)
 {
+  bannerLoader = new BannerLoader(this);
+  connect(bannerLoader, SIGNAL(bannerReceived(int)), this, SLOT(bannerReceived(int)));
+
   refresh();
 }
 
@@ -46,6 +51,7 @@ ShowModel::refresh()
     "LEFT JOIN episodes_extra ON episodes.id = episodes_extra.id "
     "GROUP BY shows.id ";
 
+  bannerLoader->clear();
   setQuery(query);
 }
 
@@ -70,7 +76,6 @@ QVariant ShowModel::data(int row, int role, QVariant fallback) const
     return rec.value("seasons").toInt();
   if (role == ShowModel::NextEpisode) {
     QDateTime date;
-    qDebug() << rec.value("nextAirs");
     date.setTime_t(rec.value("nextAirs").toInt());
     return date;
   }
@@ -82,18 +87,35 @@ QVariant ShowModel::data(int row, int role, QVariant fallback) const
     return rec.value("episodesNb").toInt() - rec.value("episodesWatched").toInt();
   if (role == Qt::DisplayRole)
     return rec.value("name").toString();
-  if (role == Qt::DecorationRole) {
-    QString sql;
-
-    sql = "SELECT banners.id as bannerId FROM banners ";
-    sql += "WHERE (banners.type = 'poster' AND banners.language = 'en') ";
-    sql += QString("AND banners.showId = %1").arg(rec.value("id").toInt());
-
-    QSqlQuery query(sql);
-    query.next();
-
-    qint64 id = query.record().value("bannerId").toInt();
-    return QIcon(cache->fetchBannerFile(id, TvDBCache::Poster, QSize(120, 150)));
-  }
+  if (role == Qt::DecorationRole)
+      return fetchIcon(row, rec.value("id").toInt());
   return fallback;
+}
+
+QVariant
+ShowModel::fetchIcon(int row, int id) const
+{
+  QtTvDB::Mirrors *mirrors = TvDB::mirrors();
+
+  if (bannerLoader->hasBanner(row))
+    return bannerLoader->banner(row);
+
+  QString sql;
+  sql = "SELECT banners.id as bannerId, banners.path FROM banners ";
+  sql += "WHERE (banners.type = 'poster' AND banners.language = 'en') ";
+  sql += QString("AND banners.showId = %1").arg(id);
+
+  QSqlQuery query(sql);
+
+  if (query.next())
+    bannerLoader->fetchBanner(row, mirrors->bannerUrl(query.record().value("path").toString()));
+
+  return QIcon::fromTheme("image-loading").pixmap(150);
+}
+
+void
+ShowModel::bannerReceived(int row)
+{
+  QModelIndex idx = index(row, 0);
+  emit dataChanged(idx, idx);
 }

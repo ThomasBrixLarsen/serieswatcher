@@ -12,6 +12,7 @@
 <file>./serieswatcher/16x16/actions/bookmark-new.png</file>
 <file>./serieswatcher/16x16/actions/checkbox.png</file>
 <file>./serieswatcher/16x16/actions/chronometer.png</file>
+<file>./serieswatcher/16x16/actions/dialog-cancel.png</file>
 <file>./serieswatcher/16x16/actions/dialog-close.png</file>
 <file>./serieswatcher/16x16/actions/dialog-ok.png</file>
 <file>./serieswatcher/16x16/actions/document-export.png</file>
@@ -31,9 +32,11 @@
 <file>./serieswatcher/16x16/places/server-database.png</file>
 <file>./serieswatcher/16x16/status/dialog-information.png</file>
 <file>./serieswatcher/16x16/status/folder-open.png</file>
+<file>./serieswatcher/16x16/status/image-loading.png</file>
 <file>./serieswatcher/22x22/actions/bookmark-new.png</file>
 <file>./serieswatcher/22x22/actions/checkbox.png</file>
 <file>./serieswatcher/22x22/actions/chronometer.png</file>
+<file>./serieswatcher/22x22/actions/dialog-cancel.png</file>
 <file>./serieswatcher/22x22/actions/dialog-close.png</file>
 <file>./serieswatcher/22x22/actions/dialog-ok.png</file>
 <file>./serieswatcher/22x22/actions/document-export.png</file>
@@ -53,6 +56,7 @@
 <file>./serieswatcher/22x22/places/server-database.png</file>
 <file>./serieswatcher/22x22/status/dialog-information.png</file>
 <file>./serieswatcher/22x22/status/folder-open.png</file>
+<file>./serieswatcher/22x22/status/image-loading.png</file>
 <file>./serieswatcher/256x256/categories/preferences-other.png</file>
 <file>./serieswatcher/256x256/mimetypes/video-x-generic.png</file>
 <file>./serieswatcher/256x256/places/folder-video.png</file>
@@ -60,6 +64,7 @@
 <file>./serieswatcher/32x32/actions/bookmark-new.png</file>
 <file>./serieswatcher/32x32/actions/checkbox.png</file>
 <file>./serieswatcher/32x32/actions/chronometer.png</file>
+<file>./serieswatcher/32x32/actions/dialog-cancel.png</file>
 <file>./serieswatcher/32x32/actions/dialog-close.png</file>
 <file>./serieswatcher/32x32/actions/dialog-ok.png</file>
 <file>./serieswatcher/32x32/actions/document-export.png</file>
@@ -79,8 +84,10 @@
 <file>./serieswatcher/32x32/places/server-database.png</file>
 <file>./serieswatcher/32x32/status/dialog-information.png</file>
 <file>./serieswatcher/32x32/status/folder-open.png</file>
+<file>./serieswatcher/32x32/status/image-loading.png</file>
 <file>./serieswatcher/48x48/actions/bookmark-new.png</file>
 <file>./serieswatcher/48x48/actions/chronometer.png</file>
+<file>./serieswatcher/48x48/actions/dialog-cancel.png</file>
 <file>./serieswatcher/48x48/actions/dialog-close.png</file>
 <file>./serieswatcher/48x48/actions/dialog-ok.png</file>
 <file>./serieswatcher/48x48/actions/document-export.png</file>
@@ -100,6 +107,7 @@
 <file>./serieswatcher/48x48/places/server-database.png</file>
 <file>./serieswatcher/48x48/status/dialog-information.png</file>
 <file>./serieswatcher/48x48/status/folder-open.png</file>
+<file>./serieswatcher/48x48/status/image-loading.png</file>
 <file>./serieswatcher/64x64/actions/bookmark-new.png</file>
 <file>./serieswatcher/64x64/actions/dialog-ok.png</file>
 <file>./serieswatcher/64x64/actions/edit-find.png</file>
@@ -110,5 +118,6 @@
 <file>./serieswatcher/64x64/places/server-database.png</file>
 <file>./serieswatcher/64x64/status/dialog-information.png</file>
 <file>./serieswatcher/index.theme</file>
+<file>./serieswatcher/index.theme~</file>
 </qresource>
 </RCC>

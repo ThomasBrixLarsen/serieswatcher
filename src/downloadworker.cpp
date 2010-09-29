@@ -18,7 +18,9 @@
 
 #include "config.h"
 
+#include <QtGui/QDesktopServices>
 #include <QtNetwork/QNetworkAccessManager>
+#include <QtNetwork/QNetworkDiskCache>
 #include <QtCore/QTimer>
 #include <QtSql/QSqlDatabase>
 
@@ -28,10 +30,18 @@
 #include "tvdb.h"
 #include "tvdbcache.h"
 
+DownloadWorker *DownloadWorker::shared = NULL;
+
 DownloadWorker::DownloadWorker(QObject *parent)
   : QObject(parent)
 {
+  QNetworkDiskCache *diskCache = new QNetworkDiskCache(this);
+
+  diskCache->setCacheDirectory(QDesktopServices::storageLocation(QDesktopServices::CacheLocation));
+
   manager = new QNetworkAccessManager(this);
+  manager->setCache(diskCache);
+
   mirrors = TvDB::mirrors();
 
   connect(manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(downloadFinished(QNetworkReply *)));
@@ -53,7 +63,28 @@ DownloadWorker::updateShow(qint64 id)
 #endif
 }
 
-void
+QNetworkReply *
+DownloadWorker::fetchBanner(int id, const QUrl & url)
+{
+  Job *job = startJob(id, url, Job::Banner);
+  return downloads.key(job);
+}
+
+QNetworkReply *
+DownloadWorker::fetchEpisodeBanner(int id, const QUrl & url)
+{
+  Job *job = startJob(id, url, Job::EpisodeBanner);
+  return downloads.key(job);
+}
+
+QNetworkReply *
+DownloadWorker::fetchSearchResults(const QString & query)
+{
+  Job *job = startJob(0, mirrors->searchShowUrl(query), Job::SearchResults);
+  return downloads.key(job);
+}
+
+Job *
 DownloadWorker::startJob(qint64 id, const QUrl & url, Job::Type type)
 {
   Job *job = new Job();
@@ -65,6 +96,7 @@ DownloadWorker::startJob(qint64 id, const QUrl & url, Job::Type type)
   emit newJob(job);
 
   startJob(job);
+  return job;
 }
 
 void
@@ -105,7 +137,7 @@ DownloadWorker::downloadFinished(QNetworkReply *reply)
 {
   Job *job = downloads[reply];
 
-  job->data = reply->readAll();
+  job->data = reply->peek(reply->bytesAvailable());
   job->state = Job::Waiting;
 
   downloads.remove(reply);

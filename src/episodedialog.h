@@ -24,6 +24,7 @@
 #include "ui_episodedialog.h"
 
 class TvDBCache;
+class BannerLoader;
 
 class EpisodeDialog : public QDialog, private Ui_EpisodeDialog
 {
@@ -33,6 +34,12 @@ public:
   ~EpisodeDialog();
 
   void setEpisode(QtTvDB::Episode *episode, TvDBCache *cache);
+
+private slots:
+  void bannerReceived();
+
+private:
+  BannerLoader *bannerLoader;
 };
 
 #endif

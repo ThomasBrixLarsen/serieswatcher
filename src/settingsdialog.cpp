@@ -41,8 +41,10 @@ SettingsDialog::SettingsDialog(QWidget * parent)
   apiLineEdit->setEnabled(false);
 
   databaseCheckBox->setChecked(settings.value("updateOnStartup").toBool() ? Qt::Checked : Qt::Unchecked);
+  prefetchBannersCheckBox->setChecked(settings.value("prefetchBanners").toBool() ? Qt::Checked : Qt::Unchecked);
 
   connect(databaseCheckBox, SIGNAL(stateChanged(int)), this, SLOT(setStartupCheck(int)));
+  connect(prefetchBannersCheckBox, SIGNAL(stateChanged(int)), this, SLOT(setPrefetchBanners(int)));
   connect(addButton, SIGNAL(clicked()), this, SLOT(addAction()));
   connect(editButton, SIGNAL(clicked()), this, SLOT(editAction()));
   connect(delButton, SIGNAL(clicked()), this, SLOT(delAction()));
@@ -66,6 +68,14 @@ SettingsDialog::setStartupCheck(int state)
   Settings settings;
 
   settings.setValue("updateOnStartup", !!state);
+}
+
+void
+SettingsDialog::setPrefetchBanners(int state)
+{
+  Settings settings;
+
+  settings.setValue("prefetchBanners", !!state);
 }
 
 void

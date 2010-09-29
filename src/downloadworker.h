@@ -32,11 +32,21 @@ class DownloadWorker : public QObject
 {
   Q_OBJECT
 public:
+  static DownloadWorker *sharedInstance() { return shared; }
+  static void setSharedInstance(DownloadWorker *dl) { shared = dl; }
+private:
+  static DownloadWorker *shared;
+
+public:
   DownloadWorker(QObject *parent = 0);
   ~DownloadWorker();
 
+  QNetworkReply *fetchBanner(int id, const QUrl & url);
+  QNetworkReply *fetchEpisodeBanner(int id, const QUrl & url);
+  QNetworkReply *fetchSearchResults(const QString & query);
+
 public slots:
-  void startJob(qint64 id, const QUrl & url, Job::Type type);
+  Job *startJob(qint64 id, const QUrl & url, Job::Type type);
   void startJob(Job *job);
   void updateShow(qint64 id);
   void abort();
@@ -54,6 +64,7 @@ signals:
   void downloadFinished(Job *job);
 
   void error(const QString & title, const QString &message);
+
 private:
   QtTvDB::Mirrors *mirrors;
   QNetworkAccessManager *manager;

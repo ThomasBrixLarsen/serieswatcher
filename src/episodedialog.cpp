@@ -18,9 +18,14 @@
 
 #include "episodedialog.h"
 #include "tvdbcache.h"
+#include "bannerloader.h"
+#include "tvdb.h"
 
 EpisodeDialog::EpisodeDialog(QWidget * parent)
 {
+  bannerLoader = new BannerLoader(this);
+  connect(bannerLoader, SIGNAL(bannerReceived(int)), this, SLOT(bannerReceived()));
+
   setupUi(this);
   overviewEdit->viewport()->setAutoFillBackground(false);
 }
@@ -32,6 +37,7 @@ EpisodeDialog::~EpisodeDialog()
 void
 EpisodeDialog::setEpisode(QtTvDB::Episode *episode, TvDBCache *cache)
 {
+  QtTvDB::Mirrors *mirrors = TvDB::mirrors();
   QVariantMap map;
 
   nameLabel->setText(episode->name());
@@ -51,7 +57,13 @@ EpisodeDialog::setEpisode(QtTvDB::Episode *episode, TvDBCache *cache)
     treeWidget->addTopLevelItem(item);
   }
 
-  QPixmap pixmap = cache->fetchBannerFile(episode->id(), TvDBCache::Episode, QSize(160, 160));
-  bannerLabel->setPixmap(pixmap);
+  bannerLabel->setPixmap(QIcon::fromTheme("image-loading").pixmap(160));
+  bannerLoader->clear();
+  bannerLoader->fetchBanner(0, mirrors->bannerUrl(episode->image()));
 }
 
+void
+EpisodeDialog::bannerReceived(void)
+{
+  bannerLabel->setPixmap(bannerLoader->banner(0).pixmap(QSize(160, 160)));
+}

@@ -20,8 +20,10 @@
 # define SEASON_MODEL_H
 
 #include <QtSql/QSqlQueryModel>
+#include <QtGui/QIcon>
 
 class TvDBCache;
+class BannerLoader;
 
 class SeasonModel : public QSqlQueryModel
 {
@@ -42,9 +44,13 @@ public:
 
 public slots:
   void setShowId(int showId);
+  void bannerReceived(int row);
 
 private:
+  QVariant fetchIcon(int row, int showId, int season) const;
+
   TvDBCache *cache;
+  BannerLoader *bannerLoader;
 };
 
 #endif

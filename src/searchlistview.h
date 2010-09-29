@@ -16,41 +16,22 @@
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef JOB_H
-# define JOB_H
+#ifndef SEARCH_LIST_VIEW_H
+# define SEARCH_LIST_VIEW_H
 
-#include <QtCore/QByteArray>
+#include <QtGui/QListView>
 
-#include "tvdbcache.h"
-
-struct Job
+class SearchListView : public QListView
 {
-  enum Type {
-    ShowAndEpisodesXml,
-    ShowAndEpisodesZip,
-    BannersXml,
-    Banner,
-    EpisodeBanner,
-    SearchResults,
-  };
-  enum State {
-    Unknown,
-    Downloading,
-    Waiting,
-    Parsing,
-    Failed,
-    Finished
-  };
+  Q_OBJECT
+public:
+  SearchListView(QWidget * parent = 0);
+  ~SearchListView();
 
-  qint64 id;
-  Type type;
-  State state;
-  TvDBCache::BannerType bannerType;
-  QUrl url;
-  qint64 done;
-  qint64 total;
-  QByteArray data;
+  virtual QModelIndexList selectedIndexes();
+
+protected:
+  QStyleOptionViewItem viewOptions() const;
 };
-
 
 #endif

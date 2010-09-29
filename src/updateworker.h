@@ -22,8 +22,6 @@
 #include <QtCore/QMutex>
 #include <QtCore/QWaitCondition>
 #include <QtCore/QQueue>
-#include <QtNetwork/QNetworkAccessManager>
-#include <QtNetwork/QNetworkReply>
 
 #include <QtTvDB>
 
@@ -56,6 +54,7 @@ signals:
   void parseFinished(Job *job);
 
   void error(const QString & title, const QString &message);
+  void databaseUpdated();
 
 private:
   void bannerJob(qint64 id, TvDBCache::BannerType type, const QUrl & url);

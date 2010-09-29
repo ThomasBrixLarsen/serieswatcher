@@ -23,9 +23,10 @@ SET(serieswatcher_SRCS
   main.cpp
   mainwindow.cpp
   searchdialog.cpp
+  searchlistview.cpp
+  searchmodel.cpp
   tvdb.cpp
   tvdbcache.cpp
-  searchlistwidget.cpp
   updateworker.cpp
   updateprogressdialog.cpp
   settings.cpp
@@ -41,7 +42,8 @@ SET(serieswatcher_SRCS
   maintreewidget.cpp
   seriesmenus.cpp
   episodedialog.cpp
-  showdialog.cpp)
+  showdialog.cpp
+  bannerloader.cpp)
 
 SET(serieswatcher_UIS
   mainwindow.ui
@@ -55,7 +57,8 @@ SET(serieswatcher_UIS
 SET(serieswatcher_MOC_HDRS
   mainwindow.h
   searchdialog.h
-  searchlistwidget.h
+  searchmodel.h
+  searchlistview.h
   updateworker.h
   downloadworker.h
   updateprogressdialog.h
@@ -71,7 +74,8 @@ SET(serieswatcher_MOC_HDRS
   seriesaction.h
   seriesmenus.h
   episodedialog.h
-  showdialog.h)
+  showdialog.h
+  bannerloader.h)
 
 SET(serieswatcher_RCS serieswatcher.qrc)
 

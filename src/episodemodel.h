@@ -20,8 +20,10 @@
 # define EPISODE_MODEL_H
 
 #include <QtSql/QSqlQueryModel>
+#include <QtGui/QIcon>
 
 class TvDBCache;
+class BannerLoader;
 
 class EpisodeModel : public QSqlQueryModel
 {
@@ -43,10 +45,16 @@ public slots:
 signals:
   void episodeChanged();
 
+private slots:
+  void bannerReceived(int row);
+
 private:
-  TvDBCache *cache;
+  QVariant fetchIcon(int row, const QString & image) const;
+
   int showId;
   int season;
+  TvDBCache *cache;
+  BannerLoader *bannerLoader;
 };
 
 #endif

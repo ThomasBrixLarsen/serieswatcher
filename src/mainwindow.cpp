@@ -20,12 +20,12 @@
 #include <QtGui/QMessageBox>
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlRecord>
+#include <QtCore/QThread>
 
 #include "config.h"
 
 #include "mainwindow.h"
 #include "searchdialog.h"
-#include "workerthread.h"
 #include "downloadworker.h"
 #include "updateworker.h"
 #include "updateprogressdialog.h"
@@ -52,6 +52,8 @@ MainWindow::MainWindow()
   setupList();
   setupTree();
   displayShows();
+
+  modelsDirty = false;
 }
 
 MainWindow::~MainWindow()
@@ -114,6 +116,8 @@ MainWindow::createWorkers()
   updateWorker = new UpdateWorker();
   downloadWorker = new DownloadWorker(this);
 
+  DownloadWorker::setSharedInstance(downloadWorker);
+
   updateBar->hide();
   updateButton->hide();
 
@@ -131,6 +135,7 @@ MainWindow::createWorkers()
   connect(progress, SIGNAL(finished()), this, SLOT(updateFinished()));
   connect(progress, SIGNAL(progress(qint64, qint64)), this, SLOT(updateProgress(qint64, qint64)));
 
+  connect(updateWorker, SIGNAL(databaseUpdated()), this, SLOT(databaseUpdated()));
   connect(updateWorker, SIGNAL(newJob(Job *)), downloadWorker, SLOT(startJob(Job *)));
   connect(downloadWorker, SIGNAL(downloadFinished(Job *)), updateWorker, SLOT(startJob(Job *)));
 
@@ -209,6 +214,7 @@ MainWindow::setupList()
   connect(episodes, SIGNAL(episodeChanged()), this, SLOT(update()));
 
   connectSeriesMenus(listView->getMenus());
+
   displayShows();
 }
 
@@ -488,7 +494,11 @@ MainWindow::updateFinished()
   updateBar->hide();
   updateButton->hide();
   statusBar()->clearMessage();
-  reload();
+
+  if (modelsDirty) {
+    reload();
+    modelsDirty = false;
+  }
 }
 
 void
@@ -496,6 +506,12 @@ MainWindow::updateProgress(qint64 done, qint64 total)
 {
   updateBar->setRange(0, total);
   updateBar->setValue(done);
+}
+
+void
+MainWindow::databaseUpdated(void)
+{
+  modelsDirty = true;
 }
 
 void

@@ -16,21 +16,27 @@
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include "searchlistwidget.h"
+#include "searchlistview.h"
 
-SearchListWidget::SearchListWidget(QWidget * parent)
-  : QListWidget(parent)
+SearchListView::SearchListView(QWidget * parent)
+  : QListView(parent)
 {
 }
 
-SearchListWidget::~SearchListWidget()
+SearchListView::~SearchListView()
 {
+}
+
+QModelIndexList
+SearchListView::selectedIndexes()
+{
+  return QListView::selectedIndexes();
 }
 
 QStyleOptionViewItem
-SearchListWidget::viewOptions() const
+SearchListView::viewOptions() const
 {
-  QStyleOptionViewItem option = QListWidget::viewOptions();
+  QStyleOptionViewItem option = QListView::viewOptions();
 
   if (viewMode() == QListView::ListMode)
     option.decorationPosition = QStyleOptionViewItem::Right;

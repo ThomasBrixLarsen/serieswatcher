@@ -24,6 +24,7 @@
 #include "ui_showdialog.h"
 
 class TvDBCache;
+class BannerLoader;
 
 class ShowDialog : public QDialog, private Ui_ShowDialog
 {
@@ -33,6 +34,12 @@ public:
   ~ShowDialog();
 
   void setShow(QtTvDB::Show *show, TvDBCache *cache);
+
+private slots:
+  void bannerReceived();
+
+private:
+  BannerLoader *bannerLoader;
 };
 
 #endif

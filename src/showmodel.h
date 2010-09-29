@@ -20,8 +20,10 @@
 # define SHOW_MODEL_H
 
 #include <QtSql/QSqlQueryModel>
+#include <QtGui/QIcon>
 
 class TvDBCache;
+class BannerLoader;
 
 class ShowModel : public QSqlQueryModel
 {
@@ -42,9 +44,13 @@ public:
 
 public slots:
   void refresh();
+  void bannerReceived(int id);
 
 private:
+  QVariant fetchIcon(int row, int id) const;
+
   TvDBCache *cache;
+  BannerLoader *bannerLoader;
 };
 
 #endif

@@ -73,6 +73,7 @@ private slots:
   void updateStarted();
   void updateFinished();
   void updateProgress(qint64 done, qint64 total);
+  void databaseUpdated();
   void reload();
   void update();
 
@@ -95,6 +96,8 @@ private:
   int currentShowId;
   int currentSeason;
   int currentEpisodeId;
+
+  bool modelsDirty;
 
   QThread *updateThread;
   DownloadWorker *downloadWorker;

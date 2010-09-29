@@ -24,10 +24,14 @@
 
 #include "tvdbcache.h"
 #include "seasonmodel.h"
+#include "tvdb.h"
+#include "bannerloader.h"
 
 SeasonModel::SeasonModel(TvDBCache *c, QObject *parent)
   : QSqlQueryModel(parent), cache(c)
 {
+  bannerLoader = new BannerLoader(this);
+  connect(bannerLoader, SIGNAL(bannerReceived(int)), this, SLOT(bannerReceived(int)));
 }
 
 void
@@ -43,6 +47,7 @@ SeasonModel::setShowId(int showId)
   query += QString("WHERE episodes.showId = %1 ").arg(showId);
   query += "GROUP BY episodes.season";
 
+  bannerLoader->clear();
   setQuery(query);
 }
 
@@ -80,23 +85,39 @@ QVariant SeasonModel::data(int row, int role, QVariant fallback) const
       return tr("Season %1").arg(season);
     return tr("Specials");
   }
-  if (role == Qt::DecorationRole) {
-    QString sql;
-
-    sql = "SELECT banners.id as bannerId FROM banners ";
-    sql += "WHERE banners.type = 'season' AND banners.type2 = 'season' ";
-    sql += "AND banners.season = %1 AND banners.language = 'en' ";
-    sql += "AND banners.showId = %2";
-
-    sql = sql
-      .arg(rec.value("season").toInt())
-      .arg(rec.value("showId").toInt());
-
-    QSqlQuery query(sql);
-    query.next();
-
-    qint64 id = query.record().value("bannerId").toInt();
-    return QIcon(cache->fetchBannerFile(id, TvDBCache::Poster, QSize(120, 150)));
-  }
+  if (role == Qt::DecorationRole)
+    return fetchIcon(row, rec.value("showId").toInt(), rec.value("season").toInt());
   return fallback;
+}
+
+QVariant
+SeasonModel::fetchIcon(int row, int showId, int season) const
+{
+  QtTvDB::Mirrors *mirrors = TvDB::mirrors();
+
+  if (bannerLoader->hasBanner(row))
+    return bannerLoader->banner(row);
+
+  QString sql;
+
+  sql = "SELECT banners.id as bannerId, banners.path FROM banners ";
+  sql += "WHERE banners.type = 'season' AND banners.type2 = 'season' ";
+  sql += "AND banners.season = %1 AND banners.language = 'en' ";
+  sql += "AND banners.showId = %2";
+
+  sql = sql.arg(season).arg(showId);
+
+  QSqlQuery query(sql);
+
+  if (query.next())
+    bannerLoader->fetchBanner(row, mirrors->bannerUrl(query.record().value("path").toString()));
+
+  return QIcon::fromTheme("image-loading").pixmap(150);
+}
+
+void
+SeasonModel::bannerReceived(int row)
+{
+  QModelIndex idx = index(row, 0);
+  emit dataChanged(idx, idx);
 }
