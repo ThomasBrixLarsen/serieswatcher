@@ -51,7 +51,6 @@ ShowModel::refresh()
     "LEFT JOIN episodes_extra ON episodes.id = episodes_extra.id "
     "GROUP BY shows.id ";
 
-  bannerLoader->clear();
   setQuery(query);
 }
 
@@ -88,7 +87,7 @@ QVariant ShowModel::data(int row, int role, QVariant fallback) const
   if (role == Qt::DisplayRole)
     return rec.value("name").toString();
   if (role == Qt::DecorationRole)
-      return fetchIcon(row, rec.value("id").toInt());
+    return fetchIcon(row, rec.value("id").toInt());
   return fallback;
 }
 

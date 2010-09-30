@@ -528,12 +528,6 @@ void
 MainWindow::reload()
 {
   shows->refresh();
-  if (currentShowId != -1) {
-    if (currentSeason != -1)
-      episodes->setSeason(currentShowId, currentSeason);
-    else
-      seasons->setShowId(currentShowId);
-  }
 
   treeWidget->buildTree(shows, seasons);
 
@@ -542,6 +536,13 @@ MainWindow::reload()
       treeWidget->setCurrentItem(currentShowId, currentSeason);
     else
       treeWidget->setCurrentItem(currentShowId);
+  }
+
+  if (currentShowId != -1) {
+    if (currentSeason != -1)
+      episodes->setSeason(currentShowId, currentSeason);
+    else
+      seasons->setShowId(currentShowId);
   }
 
   reloadActions();

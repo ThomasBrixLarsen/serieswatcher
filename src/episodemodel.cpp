@@ -32,12 +32,16 @@ EpisodeModel::EpisodeModel(TvDBCache *c, QObject *parent)
 {
   bannerLoader = new BannerLoader(this);
   connect(bannerLoader, SIGNAL(bannerReceived(int)), this, SLOT(bannerReceived(int)));
+  showId = season = -1;
 }
 
 void
 EpisodeModel::setSeason(int show, int seas)
 {
   QString query;
+
+  if (showId != show || season != seas)
+    bannerLoader->clear();
 
   showId = show;
   season = seas;
@@ -49,7 +53,6 @@ EpisodeModel::setSeason(int show, int seas)
   query += "ON episodes.id = episodes_extra.id ";
   query += QString("WHERE episodes.showId = %1 AND episodes.season = %2").arg(showId).arg(season);
 
-  bannerLoader->clear();
   setQuery(query);
 }
 
@@ -87,7 +90,7 @@ EpisodeModel::setData(const QModelIndex & index, const QVariant & value, int rol
     cache->episodeWatched(rec.value("id").toInt(), val);
     //setSeason(showId, season); // Reload SQL data
     emit dataChanged(index, index);
-    emit layoutChanged();
+    //emit layoutChanged();
     emit episodeChanged();
     return true;
   }

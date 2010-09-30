@@ -51,6 +51,7 @@ private:
 
   TvDBCache *cache;
   BannerLoader *bannerLoader;
+  int showId;
 };
 
 #endif

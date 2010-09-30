@@ -32,12 +32,18 @@ SeasonModel::SeasonModel(TvDBCache *c, QObject *parent)
 {
   bannerLoader = new BannerLoader(this);
   connect(bannerLoader, SIGNAL(bannerReceived(int)), this, SLOT(bannerReceived(int)));
+  showId = -1;
 }
 
 void
-SeasonModel::setShowId(int showId)
+SeasonModel::setShowId(int show)
 {
   QString query;
+
+  if (showId != show)
+    bannerLoader->clear();
+
+  showId = show;
 
   query = "SELECT episodes.season, episodes.seasonId, COUNT(DISTINCT episodes.id) as episodes, ";
   query += "SUM(episodes_extra.watched) as episodesWatched, ";
@@ -47,7 +53,6 @@ SeasonModel::setShowId(int showId)
   query += QString("WHERE episodes.showId = %1 ").arg(showId);
   query += "GROUP BY episodes.season";
 
-  bannerLoader->clear();
   setQuery(query);
 }
 
@@ -71,7 +76,7 @@ QVariant SeasonModel::data(int row, int role, QVariant fallback) const
   if (role == SeasonModel::ShowId)
     return rec.value("showId").toInt();
   if (role == SeasonModel::NextEpisode)
-    return QDateTime();
+    return QDateTime(); /* FIXME */
   if (role == SeasonModel::Episodes)
     return rec.value("episodes").toInt();
   if (role == SeasonModel::EpisodesWatched)
