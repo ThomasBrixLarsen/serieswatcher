@@ -22,7 +22,7 @@
 #include <QDebug>
 
 #include "showdelegate.h"
-#include "showmodel.h"
+#include "tvdbmodel.h"
 
 void
 ShowDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option,
@@ -61,11 +61,13 @@ ShowDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option,
   painter->save();
   QString status;
 
-  status = QString("%1 Seasons | %2 Episodes (%3 not watched) | Next Airs %4")
+  /*
+    status = QString("%1 Seasons | %2 Episodes (%3 not watched) | Next Airs %4")
     .arg(index.data(ShowModel::Seasons).toInt())
     .arg(index.data(ShowModel::Episodes).toInt())
     .arg(index.data(ShowModel::EpisodesNotWatched).toInt())
     .arg(index.data(ShowModel::NextEpisode).toDateTime().toString());
+  */
   qDebug() << status;
   painter->setPen("#7a8288");
   painter->drawText(r, Qt::AlignLeft | Qt::AlignBottom, status);

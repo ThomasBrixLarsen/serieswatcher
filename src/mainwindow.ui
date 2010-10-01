@@ -30,7 +30,7 @@
      <x>0</x>
      <y>0</y>
      <width>1047</width>
-     <height>21</height>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -89,7 +89,7 @@
    <widget class="QWidget" name="treeDockContent">
     <layout class="QGridLayout" name="gridLayout_2">
      <item row="0" column="0">
-      <widget class="MainTreeWidget" name="treeWidget">
+      <widget class="MainTreeView" name="treeView">
        <property name="showDropIndicator" stdset="0">
         <bool>false</bool>
        </property>
@@ -111,33 +111,12 @@
        <property name="headerHidden">
         <bool>false</bool>
        </property>
-       <attribute name="headerDefaultSectionSize">
+       <attribute name="headerMinimumSectionSize">
         <number>50</number>
        </attribute>
-       <attribute name="headerMinimumSectionSize">
-        <number>10</number>
+       <attribute name="headerStretchLastSection">
+        <bool>true</bool>
        </attribute>
-       <attribute name="headerDefaultSectionSize">
-        <number>50</number>
-       </attribute>
-       <attribute name="headerMinimumSectionSize">
-        <number>10</number>
-       </attribute>
-       <column>
-        <property name="text">
-         <string notr="true">Shows</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>New</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>Total</string>
-        </property>
-       </column>
       </widget>
      </item>
     </layout>
@@ -206,9 +185,9 @@
    <header>mainlistview.h</header>
   </customwidget>
   <customwidget>
-   <class>MainTreeWidget</class>
-   <extends>QTreeWidget</extends>
-   <header>maintreewidget.h</header>
+   <class>MainTreeView</class>
+   <extends>QTreeView</extends>
+   <header>maintreeview.h</header>
   </customwidget>
  </customwidgets>
  <resources>

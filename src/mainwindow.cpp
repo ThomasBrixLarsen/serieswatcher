@@ -30,15 +30,13 @@
 #include "updateworker.h"
 #include "updateprogressdialog.h"
 #include "tvdb.h"
-#include "showmodel.h"
-#include "seasonmodel.h"
-#include "episodemodel.h"
 #include "showdelegate.h"
 #include "tvdbcache.h"
 #include "settingsdialog.h"
 #include "episodedialog.h"
 #include "showdialog.h"
 #include "settings.h"
+#include "tvdbmodel.h"
 
 MainWindow::MainWindow()
 {
@@ -49,11 +47,14 @@ MainWindow::MainWindow()
   createActions();
   createSearchDialog();
   setupCache();
+  setupModel();
   setupList();
   setupTree();
   displayShows();
 
   modelsDirty = false;
+
+  treeView->setModel(new TvDBModel(this));
 }
 
 MainWindow::~MainWindow()
@@ -95,7 +96,7 @@ MainWindow::createActions()
 void
 MainWindow::reloadActions()
 {
-  treeWidget->buildMenus();
+  treeView->buildMenus();
   listView->buildMenus();
 }
 
@@ -187,21 +188,15 @@ MainWindow::setupCache()
 }
 
 void
-MainWindow::setupTree()
+MainWindow::setupModel()
 {
-  treeWidget->buildTree(shows, seasons);
-
-  connect(treeWidget, SIGNAL(itemActivated(QTreeWidgetItem  *, int )),
-	  this, SLOT(treeItemActivated(QTreeWidgetItem  *, int )));
-  connectSeriesMenus(treeWidget->getMenus());
+  tvdbModel = new TvDBModel(this);
+  // FIXME TvDBTreeProxyModel()
 }
 
 void
 MainWindow::setupList()
 {
-  shows = new ShowModel(cache, listView);
-  seasons = new SeasonModel(cache, listView);
-  episodes = new EpisodeModel(cache, listView);
   //listView->setItemDelegate(new ShowDelegate());
 
   connect(listView, SIGNAL(clicked(const QModelIndex &)),
@@ -211,11 +206,22 @@ MainWindow::setupList()
   connect(listView, SIGNAL(doubleClicked(const QModelIndex &)),
 	  this, SLOT(itemDoubleClicked(const QModelIndex &)));
 
-  connect(episodes, SIGNAL(episodeChanged()), this, SLOT(update()));
+  connectSeriesMenus(listView->getMenus());
+
+  listView->setModel(tvdbModel);
+
+  displayShows();
+}
+
+void
+MainWindow::setupTree()
+{
+  connect(treeView, SIGNAL(clicked(const QModelIndex &)),
+	  this, SLOT(itemDoubleClicked(const QModelIndex &)));
 
   connectSeriesMenus(listView->getMenus());
 
-  displayShows();
+  treeView->setModel(tvdbModel);
 }
 
 void
@@ -243,69 +249,47 @@ MainWindow::itemEntered(const QModelIndex & item)
 void
 MainWindow::itemDoubleClicked(const QModelIndex & item)
 {
-  QString type = item.data(Qt::UserRole).toString();
+  QModelIndex index = tvdbModel->index(item.row(), 0, item.parent());
+  int type = index.data(TvDBModel::Type).toInt();
 
-  if (type == "show")
-    displayShow(item.data(ShowModel::Id).toInt());
-  else if (type == "season")
-    displaySeason(item.data(SeasonModel::ShowId).toInt(),
-		  item.data(SeasonModel::Id).toInt());
-  else
-    return ;
-}
-
-void
-MainWindow::treeItemActivated(QTreeWidgetItem  * item, int column)
-{
-  QString type = item->data(0, Qt::UserRole).toString();
-
-    if (type == "show")
-    displayShow(item->data(0, ShowModel::Id).toInt());
-  else if (type == "season")
-    displaySeason(item->data(0, SeasonModel::ShowId).toInt(),
-		  item->data(0, SeasonModel::Id).toInt());
-  else
+  if (type == TvDBModel::Show)
+    displayShow(index);
+  else if (type == TvDBModel::Season)
+    displaySeason(index);
+  else if (type == TvDBModel::Root)
     displayShows();
 }
 
 void
 MainWindow::displayShows()
 {
-  listView->setModel(shows);
+  listView->setRootIndex(QModelIndex());
+
   listView->setViewMode(QListView::IconMode);
   listView->setIconSize(QSize(100, 120));
   listView->setGridSize(QSize(150, 150));
-
-  currentShowId = currentSeason = currentEpisodeId = -1;
 }
 
 void
-MainWindow::displayShow(qint64 showId)
+MainWindow::displayShow(const QModelIndex & item)
 {
-  treeWidget->setCurrentItem(showId);
-  seasons->setShowId(showId);
-  listView->setModel(seasons);
+  qDebug() << item.row() << item.column() << item.data(TvDBModel::Name);
+
+  listView->setRootIndex(item);
+
   listView->setViewMode(QListView::IconMode);
   listView->setIconSize(QSize(100, 120));
   listView->setGridSize(QSize(150, 150));
-
-  currentShowId = showId;
-  currentSeason = currentEpisodeId = -1;
 }
 
 void
-MainWindow::displaySeason(qint64 showId, int season)
+MainWindow::displaySeason(const QModelIndex & item)
 {
-  treeWidget->setCurrentItem(showId, season);
-  episodes->setSeason(showId, season);
-  listView->setModel(episodes);
+  listView->setRootIndex(item);
+
   listView->setViewMode(QListView::ListMode);
   listView->setIconSize(QSize(100, 56));
   listView->setGridSize(QSize(110, 60));
-
-  currentShowId = showId;
-  currentSeason = season;
-  currentEpisodeId = -1;
 }
 
 void
@@ -387,10 +371,10 @@ MainWindow::deleteShow()
   QModelIndexList list = listView->selectedIndexes();
 
   foreach (QModelIndex item, list) {
-    QString type = item.data(Qt::UserRole).toString();
+    int type = item.data(TvDBModel::Id).toInt();
 
-    if (type == "show")
-      cache->deleteShow(item.data(ShowModel::Id).toLongLong());
+    if (type == TvDBModel::Show)
+      cache->deleteShow(item.data(TvDBModel::Id).toLongLong());
   }
   reload();
 }
@@ -405,8 +389,8 @@ MainWindow::deleteShow(qint64 showId)
 void
 MainWindow::episodesWatched(qint64 showId, int season, bool watched)
 {
+  /* FIXME -> use tvdbModel */
   cache->episodesWatched(showId, season, watched);
-  update();
 }
 
 void
@@ -427,6 +411,7 @@ MainWindow::markWatched(bool watched)
   QModelIndexList list = listView->selectedIndexes();
 
   foreach (QModelIndex item, list) {
+    /*
     QString type = item.data(Qt::UserRole).toString();
 
     if (type == "show")
@@ -436,15 +421,16 @@ MainWindow::markWatched(bool watched)
 			     item.data(SeasonModel::Id).toLongLong(), watched);
     if (type == "episode")
       cache->episodeWatched(item.data(EpisodeModel::Id).toLongLong(), watched);
+    */
   }
-  update();
+  /* FIXME -> use tvdbModel */
 }
 
 void
 MainWindow::episodeWatched(qint64 id, bool watched)
 {
   cache->episodeWatched(id, watched);
-  update();
+  /* FIXME -> use tvdbModel */
 }
 
 void
@@ -515,36 +501,9 @@ MainWindow::databaseUpdated(void)
 }
 
 void
-MainWindow::update()
-{
-  shows->refresh();
-  episodes->setSeason(currentShowId, currentSeason);
-  seasons->setShowId(currentShowId);
-  shows->refresh();
-  treeWidget->updateTree(shows, seasons);
-}
-
-void
 MainWindow::reload()
 {
-  shows->refresh();
-
-  treeWidget->buildTree(shows, seasons);
-
-  if (currentShowId != -1) {
-    if (currentSeason != -1)
-      treeWidget->setCurrentItem(currentShowId, currentSeason);
-    else
-      treeWidget->setCurrentItem(currentShowId);
-  }
-
-  if (currentShowId != -1) {
-    if (currentSeason != -1)
-      episodes->setSeason(currentShowId, currentSeason);
-    else
-      seasons->setShowId(currentShowId);
-  }
-
+  tvdbModel->reloadModel();
   reloadActions();
 }
 

@@ -31,19 +31,18 @@ SET(serieswatcher_SRCS
   updateprogressdialog.cpp
   settings.cpp
   downloadworker.cpp
-  showmodel.cpp
-  seasonmodel.cpp
-  episodemodel.cpp
   showdelegate.cpp
   settingsdialog.cpp
   actiondialog.cpp
   seriesaction.cpp
   mainlistview.cpp
-  maintreewidget.cpp
+  maintreeview.cpp
   seriesmenus.cpp
   episodedialog.cpp
   showdialog.cpp
-  bannerloader.cpp)
+  bannerloader.cpp
+  tvdbmodel.cpp
+  tvdbitem.cpp)
 
 SET(serieswatcher_UIS
   mainwindow.ui
@@ -63,19 +62,17 @@ SET(serieswatcher_MOC_HDRS
   downloadworker.h
   updateprogressdialog.h
   settings.h
-  showmodel.h
-  seasonmodel.h
-  episodemodel.h
   showdelegate.h
   settingsdialog.h
   actiondialog.h
   mainlistview.h
-  maintreewidget.h
+  maintreeview.h
   seriesaction.h
   seriesmenus.h
   episodedialog.h
   showdialog.h
-  bannerloader.h)
+  bannerloader.h
+  tvdbmodel.h)
 
 SET(serieswatcher_RCS serieswatcher.qrc)
 

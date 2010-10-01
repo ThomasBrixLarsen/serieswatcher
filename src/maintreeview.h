@@ -16,42 +16,36 @@
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef SEASON_MODEL_H
-# define SEASON_MODEL_H
+#ifndef MAINTREEVIEW_H
+# define MAINTREEVIEW_H
 
-#include <QtSql/QSqlQueryModel>
-#include <QtGui/QIcon>
+#include <QtGui/QTreeWidget>
+
+#include "seriesmenus.h"
 
 class TvDBCache;
-class BannerLoader;
 
-class SeasonModel : public QSqlQueryModel
-{
+class MainTreeView : public QTreeView {
   Q_OBJECT
 public:
-  enum Role { Type = Qt::UserRole,
-	      Id,
-	      ShowId,
-	      Episodes,
-	      EpisodesWatched,
-	      EpisodesNotWatched,
-	      NextEpisode };
+  MainTreeView(QWidget *parent = 0);
+  virtual ~MainTreeView();
 
-  SeasonModel(TvDBCache *cache, QObject *parent = 0);
+  void buildMenus();
 
-  QVariant data(const QModelIndex &item, int role) const;
-  QVariant data(int row, int role, QVariant fallback = QVariant()) const;
+  const SeriesMenus *getMenus() const { return menus; }
 
-public slots:
-  void setShowId(int showId);
-  void bannerReceived(int row);
+/* Needed by SeriesMenus */
+private slots:
+  void seriesAction();
+
+protected:
+  virtual void contextMenuEvent(QContextMenuEvent * event);
 
 private:
-  QVariant fetchIcon(int row, int showId, int season) const;
-
   TvDBCache *cache;
-  BannerLoader *bannerLoader;
-  int showId;
+  SeriesMenus *menus;
 };
 
 #endif
+

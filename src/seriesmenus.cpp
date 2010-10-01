@@ -19,9 +19,7 @@
 #include "seriesmenus.h"
 #include "seriesaction.h"
 #include "tvdbcache.h"
-#include "episodemodel.h"
-#include "showmodel.h"
-#include "seasonmodel.h"
+#include "tvdbmodel.h"
 
 SeriesMenus::SeriesMenus(QWidget *p)
   : QObject(p), parent(p)
@@ -100,7 +98,7 @@ SeriesMenus::buildMenus()
 void
 SeriesMenus::miscAction(TvDBCache *cache, const QModelIndex & index, QAction *action)
 {
-  QString type = index.data(Qt::UserRole).toString();
+  int type = index.data(TvDBModel::Type).toInt();
 
   int showId = -1;
   int id = -1;
@@ -109,16 +107,16 @@ SeriesMenus::miscAction(TvDBCache *cache, const QModelIndex & index, QAction *ac
   if (!index.isValid())
     return ;
 
-  if (type == "episode") {
-    id = index.data(EpisodeModel::Id).toInt();
-    showId = index.data(EpisodeModel::ShowId).toInt();
-    season = index.data(EpisodeModel::Season).toInt();
-  } else if (type == "season") {
-    showId = index.data(SeasonModel::ShowId).toInt();
-    season = index.data(SeasonModel::Id).toInt();
+  if (type == TvDBModel::Episode) {
+    id = index.data(TvDBModel::Id).toInt();
+    showId = index.parent().parent().data(TvDBModel::Id).toInt();
+    season = index.parent().data(TvDBModel::Name).toInt();
+  } else if (type == TvDBModel::Season) {
+    showId = index.parent().data(TvDBModel::Id).toInt();
+    season = index.data(TvDBModel::Name).toInt();
     id = season;
-  } else if (type == "show") {
-    showId = index.data(ShowModel::Id).toInt();
+  } else if (type == TvDBModel::Show) {
+    showId = index.data(TvDBModel::Id).toInt();
     id = showId;
   } else {
     return ;
@@ -131,15 +129,15 @@ SeriesMenus::miscAction(TvDBCache *cache, const QModelIndex & index, QAction *ac
   if (action == markWatchedAction || action == markNotWatchedAction) {
     bool watched = action == markWatchedAction;
 
-    if (type == "episode")
+    if (type == TvDBModel::Episode)
       emit episodeWatched(id, watched);
     else
       emit episodesWatched(showId, season, watched);
   }
   if (action == detailsAction) {
-    if (type == "episode")
+    if (type == TvDBModel::Episode)
       emit episodeDetails(id);
-    if (type == "show")
+    if (type == TvDBModel::Show)
       emit showDetails(id);
   }
 }
@@ -147,22 +145,22 @@ SeriesMenus::miscAction(TvDBCache *cache, const QModelIndex & index, QAction *ac
 void
 SeriesMenus::seriesAction(TvDBCache *cache, const QModelIndex & index, SeriesAction *action)
 {
-  QString type = index.data(Qt::UserRole).toString();
+  int type = index.data(TvDBModel::Type).toInt();
 
-  if (type == "episode") {
-    QtTvDB::Episode *episode = cache->fetchEpisode(index.data(EpisodeModel::Id).toInt());
+  if (type == TvDBModel::Episode) {
+    QtTvDB::Episode *episode = cache->fetchEpisode(index.data(TvDBModel::Id).toInt());
     QtTvDB::Show *show = cache->fetchShow(episode->showId());
 
     action->actEpisode(show, episode->season(), episode);
   }
-  if (type == "season") {
-    QtTvDB::Show *show = cache->fetchShow(index.data(SeasonModel::ShowId).toInt());
-    int season = index.data(SeasonModel::Id).toInt();
+  if (type == TvDBModel::Season) {
+    QtTvDB::Show *show = cache->fetchShow(index.parent().data(TvDBModel::Id).toInt());
+    int season = index.data(TvDBModel::Name).toInt();
 
     action->actSeason(show, season);
   }
-  if (type == "show") {
-    QtTvDB::Show *show = cache->fetchShow(index.data(ShowModel::Id).toInt());
+  if (type == TvDBModel::Show) {
+    QtTvDB::Show *show = cache->fetchShow(index.data(TvDBModel::Id).toInt());
 
     action->actShow(show);
   }
@@ -171,13 +169,13 @@ SeriesMenus::seriesAction(TvDBCache *cache, const QModelIndex & index, SeriesAct
 QAction *
 SeriesMenus::exec(const QModelIndex & index, const QPoint & pos)
 {
-  QString type = index.data(Qt::UserRole).toString();
+  int type = index.data(TvDBModel::Type).toInt();
 
-  if (type == "episode")
+  if (type == TvDBModel::Episode)
     return episodeMenu->exec(pos);
-  if (type == "season")
+  if (type == TvDBModel::Season)
     return seasonMenu->exec(pos);
-  if (type == "show")
+  if (type == TvDBModel::Show)
     return showMenu->exec(pos);
   return NULL;
 }

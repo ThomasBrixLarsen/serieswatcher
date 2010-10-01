@@ -16,41 +16,58 @@
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef SHOW_MODEL_H
-# define SHOW_MODEL_H
+#ifndef TREE_ITEM_H
+#define TREE_ITEM_H
 
-#include <QtSql/QSqlQueryModel>
-#include <QtGui/QIcon>
+#include <QtCore/QList>
+#include <QtCore/QVariant>
 
-class TvDBCache;
-class BannerLoader;
+#include <QtTvDB>
 
-class ShowModel : public QSqlQueryModel
+class TvDBModel;
+
+class TvDBItem
 {
-  Q_OBJECT
 public:
-  enum Role { Type = Qt::UserRole,
-	      Id,
-	      Seasons,
-	      Episodes,
-	      EpisodesWatched,
-	      EpisodesNotWatched,
-	      NextEpisode };
+  TvDBItem(int type, TvDBItem *parent = 0);
+  ~TvDBItem();
 
-  ShowModel(TvDBCache *cache, QObject *parent = 0);
+  void appendChild(TvDBItem *child);
 
-  QVariant data(const QModelIndex &item, int role) const;
-  QVariant data(int row, int role, QVariant fallback = QVariant()) const;
+  TvDBItem *child(int row);
+  int childCount() const;
+  int columnCount() const;
+  QVariant data(int column, int role) const;
+  int row() const;
+  Qt::ItemFlags flags() const;
+  TvDBItem *parent();
 
-public slots:
-  void refresh();
-  void bannerReceived(int id);
+  enum Type {
+    Root,
+    Show,
+    Season,
+    Episode
+  };
 
 private:
-  QVariant fetchIcon(int row, int id) const;
+  QList< TvDBItem * > childItems;
 
-  TvDBCache *cache;
-  BannerLoader *bannerLoader;
+  QtTvDB::Show *show;
+  QtTvDB::Episode *episode;
+
+  QString name;
+  QString nextEpisodeName;
+  QDateTime nextEpisodeDate;
+
+  TvDBItem::Type itemType;
+  int id;
+  int episodes;
+  int episodesWatched;
+  int episodesNew;
+
+  TvDBItem *parentItem;
+
+  friend class TvDBModel;
 };
 
 #endif

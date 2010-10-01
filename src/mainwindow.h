@@ -27,9 +27,7 @@ class SearchDialog;
 class DownloadWorker;
 class UpdateWorker;
 class UpdateProgressDialog;
-class ShowModel;
-class SeasonModel;
-class EpisodeModel;
+class TvDBModel;
 class TvDBCache;
 class QTreeWidgetItem;
 class QProgressBar;
@@ -56,8 +54,6 @@ private slots:
   void itemEntered(const QModelIndex & index);
   void itemDoubleClicked(const QModelIndex & index);
 
-  void treeItemActivated(QTreeWidgetItem  * item, int column);
-
   void updateShow(qint64 showId = -1);
   void deleteShow();
   void deleteShow(qint64 showId);
@@ -75,7 +71,6 @@ private slots:
   void updateProgress(qint64 done, qint64 total);
   void databaseUpdated();
   void reload();
-  void update();
 
 private:
   void setupTvDB();
@@ -86,11 +81,12 @@ private:
   void createSettingsDialog();
   void connectSeriesMenus(const SeriesMenus *menus);
   void setupCache();
+  void setupModel();
   void setupList();
   void setupTree();
   void displayShows();
-  void displayShow(qint64 showId);
-  void displaySeason(qint64 showId, int season);
+  void displayShow(const QModelIndex &item);
+  void displaySeason(const QModelIndex &item);
 
 private:
   int currentShowId;
@@ -107,9 +103,7 @@ private:
   QProgressBar *updateBar;
   QPushButton *updateButton;
   SearchDialog *searchDialog;
-  ShowModel *shows;
-  SeasonModel *seasons;
-  EpisodeModel *episodes;
+  TvDBModel *tvdbModel;
   TvDBCache *cache;
 };
 

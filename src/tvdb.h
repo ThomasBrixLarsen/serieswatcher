@@ -20,6 +20,7 @@
 # define TVDB_H
 
 #include <QtTvDB>
+#include <QtCore/QMap>
 
 class TvDB {
 public:
