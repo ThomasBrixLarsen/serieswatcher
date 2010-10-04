@@ -218,7 +218,7 @@ MainWindow::setupTree()
   connect(treeView, SIGNAL(clicked(const QModelIndex &)),
 	  this, SLOT(itemDoubleClicked(const QModelIndex &)));
 
-  connectSeriesMenus(listView->getMenus());
+  connectSeriesMenus(treeView->getMenus());
 
   treeView->setModel(tvdbModel);
 }
