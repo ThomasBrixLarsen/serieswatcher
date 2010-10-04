@@ -18,15 +18,24 @@
 
 #include <QtSql/QSqlQuery>
 #include <QtSql/QSqlRecord>
+#include <QtCore/QUrl>
+#include <QtGui/QIcon>
+#include <QtGui/QPixmap>
+#include <QtGui/QPixmapCache>
 
 #include "tvdbmodel.h"
 #include "tvdb.h"
 #include "tvdbitem.h"
+#include "bannerloader.h"
 
 TvDBModel::TvDBModel(QObject *parent)
   : QAbstractItemModel(parent)
 {
   rootItem = new TvDBItem(TvDBItem::Root, NULL);
+  bannerLoader = new BannerLoader(this);
+
+  connect(bannerLoader, SIGNAL(bannerReceived(int)), this, SLOT(bannerReceived(int)));
+
   setupModelData();
 }
 
@@ -52,44 +61,48 @@ TvDBModel::data(const QModelIndex &index, int role) const
 
   TvDBItem *item = static_cast<TvDBItem*>(index.internalPointer());
 
-  return item->data(index.column(), role);
-}
-
-/*
-
-QVariant
-TvDBBannerProxyModel::data(const QModelIndex & index, int role) const
-{
-  const QModelIndex sourceIndex = mapToSource(index);
-
-  if (role == Qt::DecorationRole && index.column() == 0) {
+  if (role == Qt::DecorationRole && index.column() == 7) {
     QVariant var;
     QString key = pixmapKey(index);
     QPixmap pm;
 
     if (QPixmapCache::find(key, &pm))
-      return pm;
+      return QIcon(pm);
+    if (bannerRequests.contains((unsigned long)item))
+      return QIcon::fromTheme("image-loading");
 
-    var = sourceModel()->data(index, role);;
-    if (var.type() == QVariant::Icon || var.type() == QVariant::Image || var.type() == QVariant::Pixmap)
-      return var;
-    if (var.type() == QVariant::Url || var.type() == QVariant::String)
-      return QVariant();
-    return QVariant();
+    var = item->data(index.column(), role);
+    if (var.type() == QVariant::Url || var.type() == QVariant::String) {
+      bannerRequests[(unsigned long)item] = index;
+      bannerLoader->fetchBanner((unsigned long)item, var.toUrl());
+    }
+
+    return QIcon::fromTheme("image-loading");
   } else
-    return sourceModel()->data(index, role);
+    return item->data(index.column(), role);
+}
+
+void
+TvDBModel::bannerReceived(int id)
+{
+  if (!bannerRequests.contains(id))
+    return ;
+
+  const QModelIndex item = bannerRequests[id];
+
+  QPixmapCache::insert(pixmapKey(item), bannerLoader->banner(id).pixmap(200));
+  emit dataChanged(item, item);
+  bannerRequests.remove(id);
 }
 
 QString
-TvDBBannerProxyModel::pixmapKey(const QModelIndex & index) const
+TvDBModel::pixmapKey(const QModelIndex & index) const
 {
   return QString("$tvdbmodel-%1-%2-%3")
     .arg(index.row())
     .arg(index.column())
     .arg((unsigned long)index.internalPointer());
 }
-
-*/
 
 Qt::ItemFlags
 TvDBModel::flags(const QModelIndex &index) const
@@ -163,6 +176,7 @@ TvDBModel::rowCount(const QModelIndex &parent) const
 void
 TvDBModel::reloadModel(void)
 {
+  bannerRequests.clear();
   setupModelData();
 }
 

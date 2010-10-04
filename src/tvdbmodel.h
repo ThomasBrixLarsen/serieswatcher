@@ -23,6 +23,7 @@
 #include <QtCore/QModelIndex>
 #include <QtCore/QVariant>
 
+class BannerLoader;
 class TvDBItem;
 
 class TvDBModel : public QAbstractItemModel
@@ -66,11 +67,17 @@ class TvDBModel : public QAbstractItemModel
  public slots:
     void reloadModel(void);
 
+ private slots:
+    void bannerReceived(int id);
+
  private:
     void setupModelData(void);
-    QString pixmapKey(const QModelIndex & index);
+    QString pixmapKey(const QModelIndex & index) const;
 
     TvDBItem *rootItem;
+    BannerLoader *bannerLoader;
+
+    mutable QMap < int , QModelIndex > bannerRequests;
 };
 
 #endif

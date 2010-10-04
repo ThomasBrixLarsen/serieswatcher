@@ -20,7 +20,11 @@
 #include <QtGui/QIcon>
 #include <QtGui/QApplication>
 #include <QtGui/QStyle>
+#include <QtSql/QSqlQuery>
+#include <QtSql/QSqlRecord>
+#include <QtSql/QSqlError>
 
+#include "tvdb.h"
 #include "tvdbitem.h"
 #include "tvdbmodel.h"
 
@@ -133,8 +137,35 @@ TvDBItem::data(int column, int role) const
 	} else
 	  return name;
       }
-      if (role == Qt::DecorationRole)
-	return QIcon::fromTheme("image-loading"); /* .pixmap(150);*/
+      if (role == Qt::DecorationRole) {
+	QString sql;
+
+	if (itemType == TvDBItem::Show) {
+	  sql = "SELECT banners.path FROM banners ";
+	  sql += "WHERE (banners.type = 'poster' AND banners.language = 'en') ";
+	  sql += "AND banners.showId = %1";
+	  sql = sql.arg(id);
+	}
+	if (itemType == TvDBItem::Season) {
+	  sql = "SELECT banners.path FROM banners ";
+	  sql += "WHERE banners.type = 'season' AND banners.type2 = 'season' ";
+	  sql += "AND banners.season = %1 AND banners.language = 'en' ";
+	  sql += "AND banners.showId = %2";
+	  sql = sql.arg(name.toInt()).arg(parentItem->id);
+	}
+	if (itemType == TvDBItem::Episode) {
+	  sql = "SELECT image as path FROM episodes WHERE episodes.id = %1";
+	  sql = sql.arg(id);
+	}
+
+	QSqlQuery query(sql);
+
+	if (query.next())
+	  return TvDB::mirrors()->bannerUrl(query.record().value("path").toString());
+	else
+	  qWarning() << query.lastError();
+	return QVariant();
+      }
     }
     if (role != Qt::DisplayRole)
       return QVariant();
