@@ -30,10 +30,7 @@ MainTreeView::MainTreeView(QWidget *parent)
   cache = new TvDBCache();
   menus = new SeriesMenus(this);
 
-  connect(this, SIGNAL(itemCollapsed(QTreeWidgetItem *)),
-	  this, SLOT(treeItemCollapsed(QTreeWidgetItem *)));
-  connect(this, SIGNAL(itemExpanded(QTreeWidgetItem *)),
-	  this, SLOT(treeItemExpanded(QTreeWidgetItem *)));
+  buildMenus();
 }
 
 MainTreeView::~MainTreeView()
@@ -48,19 +45,22 @@ MainTreeView::buildMenus()
   menus->buildMenus();
 }
 
-/*
 void
-MainTreeView::treeItemCollapsed(QTreeWidgetItem * item)
+MainTreeView::setModel(QAbstractItemModel *model)
 {
-  item->setIcon(0, QIcon::fromTheme("folder-video"));
-}
+  QTreeView::setModel(model);
 
-void
-MainTreeView::treeItemExpanded(QTreeWidgetItem * item)
-{
-  item->setIcon(0, QIcon::fromTheme("folder-open"));
+  setColumnHidden(2, true);
+  setColumnHidden(4, true);
+  setColumnHidden(5, true);
+  setColumnHidden(6, true);
+  setColumnHidden(7, true);
+
+  header()->setStretchLastSection(false);
+  header()->setResizeMode(1, QHeaderView::ResizeToContents);
+  header()->setResizeMode(3, QHeaderView::ResizeToContents);
+  header()->setResizeMode(0, QHeaderView::Stretch);
 }
-*/
 
 void
 MainTreeView::seriesAction()

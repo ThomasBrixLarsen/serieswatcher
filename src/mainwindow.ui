@@ -79,10 +79,14 @@
    <addaction name="deleteShowAction"/>
    <addaction name="updateShowAction"/>
    <addaction name="separator"/>
+   <addaction name="homeAction"/>
    <addaction name="markWatchedAction"/>
    <addaction name="markNotWatchedAction"/>
   </widget>
   <widget class="QDockWidget" name="treeDock">
+   <property name="windowTitle">
+    <string>Shows</string>
+   </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
    </attribute>
@@ -90,9 +94,6 @@
     <layout class="QGridLayout" name="gridLayout_2">
      <item row="0" column="0">
       <widget class="MainTreeView" name="treeView">
-       <property name="showDropIndicator" stdset="0">
-        <bool>false</bool>
-       </property>
        <property name="iconSize">
         <size>
          <width>24</width>
@@ -101,6 +102,9 @@
        </property>
        <property name="indentation">
         <number>10</number>
+       </property>
+       <property name="rootIsDecorated">
+        <bool>false</bool>
        </property>
        <property name="uniformRowHeights">
         <bool>true</bool>
@@ -175,6 +179,11 @@
   <action name="markNotWatchedAction">
    <property name="text">
     <string>Mark as not watched</string>
+   </property>
+  </action>
+  <action name="homeAction">
+   <property name="text">
+    <string>Home</string>
    </property>
   </action>
  </widget>

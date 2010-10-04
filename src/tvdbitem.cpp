@@ -17,6 +17,9 @@
  */
 
 #include <QtCore/QStringList>
+#include <QtGui/QIcon>
+#include <QtGui/QApplication>
+#include <QtGui/QStyle>
 
 #include "tvdbitem.h"
 #include "tvdbmodel.h"
@@ -48,7 +51,8 @@ TvDBItem::appendChild(TvDBItem *item)
   episodesWatched += item->episodesWatched;
   episodesNew += item->episodesNew;
 
-  if (nextEpisodeName.isEmpty() && item->episodesNew) {
+  if (item->episodesNew
+      && (nextEpisodeName.isEmpty() || nextEpisodeDate > item->nextEpisodeDate)) {
     nextEpisodeName = item->nextEpisodeName;
     nextEpisodeDate = item->nextEpisodeDate;
   }
@@ -69,26 +73,40 @@ TvDBItem::childCount() const
 int
 TvDBItem::columnCount() const
 {
-  return 7;
+  return 8;
 }
 
 QVariant
 TvDBItem::data(int column, int role) const
 {
-  if (itemType == TvDBItem::Root) {
+  if (itemType == TvDBItem::Root && !parentItem) {
     QStringList columns;
 
-    columns << QObject::tr("Name") << QObject::tr("Episodes") << ("Episodes Watched")
-	    << QObject::tr("New Episodes") << QObject::tr("Episodes Not Watched")
-	    << QObject::tr("Next Episode Name") << QObject::tr("Next Episode Date");
+    columns << QObject::tr("Name") << QObject::tr("Episodes")
+	    << QObject::tr("Watched") << QObject::tr("New")
+	    << QObject::tr("Not Watched") << QObject::tr("Next Episode")
+	    << QObject::tr("Next Date") << QObject::tr("Banner");
 
     return columns[column];
   } else {
+    if (role == Qt::TextColorRole && episodesNew)
+      return Qt::blue;
     if (column == 0) {
-      if (role == Qt::DisplayRole)
-	return name;
+      if (role == Qt::DisplayRole) {
+	if (itemType == TvDBItem::Season)
+	  return QObject::tr("Season %1").arg(name);
+	else
+	  return name;
+      }
       if (role == Qt::DecorationRole) {
-	/* FIXME */
+	if (itemType == TvDBItem::Root)
+	  return QApplication::style()->standardIcon(QStyle::SP_DirHomeIcon);
+	if (itemType == TvDBItem::Show)
+	  return QIcon::fromTheme("folder-video");
+	if (itemType == TvDBItem::Season)
+	  return QIcon::fromTheme("folder-video");
+	if (itemType == TvDBItem::Episode)
+	  return QIcon::fromTheme("video-x-generic");
 	return QVariant();
       }
       if (role == TvDBModel::Type)
@@ -101,6 +119,13 @@ TvDBItem::data(int column, int role) const
 	role = Qt::DisplayRole;
 	column = role - Qt::DisplayRole + 3;
       }
+    }
+    if (column == 7) {
+      /* FIXME */
+      if (role == Qt::DisplayRole)
+	return name;
+      if (role == Qt::DecorationRole)
+	return QIcon::fromTheme("image-loading"); /* .pixmap(150);*/
     }
     if (role != Qt::DisplayRole)
       return QVariant();

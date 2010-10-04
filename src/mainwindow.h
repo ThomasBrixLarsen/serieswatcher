@@ -72,6 +72,10 @@ private slots:
   void databaseUpdated();
   void reload();
 
+  void displayShows();
+  void displayShow(const QModelIndex &item);
+  void displaySeason(const QModelIndex &item);
+
 private:
   void setupTvDB();
   void createWorkers();
@@ -84,9 +88,6 @@ private:
   void setupModel();
   void setupList();
   void setupTree();
-  void displayShows();
-  void displayShow(const QModelIndex &item);
-  void displaySeason(const QModelIndex &item);
 
 private:
   int currentShowId;

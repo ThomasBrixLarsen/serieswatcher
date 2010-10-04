@@ -53,8 +53,6 @@ MainWindow::MainWindow()
   displayShows();
 
   modelsDirty = false;
-
-  treeView->setModel(new TvDBModel(this));
 }
 
 MainWindow::~MainWindow()
@@ -71,6 +69,7 @@ MainWindow::~MainWindow()
 void
 MainWindow::createActions()
 {
+  homeAction->setIcon(style()->standardIcon(QStyle::SP_DirHomeIcon));
   quitAction->setIcon(QIcon::fromTheme("window-close"));
   updateShowAction->setIcon(QIcon::fromTheme("download"));
   deleteShowAction->setIcon(QIcon::fromTheme("edit-delete"));
@@ -83,6 +82,7 @@ MainWindow::createActions()
   settingsAction->setIcon(QIcon::fromTheme("preferences-other"));
   aboutQtAction->setIcon(QPixmap(":/trolltech/qmessagebox/images/qtlogo-64.png"));
 
+  connect(homeAction, SIGNAL(triggered()), this, SLOT(displayShows()));
   connect(markWatchedAction, SIGNAL(triggered()), this, SLOT(markWatched()));
   connect(markNotWatchedAction, SIGNAL(triggered()), this, SLOT(markNotWatched()));
   connect(deleteShowAction, SIGNAL(triggered()), this, SLOT(deleteShow()));
@@ -191,7 +191,6 @@ void
 MainWindow::setupModel()
 {
   tvdbModel = new TvDBModel(this);
-  // FIXME TvDBTreeProxyModel()
 }
 
 void
@@ -273,8 +272,6 @@ MainWindow::displayShows()
 void
 MainWindow::displayShow(const QModelIndex & item)
 {
-  qDebug() << item.row() << item.column() << item.data(TvDBModel::Name);
-
   listView->setRootIndex(item);
 
   listView->setViewMode(QListView::IconMode);

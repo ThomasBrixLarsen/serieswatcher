@@ -34,6 +34,7 @@ public:
   void buildMenus();
 
   const SeriesMenus *getMenus() const { return menus; }
+  virtual void setModel(QAbstractItemModel *model);
 
 /* Needed by SeriesMenus */
 private slots:

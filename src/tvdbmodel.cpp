@@ -55,6 +55,42 @@ TvDBModel::data(const QModelIndex &index, int role) const
   return item->data(index.column(), role);
 }
 
+/*
+
+QVariant
+TvDBBannerProxyModel::data(const QModelIndex & index, int role) const
+{
+  const QModelIndex sourceIndex = mapToSource(index);
+
+  if (role == Qt::DecorationRole && index.column() == 0) {
+    QVariant var;
+    QString key = pixmapKey(index);
+    QPixmap pm;
+
+    if (QPixmapCache::find(key, &pm))
+      return pm;
+
+    var = sourceModel()->data(index, role);;
+    if (var.type() == QVariant::Icon || var.type() == QVariant::Image || var.type() == QVariant::Pixmap)
+      return var;
+    if (var.type() == QVariant::Url || var.type() == QVariant::String)
+      return QVariant();
+    return QVariant();
+  } else
+    return sourceModel()->data(index, role);
+}
+
+QString
+TvDBBannerProxyModel::pixmapKey(const QModelIndex & index) const
+{
+  return QString("$tvdbmodel-%1-%2-%3")
+    .arg(index.row())
+    .arg(index.column())
+    .arg((unsigned long)index.internalPointer());
+}
+
+*/
+
 Qt::ItemFlags
 TvDBModel::flags(const QModelIndex &index) const
 {
@@ -75,8 +111,7 @@ TvDBModel::headerData(int section, Qt::Orientation orientation, int role) const
   return QVariant();
 }
 
-QModelIndex TvDBModel::index(int row, int column, const QModelIndex &parent)
-            const
+QModelIndex TvDBModel::index(int row, int column, const QModelIndex &parent) const
 {
   if (!hasIndex(row, column, parent))
     return QModelIndex();

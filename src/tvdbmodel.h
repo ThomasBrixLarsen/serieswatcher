@@ -52,7 +52,8 @@ class TvDBModel : public QAbstractItemModel
       EpisodesNew,
       EpisodesNotWatched,
       NextEpisodeName,
-      NextEpisodeDate
+      NextEpisodeDate,
+      Banner
     };
 
     enum Type {
@@ -67,6 +68,7 @@ class TvDBModel : public QAbstractItemModel
 
  private:
     void setupModelData(void);
+    QString pixmapKey(const QModelIndex & index);
 
     TvDBItem *rootItem;
 };
