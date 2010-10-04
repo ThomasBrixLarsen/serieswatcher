@@ -208,6 +208,7 @@ MainWindow::setupList()
   connectSeriesMenus(listView->getMenus());
 
   listView->setModel(tvdbModel);
+  listView->setModelColumn(7);
 
   displayShows();
 }

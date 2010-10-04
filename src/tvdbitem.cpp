@@ -109,21 +109,30 @@ TvDBItem::data(int column, int role) const
 	  return QIcon::fromTheme("video-x-generic");
 	return QVariant();
       }
-      if (role == TvDBModel::Type)
-	return (int) itemType;
-      if (role == TvDBModel::Id)
-	return id;
-      if (role == TvDBModel::Name)
-	return name;
-      if (role > Qt::UserRole) {
-	role = Qt::DisplayRole;
-	column = role - Qt::DisplayRole + 3;
-      }
     }
+
+    if (role == TvDBModel::Type)
+      return (int) itemType;
+    if (role == TvDBModel::Id)
+      return id;
+    if (role == TvDBModel::Name)
+      return name;
+    if (role > Qt::UserRole) {
+      role = Qt::DisplayRole;
+      column = role - Qt::DisplayRole + 3;
+    }
+
     if (column == 7) {
       /* FIXME */
-      if (role == Qt::DisplayRole)
-	return name;
+      if (role == Qt::DisplayRole) {
+	if (itemType == TvDBItem::Season) {
+	  if (name.toInt() == 0)
+	    return QObject::tr("Specials");
+	  else
+	    return QObject::tr("Season %1").arg(name);
+	} else
+	  return name;
+      }
       if (role == Qt::DecorationRole)
 	return QIcon::fromTheme("image-loading"); /* .pixmap(150);*/
     }
