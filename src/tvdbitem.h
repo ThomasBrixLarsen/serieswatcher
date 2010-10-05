@@ -38,8 +38,9 @@ public:
   int childCount() const;
   int columnCount() const;
   QVariant data(int column, int role) const;
+  bool setData(const QVariant & data, int role);
   int row() const;
-  Qt::ItemFlags flags() const;
+  Qt::ItemFlags flags(int column) const;
   TvDBItem *parent();
 
   enum Type {
@@ -50,6 +51,13 @@ public:
   };
 
 private:
+  void recount();
+  void recountBottom();
+  void recountTop();
+  void setWatched(bool watched);
+
+  void update(TvDBItem *item);
+
   QList< TvDBItem * > childItems;
 
   QtTvDB::Show *show;

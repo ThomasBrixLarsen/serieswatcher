@@ -53,6 +53,28 @@ TvDBModel::columnCount(const QModelIndex &parent) const
     return rootItem->columnCount();
 }
 
+bool
+TvDBModel::setData(const QModelIndex & idx, const QVariant & data, int role)
+{
+  qDebug() << data << role;
+  if (!idx.isValid())
+    return false;
+
+  TvDBItem *item = static_cast<TvDBItem*>(idx.internalPointer());
+
+  if (item->setData(data, role)) {
+    QModelIndex parent = idx.sibling(idx.row(), 0);
+
+    while (parent.isValid()) {
+      emit dataChanged(parent, parent.sibling(parent.row(), item->columnCount() - 1));
+      parent = parent.parent();
+    }
+
+    return true;
+  }
+  return false;
+}
+
 QVariant
 TvDBModel::data(const QModelIndex &index, int role) const
 {
@@ -112,7 +134,7 @@ TvDBModel::flags(const QModelIndex &index) const
 
   TvDBItem *item = static_cast<TvDBItem*>(index.internalPointer());
 
-  return item->flags();
+  return item->flags(index.column());
 }
 
 QVariant

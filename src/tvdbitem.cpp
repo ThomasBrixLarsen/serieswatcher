@@ -41,7 +41,7 @@ TvDBItem::TvDBItem(int type, TvDBItem *parent)
 
 TvDBItem::~TvDBItem()
 {
-    qDeleteAll(childItems);
+  qDeleteAll(childItems);
 }
 
 void
@@ -50,16 +50,7 @@ TvDBItem::appendChild(TvDBItem *item)
   item->parentItem = this;
 
   childItems.append(item);
-
-  episodes += item->episodes;
-  episodesWatched += item->episodesWatched;
-  episodesNew += item->episodesNew;
-
-  if (item->episodesNew
-      && (nextEpisodeName.isEmpty() || nextEpisodeDate > item->nextEpisodeDate)) {
-    nextEpisodeName = item->nextEpisodeName;
-    nextEpisodeDate = item->nextEpisodeDate;
-  }
+  update(item);
 }
 
 TvDBItem *
@@ -80,6 +71,81 @@ TvDBItem::columnCount() const
   return 8;
 }
 
+void
+TvDBItem::update(TvDBItem *item)
+{
+  episodes += item->episodes;
+  episodesWatched += item->episodesWatched;
+  episodesNew += item->episodesNew;
+
+  if (item->episodesNew
+      && (nextEpisodeName.isEmpty() || nextEpisodeDate > item->nextEpisodeDate)) {
+    nextEpisodeName = item->nextEpisodeName;
+    nextEpisodeDate = item->nextEpisodeDate;
+  }
+}
+
+void
+TvDBItem::recountTop()
+{
+  recount();
+  if (parentItem)
+    parentItem->recountTop();
+}
+
+void
+TvDBItem::recountBottom()
+{
+  foreach (TvDBItem *item, childItems)
+    item->recountBottom();
+  recount();
+}
+
+void
+TvDBItem::recount()
+{
+  episodes = 0;
+  episodesNew = 0;
+
+  if (itemType == TvDBItem::Episode) {
+    episodes = 1;
+    if (QDateTime::currentDateTime() > nextEpisodeDate && !episodesWatched)
+      episodesNew = 1;
+  } else {
+    episodesWatched = 0;
+    nextEpisodeName = QString();
+    nextEpisodeDate = QDateTime();
+  }
+
+  foreach (TvDBItem *item, childItems)
+    update(item);
+}
+
+void
+TvDBItem::setWatched(bool watched)
+{
+  episodesWatched = watched;
+
+  foreach (TvDBItem *item, childItems)
+    item->setWatched(watched);
+}
+
+bool
+TvDBItem::setData(const QVariant & value, int role)
+{
+  if (itemType == TvDBItem::Episode &&
+      (role == Qt::CheckStateRole || role == TvDBModel::EpisodesWatched)) {
+    bool watched = value.toInt() == Qt::Checked;
+
+    setWatched(watched);
+    recountBottom();
+    recountTop();
+
+    return true;
+  }
+  return false;
+ }
+
 QVariant
 TvDBItem::data(int column, int role) const
 {
@@ -93,6 +159,9 @@ TvDBItem::data(int column, int role) const
 
     return columns[column];
   } else {
+    if (itemType == TvDBItem::Episode && role == Qt::CheckStateRole
+	&& (column == 0 || column == 7))
+      return episodesWatched ? Qt::Checked : Qt::Unchecked;
     if (role == Qt::TextColorRole && episodesNew)
       return Qt::blue;
     if (column == 0) {
@@ -201,11 +270,11 @@ TvDBItem::row() const
 }
 
 Qt::ItemFlags
-TvDBItem::flags() const
+TvDBItem::flags(int column) const
 {
   Qt::ItemFlags flags = Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 
-  if (itemType == TvDBItem::Episode)
+  if (itemType == TvDBItem::Episode && (column == 0 || column == 7))
     flags |= Qt::ItemIsUserCheckable;
   return flags;
 }
