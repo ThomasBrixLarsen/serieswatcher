@@ -32,15 +32,14 @@ public:
   ~SeriesMenus();
 
   void buildMenus();
-  void miscAction(TvDBCache *cache, const QModelIndex & index, QAction *action);
-  void seriesAction(TvDBCache *cache, const QModelIndex & index, SeriesAction *action);
+  void miscAction(const QModelIndex & index, QAction *action);
+  void seriesAction(const QModelIndex & index, SeriesAction *action);
   QAction *exec(const QModelIndex & index, const QPoint & pos);
 
  signals:
   void updateShow(qint64 showId);
   void deleteShow(qint64 showId);
-  void episodesWatched(qint64 showId, int season, bool watched);
-  void episodeWatched(qint64 id, bool watched);
+  void episodesWatched(const QModelIndex & index, bool watched);
   void episodeDetails(qint64 id);
   void showDetails(qint64 id);
 

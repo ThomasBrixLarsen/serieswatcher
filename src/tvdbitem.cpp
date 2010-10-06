@@ -27,6 +27,7 @@
 #include "tvdb.h"
 #include "tvdbitem.h"
 #include "tvdbmodel.h"
+#include "tvdbcache.h"
 
 TvDBItem::TvDBItem(int type, TvDBItem *parent)
 {
@@ -133,9 +134,18 @@ TvDBItem::setWatched(bool watched)
 bool
 TvDBItem::setData(const QVariant & value, int role)
 {
-  if (itemType == TvDBItem::Episode &&
-      (role == Qt::CheckStateRole || role == TvDBModel::EpisodesWatched)) {
-    bool watched = value.toInt() == Qt::Checked;
+  if (role == Qt::CheckStateRole || role == TvDBModel::EpisodesWatched) {
+    TvDBCache *cache = TvDBCache::instance();
+    bool watched = !!value.toInt();
+
+    if (itemType == TvDBItem::Episode)
+      cache->episodeWatched(id, watched);
+    else if (itemType == TvDBItem::Season)
+      cache->episodesWatched(parentItem->id, name.toInt(), watched);
+    else if (itemType == TvDBItem::Show)
+      cache->episodesWatched(id, -1, watched);
+    else
+      cache->episodesWatched(-1, -1, watched);
 
     setWatched(watched);
     recountBottom();

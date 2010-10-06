@@ -27,7 +27,6 @@
 MainTreeView::MainTreeView(QWidget *parent)
   : QTreeView(parent)
 {
-  cache = new TvDBCache();
   menus = new SeriesMenus(this);
 
   buildMenus();
@@ -35,7 +34,6 @@ MainTreeView::MainTreeView(QWidget *parent)
 
 MainTreeView::~MainTreeView()
 {
-  delete cache;
   delete menus;
 }
 
@@ -71,11 +69,15 @@ MainTreeView::seriesAction()
   if (!saction && !action)
     return ;
 
-  foreach (QModelIndex index, selectedIndexes())
+  foreach (QModelIndex index, selectedIndexes()) {
+    if (index.column() != 0)
+      continue ;
+
     if (saction)
-      menus->seriesAction(cache, index, saction);
+      menus->seriesAction(index, saction);
     else
-      menus->miscAction(cache, index, action);
+      menus->miscAction(index, action);
+  }
 }
 
 void

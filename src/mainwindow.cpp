@@ -64,6 +64,8 @@ MainWindow::~MainWindow()
 
   QSqlDatabase::database("default").close();
   QSqlDatabase::removeDatabase("default");
+
+  delete cache;
 }
 
 void
@@ -184,7 +186,7 @@ MainWindow::createSearchDialog()
 void
 MainWindow::setupCache()
 {
-  cache = new TvDBCache();
+  cache = TvDBCache::instance();
 }
 
 void
@@ -229,9 +231,8 @@ MainWindow::connectSeriesMenus(const SeriesMenus *menus)
 {
   connect(menus, SIGNAL(updateShow(qint64)), this, SLOT(updateShow(qint64)));
   connect(menus, SIGNAL(deleteShow(qint64)), this, SLOT(deleteShow(qint64)));
-  connect(menus, SIGNAL(episodesWatched(qint64, int, bool)),
-	  this, SLOT(episodesWatched(qint64, int, bool)));
-  connect(menus, SIGNAL(episodeWatched(qint64, bool)), this, SLOT(episodeWatched(qint64, bool)));
+  connect(menus, SIGNAL(episodesWatched(const QModelIndex &, bool)),
+	  this, SLOT(episodesWatched(const QModelIndex &, bool)));
   connect(menus, SIGNAL(episodeDetails(qint64)), this, SLOT(episodeDetails(qint64)));
   connect(menus, SIGNAL(showDetails(qint64)), this, SLOT(showDetails(qint64)));
 }
@@ -385,10 +386,9 @@ MainWindow::deleteShow(qint64 showId)
 }
 
 void
-MainWindow::episodesWatched(qint64 showId, int season, bool watched)
+MainWindow::episodesWatched(const QModelIndex & index, bool watched)
 {
-  /* FIXME -> use tvdbModel */
-  cache->episodesWatched(showId, season, watched);
+  tvdbModel->setData(index, watched, TvDBModel::EpisodesWatched);
 }
 
 void
@@ -408,27 +408,8 @@ MainWindow::markWatched(bool watched)
 {
   QModelIndexList list = listView->selectedIndexes();
 
-  foreach (QModelIndex item, list) {
-    /*
-    QString type = item.data(Qt::UserRole).toString();
-
-    if (type == "show")
-      cache->episodesWatched(item.data(ShowModel::Id).toLongLong(), -1, watched);
-    if (type == "season")
-      cache->episodesWatched(item.data(SeasonModel::Id).toLongLong(),
-			     item.data(SeasonModel::Id).toLongLong(), watched);
-    if (type == "episode")
-      cache->episodeWatched(item.data(EpisodeModel::Id).toLongLong(), watched);
-    */
-  }
-  /* FIXME -> use tvdbModel */
-}
-
-void
-MainWindow::episodeWatched(qint64 id, bool watched)
-{
-  cache->episodeWatched(id, watched);
-  /* FIXME -> use tvdbModel */
+  foreach (QModelIndex item, list)
+    tvdbModel->setData(item, watched, TvDBModel::EpisodesWatched);
 }
 
 void
@@ -501,7 +482,15 @@ MainWindow::databaseUpdated(void)
 void
 MainWindow::reload()
 {
-  tvdbModel->reloadModel();
+  listView->setModel(NULL);
+  treeView->setModel(NULL);
+  delete tvdbModel;
+  tvdbModel = new TvDBModel(this);
+  listView->setModel(tvdbModel);
+  listView->setModelColumn(7);
+  treeView->setModel(tvdbModel);
+  displayShows();
+
   reloadActions();
 }
 

@@ -96,7 +96,7 @@ SeriesMenus::buildMenus()
 }
 
 void
-SeriesMenus::miscAction(TvDBCache *cache, const QModelIndex & index, QAction *action)
+SeriesMenus::miscAction(const QModelIndex & index, QAction *action)
 {
   int type = index.data(TvDBModel::Type).toInt();
 
@@ -129,11 +129,9 @@ SeriesMenus::miscAction(TvDBCache *cache, const QModelIndex & index, QAction *ac
   if (action == markWatchedAction || action == markNotWatchedAction) {
     bool watched = action == markWatchedAction;
 
-    if (type == TvDBModel::Episode)
-      emit episodeWatched(id, watched);
-    else
-      emit episodesWatched(showId, season, watched);
+    emit episodesWatched(index, watched);
   }
+
   if (action == detailsAction) {
     if (type == TvDBModel::Episode)
       emit episodeDetails(id);
@@ -143,8 +141,9 @@ SeriesMenus::miscAction(TvDBCache *cache, const QModelIndex & index, QAction *ac
 }
 
 void
-SeriesMenus::seriesAction(TvDBCache *cache, const QModelIndex & index, SeriesAction *action)
+SeriesMenus::seriesAction(const QModelIndex & index, SeriesAction *action)
 {
+  TvDBCache *cache = TvDBCache::instance();
   int type = index.data(TvDBModel::Type).toInt();
 
   if (type == TvDBModel::Episode) {

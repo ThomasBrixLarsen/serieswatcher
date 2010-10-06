@@ -25,14 +25,12 @@
 MainListView::MainListView(QWidget *parent)
   : QListView(parent)
 {
-  cache = new TvDBCache();
   menus = new SeriesMenus(this);
   buildMenus();
 }
 
 MainListView::~MainListView()
 {
-  delete cache;
   delete menus;
 }
 
@@ -53,9 +51,9 @@ MainListView::seriesAction()
 
   foreach (QModelIndex index, selectedIndexes())
     if (saction)
-      menus->seriesAction(cache, index, saction);
+      menus->seriesAction(index, saction);
     else
-      menus->miscAction(cache, index, action);
+      menus->miscAction(index, action);
 }
 
 void

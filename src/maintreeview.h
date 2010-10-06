@@ -44,7 +44,6 @@ protected:
   virtual void contextMenuEvent(QContextMenuEvent * event);
 
 private:
-  TvDBCache *cache;
   SeriesMenus *menus;
 };
 

@@ -56,7 +56,6 @@ TvDBModel::columnCount(const QModelIndex &parent) const
 bool
 TvDBModel::setData(const QModelIndex & idx, const QVariant & data, int role)
 {
-  qDebug() << data << role;
   if (!idx.isValid())
     return false;
 

@@ -43,7 +43,6 @@ private slots:
 
 private:
   SeriesMenus *menus;
-  TvDBCache *cache;
 };
 
 #endif

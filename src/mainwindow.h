@@ -61,8 +61,7 @@ private slots:
   void markWatched();
   void markNotWatched();
   void markWatched(bool watched);
-  void episodesWatched(qint64 showId, int season, bool watched);
-  void episodeWatched(qint64 id, bool watched);
+  void episodesWatched(const QModelIndex & index, bool watched);
   void episodeDetails(qint64 id);
   void showDetails(qint64 id);
 

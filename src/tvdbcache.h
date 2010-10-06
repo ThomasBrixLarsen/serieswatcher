@@ -32,6 +32,8 @@ public:
   TvDBCache(const QString & name = QLatin1String(QSqlDatabase::defaultConnection));
   ~TvDBCache();
 
+  static TvDBCache *instance();
+
   void episodesWatched(qint64 showId, int season, bool watched);
   void episodeWatched(qint64 id, bool watched);
   void deleteShow(qint64 showId);
@@ -62,7 +64,7 @@ public:
   QtTvDB::Banner *bannerFromRecord(QSqlRecord record);
 
  private:
-  QString bannerPath(qint64 id, BannerType type, QSize size = QSize());
+  static TvDBCache *_instance;
 
   QSqlDatabase db;
   QString dbName;

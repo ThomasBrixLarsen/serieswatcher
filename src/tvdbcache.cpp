@@ -24,11 +24,25 @@
 #include <QtCore/QFileInfo>
 #include <QtGui/QPixmap>
 #include <QtGui/QPixmapCache>
+#include <QtGui/QApplication>
+#include <QtCore/QThread>
 
 #include "settings.h"
 #include "tvdbcache.h"
 
 #include "schema.h"
+
+TvDBCache *TvDBCache::_instance = NULL;
+
+TvDBCache *
+TvDBCache::instance()
+{
+  if (QApplication::instance()->thread() != QThread::currentThread())
+    return NULL;
+  if (!_instance)
+    _instance = new TvDBCache();
+  return _instance;
+}
 
 TvDBCache::TvDBCache(const QString & name)
   : dbName(name)
