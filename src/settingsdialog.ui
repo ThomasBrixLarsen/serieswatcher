@@ -34,14 +34,7 @@
        <string>Database</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_4">
-       <item row="0" column="0">
-        <widget class="QCheckBox" name="databaseCheckBox">
-         <property name="text">
-          <string>Update Database at Startup</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
+       <item row="3" column="0">
         <spacer name="verticalSpacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -55,10 +48,42 @@
         </spacer>
        </item>
        <item row="1" column="0">
-        <widget class="QCheckBox" name="prefetchBannersCheckBox">
-         <property name="text">
-          <string>Prefetch banners</string>
+        <widget class="QGroupBox" name="groupBox">
+         <property name="title">
+          <string>Cache</string>
          </property>
+         <layout class="QGridLayout" name="gridLayout_5">
+          <item row="0" column="0">
+           <widget class="QCheckBox" name="prefetchBannersCheckBox">
+            <property name="text">
+             <string>Prefetch banners</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QPushButton" name="clearCacheButton">
+            <property name="text">
+             <string>Clear Cache</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QGroupBox" name="groupBox_2">
+         <property name="title">
+          <string>Database</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_6">
+          <item row="0" column="0">
+           <widget class="QCheckBox" name="databaseCheckBox">
+            <property name="text">
+             <string>Update Database at Startup</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
       </layout>
@@ -146,18 +171,6 @@
          <property name="sortingEnabled">
           <bool>true</bool>
          </property>
-         <attribute name="headerDefaultSectionSize">
-          <number>60</number>
-         </attribute>
-         <attribute name="headerMinimumSectionSize">
-          <number>1</number>
-         </attribute>
-         <attribute name="headerShowSortIndicator" stdset="0">
-          <bool>true</bool>
-         </attribute>
-         <attribute name="headerStretchLastSection">
-          <bool>true</bool>
-         </attribute>
          <attribute name="headerDefaultSectionSize">
           <number>60</number>
          </attribute>

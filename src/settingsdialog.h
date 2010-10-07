@@ -43,6 +43,8 @@ private slots:
   void delAction();
   void setStartupCheck(int state);
   void setPrefetchBanners(int state);
+  void clearCache();
+  bool removeDir(const QString & dirname);
 
 private:
   void populateActions();

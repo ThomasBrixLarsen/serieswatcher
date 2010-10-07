@@ -16,6 +16,10 @@
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#include <QtGui/QDesktopServices>
+#include <QtCore/QFileInfo>
+#include <QtCore/QDir>
+
 #include "settingsdialog.h"
 #include "actiondialog.h"
 #include "seriesaction.h"
@@ -43,6 +47,7 @@ SettingsDialog::SettingsDialog(QWidget * parent)
   databaseCheckBox->setChecked(settings.value("updateOnStartup").toBool() ? Qt::Checked : Qt::Unchecked);
   prefetchBannersCheckBox->setChecked(settings.value("prefetchBanners").toBool() ? Qt::Checked : Qt::Unchecked);
 
+  connect(clearCacheButton, SIGNAL(clicked()), this, SLOT(clearCache()));
   connect(databaseCheckBox, SIGNAL(stateChanged(int)), this, SLOT(setStartupCheck(int)));
   connect(prefetchBannersCheckBox, SIGNAL(stateChanged(int)), this, SLOT(setPrefetchBanners(int)));
   connect(addButton, SIGNAL(clicked()), this, SLOT(addAction()));
@@ -78,15 +83,44 @@ SettingsDialog::setPrefetchBanners(int state)
   settings.setValue("prefetchBanners", !!state);
 }
 
+bool
+SettingsDialog::removeDir(const QString &dirName)
+{
+  bool result = true;
+  QDir dir(dirName);
+  QFlags<QDir::Filter> flags = QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs | QDir::Files;
+
+  if (!dir.exists())
+    return result;
+
+  foreach (QFileInfo info, dir.entryInfoList(flags, QDir::DirsFirst)) {
+    if (info.isDir())
+      result = removeDir(info.absoluteFilePath());
+    else
+      result = QFile::remove(info.absoluteFilePath());
+    if (!result)
+	return result;
+    result = dir.rmdir(dirName);
+  }
+  return result;
+}
+
+void
+SettingsDialog::clearCache(void)
+{
+  removeDir(QDesktopServices::storageLocation(QDesktopServices::CacheLocation));
+}
+
 void
 SettingsDialog::addAction()
 {
   SeriesAction *action = new SeriesAction();
   ActionDialog dlg(action, this);
 
-  dlg.exec();
-
-  createItemFromAction(action);
+  if (dlg.exec())
+    createItemFromAction(action);
+  else
+    delete action;
 }
 
 void
@@ -100,9 +134,8 @@ SettingsDialog::editAction()
 
     ActionDialog dlg(action, this);
 
-    dlg.exec();
-
-    updateItemForAction(item, action);
+    if (dlg.exec())
+      updateItemForAction(item, action);
   }
 }
 
