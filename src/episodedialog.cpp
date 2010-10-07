@@ -20,13 +20,22 @@
 #include "tvdbcache.h"
 #include "bannerloader.h"
 #include "tvdb.h"
+#include "serieswatcher.h"
 
 EpisodeDialog::EpisodeDialog(QWidget * parent)
+  :
+#ifdef Q_WS_MAEMO_5
+  QDialog(parent, Qt::Window)
+#else
+  QDialog(parent)
+#endif
 {
   bannerLoader = new BannerLoader(this);
   connect(bannerLoader, SIGNAL(bannerReceived(int)), this, SLOT(bannerReceived()));
 
   setupUi(this);
+  setupDialog(this);
+
   overviewEdit->viewport()->setAutoFillBackground(false);
 }
 

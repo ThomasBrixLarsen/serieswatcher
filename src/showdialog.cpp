@@ -23,14 +23,24 @@
 #include "showdialog.h"
 #include "bannerloader.h"
 #include "tvdb.h"
+#include "serieswatcher.h"
 
 ShowDialog::ShowDialog(QWidget * parent)
+  :
+#ifdef Q_WS_MAEMO_5
+  QDialog(parent, Qt::Window)
+#else
+  QDialog(parent)
+#endif
 {
   bannerLoader = new BannerLoader(this);
   connect(bannerLoader, SIGNAL(bannerReceived(int)), this, SLOT(bannerReceived()));
 
   setupUi(this);
+  setupDialog(this);
+#if !defined(Q_WS_MAEMO_5)
   overviewEdit->viewport()->setAutoFillBackground(false);
+#endif
 }
 
 ShowDialog::~ShowDialog()

@@ -92,6 +92,10 @@ ADD_EXECUTABLE(
 	${RC_SRCS}
 )
 
+if (Q_WS_MAEMO_5)
+  target_link_libraries(serieswatcher QtMaemo5)
+endif()
+
 TARGET_LINK_LIBRARIES(
 	serieswatcher
 	${QT_LIBRARIES}

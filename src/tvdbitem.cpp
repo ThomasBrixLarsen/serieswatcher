@@ -173,7 +173,11 @@ TvDBItem::data(int column, int role) const
 	&& (column == 0 || column == 7))
       return episodesWatched ? Qt::Checked : Qt::Unchecked;
     if (role == Qt::TextColorRole && episodesNew)
-      return Qt::blue;
+#if defined(Q_WS_MAEMO_5)
+      return QColor(0x80, 0xB3, 0xFF);
+#else
+      return Qt::blue
+#endif
     if (column == 0) {
       if (role == Qt::DisplayRole) {
 	if (itemType == TvDBItem::Season)

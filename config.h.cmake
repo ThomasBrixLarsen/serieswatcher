@@ -4,3 +4,4 @@
 #cmakedefine HAVE_LIBZIP
 #cmakedefine HAVE_ZIP
 #cmakedefine WITH_ZIP
+#cmakedefine Q_WS_MAEMO_5

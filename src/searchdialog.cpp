@@ -21,11 +21,23 @@
 #include "searchdialog.h"
 #include "searchmodel.h"
 #include "tvdb.h"
+#include "serieswatcher.h"
 
 SearchDialog::SearchDialog(QWidget * parent)
-  : QDialog(parent)
+  :
+#ifdef Q_WS_MAEMO_5
+  QDialog(parent, Qt::Window)
+#else
+  QDialog(parent)
+#endif
 {
   setupUi(this);
+  setupDialog(this);
+
+#if defined(Q_WS_MAEMO_5)
+  progressBar->hide();
+  buttonBox->hide();
+#endif
 
   model = new SearchModel(this);
   connect(model, SIGNAL(searchProgress(qint64, qint64)), this, SLOT(downloadProgress(qint64, qint64)));

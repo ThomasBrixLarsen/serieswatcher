@@ -48,7 +48,7 @@
         </spacer>
        </item>
        <item row="1" column="0">
-        <widget class="QGroupBox" name="groupBox">
+        <widget class="QGroupBox" name="cacheGroupBox">
          <property name="title">
           <string>Cache</string>
          </property>
@@ -71,7 +71,7 @@
         </widget>
        </item>
        <item row="0" column="0">
-        <widget class="QGroupBox" name="groupBox_2">
+        <widget class="QGroupBox" name="databaseGroupBox">
          <property name="title">
           <string>Database</string>
          </property>

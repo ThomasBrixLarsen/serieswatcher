@@ -25,17 +25,31 @@
 #include "seriesaction.h"
 #include "settings.h"
 #include "tvdb.h"
+#include "serieswatcher.h"
 
 SettingsDialog::SettingsDialog(QWidget * parent)
-  : QDialog(parent)
+  :
+#ifdef Q_WS_MAEMO_5
+  QDialog(parent, Qt::Window)
+#else
+  QDialog(parent)
+#endif
 {
   Settings settings;
 
   setupUi(this);
+  setupDialog(this);
 
   tabWidget->setTabIcon(0, QIcon::fromTheme("folder-video"));
   tabWidget->setTabIcon(1, QIcon::fromTheme("preferences-other"));
   tabWidget->setTabIcon(2, QIcon::fromTheme("server-database"));
+
+#if defined(Q_WS_MAEMO_5)
+  tabWidget->setIconSize(QSize(24, 24));
+  databaseGroupBox->setTitle(QString());
+  buttonBox->hide();
+  cacheGroupBox->setTitle(QString());
+#endif
 
   addButton->setIcon(QIcon::fromTheme("list-add"));
   delButton->setIcon(QIcon::fromTheme("list-remove"));

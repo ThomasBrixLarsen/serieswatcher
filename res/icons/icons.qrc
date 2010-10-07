@@ -118,6 +118,5 @@
 <file>./serieswatcher/64x64/places/server-database.png</file>
 <file>./serieswatcher/64x64/status/dialog-information.png</file>
 <file>./serieswatcher/index.theme</file>
-<file>./serieswatcher/index.theme~</file>
 </qresource>
 </RCC>

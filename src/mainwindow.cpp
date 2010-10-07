@@ -49,10 +49,26 @@ MainWindow::MainWindow()
   setupCache();
   setupModel();
   setupList();
+#if !defined(Q_WS_MAEMO_5)
   setupTree();
+#endif
   displayShows();
 
   modelsDirty = false;
+#if defined(Q_WS_MAEMO_5)
+  setAttribute(Qt::WA_Maemo5StackedWindow);
+  setAttribute(Qt::WA_Maemo5AutoOrientation, true);
+
+  treeDock->hide();
+  toolBar->hide();
+  statusBar()->hide();
+  menu_Edit->removeAction(updateShowAction);
+  menu_Edit->removeAction(markWatchedAction);
+  menu_Edit->removeAction(deleteShowAction);
+  menu_Help->removeAction(aboutQtAction);
+  menu_File->removeAction(importAction);
+  menu_File->removeAction(exportAction);
+#endif
 }
 
 MainWindow::~MainWindow()
@@ -98,7 +114,8 @@ MainWindow::createActions()
 void
 MainWindow::reloadActions()
 {
-  treeView->buildMenus();
+  if (treeView)
+    treeView->buildMenus();
   listView->buildMenus();
 }
 
@@ -483,12 +500,14 @@ void
 MainWindow::reload()
 {
   listView->setModel(NULL);
-  treeView->setModel(NULL);
+  if (treeView)
+    treeView->setModel(NULL);
   delete tvdbModel;
   tvdbModel = new TvDBModel(this);
   listView->setModel(tvdbModel);
   listView->setModelColumn(7);
-  treeView->setModel(tvdbModel);
+  if (treeView)
+    treeView->setModel(tvdbModel);
   displayShows();
 
   reloadActions();
