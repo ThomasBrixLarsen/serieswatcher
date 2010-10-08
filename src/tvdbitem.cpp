@@ -176,7 +176,7 @@ TvDBItem::data(int column, int role) const
 #if defined(Q_WS_MAEMO_5)
       return QColor(0x80, 0xB3, 0xFF);
 #else
-      return Qt::blue
+      return Qt::blue;
 #endif
     if (column == 0) {
       if (role == Qt::DisplayRole) {
