@@ -220,7 +220,8 @@ TvDBModel::setupModelData(void)
 
     sql = "SELECT episodes.season, episodes.seasonId FROM episodes ";
     sql += "WHERE episodes.showId = %1 ";
-    sql += "GROUP BY episodes.season";
+    sql += "GROUP BY episodes.season ";
+    sql += "ORDER BY episodes.season ASC";
     sql = sql.arg(show->id);
 
     querySeason.exec(sql);
@@ -234,7 +235,8 @@ TvDBModel::setupModelData(void)
       sql += "episodes.firstAired ";
       sql += "FROM episodes LEFT JOIN episodes_extra ";
       sql += "ON episodes.id = episodes_extra.id ";
-      sql += "WHERE episodes.showId = %1 AND episodes.season = %2";
+      sql += "WHERE episodes.showId = %1 AND episodes.season = %2 ";
+      sql += "ORDER BY episodes.episode ASC";
       sql = sql.arg(show->id).arg(season->name.toInt());
 
       queryEpisode.exec(sql);
