@@ -22,6 +22,7 @@ LINK_DIRECTORIES(
 SET(serieswatcher_SRCS
   main.cpp
   mainwindow.cpp
+  listwindow.cpp
   searchdialog.cpp
   searchlistview.cpp
   searchmodel.cpp
@@ -46,6 +47,7 @@ SET(serieswatcher_SRCS
 
 SET(serieswatcher_UIS
   mainwindow.ui
+  listwindow.ui
   searchdialog.ui
   updateprogressdialog.ui
   settingsdialog.ui
@@ -55,6 +57,7 @@ SET(serieswatcher_UIS
 
 SET(serieswatcher_MOC_HDRS
   mainwindow.h
+  listwindow.h
   searchdialog.h
   searchmodel.h
   searchlistview.h

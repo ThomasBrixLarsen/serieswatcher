@@ -20,9 +20,11 @@
 # define MAINWINDOW_H
 
 #include <QtGui/QMainWindow>
+#include <QtCore/QStack>
 
 #include "ui_mainwindow.h"
 
+class ListWindow;
 class SearchDialog;
 class DownloadWorker;
 class UpdateWorker;
@@ -50,6 +52,7 @@ private slots:
 
   void threadStarted();
 
+  void itemOpened(const QModelIndex & index);
   void itemClicked(const QModelIndex & index);
   void itemEntered(const QModelIndex & index);
   void itemDoubleClicked(const QModelIndex & index);
@@ -75,6 +78,8 @@ private slots:
   void displayShow(const QModelIndex &item);
   void displaySeason(const QModelIndex &item);
 
+  void windowClosed();
+
 private:
   void setupTvDB();
   void createWorkers();
@@ -85,8 +90,11 @@ private:
   void connectSeriesMenus(const SeriesMenus *menus);
   void setupCache();
   void setupModel();
-  void setupList();
+  void setupList(MainListView *view);
   void setupTree();
+
+  MainListView *newView(const QModelIndex &item);
+  MainListView *topView(void);
 
 private:
   int currentShowId;
@@ -105,6 +113,9 @@ private:
   SearchDialog *searchDialog;
   TvDBModel *tvdbModel;
   TvDBCache *cache;
+
+  /* Used for Maemo 5 */
+  QStack < ListWindow * > childWindows;
 };
 
 #endif

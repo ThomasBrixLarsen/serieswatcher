@@ -25,6 +25,7 @@
 #include "config.h"
 
 #include "mainwindow.h"
+#include "listwindow.h"
 #include "searchdialog.h"
 #include "downloadworker.h"
 #include "updateworker.h"
@@ -48,7 +49,7 @@ MainWindow::MainWindow()
   createSearchDialog();
   setupCache();
   setupModel();
-  setupList();
+  setupList(listView);
 #if !defined(Q_WS_MAEMO_5)
   setupTree();
 #endif
@@ -213,23 +214,21 @@ MainWindow::setupModel()
 }
 
 void
-MainWindow::setupList()
+MainWindow::setupList(MainListView *view)
 {
-  //listView->setItemDelegate(new ShowDelegate());
+  //view->setItemDelegate(new ShowDelegate());
 
-  connect(listView, SIGNAL(clicked(const QModelIndex &)),
+  connect(view, SIGNAL(clicked(const QModelIndex &)),
 	  this, SLOT(itemClicked(const QModelIndex &)));
-  connect(listView, SIGNAL(entered(const QModelIndex &)),
+  connect(view, SIGNAL(entered(const QModelIndex &)),
 	  this, SLOT(itemEntered(const QModelIndex &)));
-  connect(listView, SIGNAL(doubleClicked(const QModelIndex &)),
+  connect(view, SIGNAL(doubleClicked(const QModelIndex &)),
 	  this, SLOT(itemDoubleClicked(const QModelIndex &)));
 
-  connectSeriesMenus(listView->getMenus());
+  connectSeriesMenus(view->getMenus());
 
-  listView->setModel(tvdbModel);
-  listView->setModelColumn(7);
-
-  displayShows();
+  view->setModel(tvdbModel);
+  view->setModelColumn(7);
 }
 
 void
@@ -257,6 +256,9 @@ MainWindow::connectSeriesMenus(const SeriesMenus *menus)
 void
 MainWindow::itemClicked(const QModelIndex & item)
 {
+#if defined(Q_WS_MAEMO_5)
+  itemOpened(item);
+#endif
 }
 
 void
@@ -267,6 +269,14 @@ MainWindow::itemEntered(const QModelIndex & item)
 void
 MainWindow::itemDoubleClicked(const QModelIndex & item)
 {
+#if !defined(Q_WS_MAEMO_5)
+  itemOpened(item);
+#endif
+}
+
+void
+MainWindow::itemOpened(const QModelIndex & item)
+{
   QModelIndex index = tvdbModel->index(item.row(), 0, item.parent());
   int type = index.data(TvDBModel::Type).toInt();
 
@@ -274,6 +284,8 @@ MainWindow::itemDoubleClicked(const QModelIndex & item)
     displayShow(index);
   else if (type == TvDBModel::Season)
     displaySeason(index);
+  else if (type == TvDBModel::Episode)
+    episodeDetails(item.data(TvDBModel::Id).toInt());
   else if (type == TvDBModel::Root)
     displayShows();
 }
@@ -281,31 +293,37 @@ MainWindow::itemDoubleClicked(const QModelIndex & item)
 void
 MainWindow::displayShows()
 {
-  listView->setRootIndex(QModelIndex());
+  MainListView *view = topView();
 
-  listView->setViewMode(QListView::IconMode);
-  listView->setIconSize(QSize(100, 120));
-  listView->setGridSize(QSize(150, 150));
+  view->setRootIndex(QModelIndex());
+
+  view->setViewMode(QListView::IconMode);
+  view->setIconSize(QSize(100, 120));
+  view->setGridSize(QSize(150, 150));
 }
 
 void
 MainWindow::displayShow(const QModelIndex & item)
 {
-  listView->setRootIndex(item);
+  MainListView *view = newView(item);
 
-  listView->setViewMode(QListView::IconMode);
-  listView->setIconSize(QSize(100, 120));
-  listView->setGridSize(QSize(150, 150));
+  view->setRootIndex(item);
+
+  view->setViewMode(QListView::IconMode);
+  view->setIconSize(QSize(100, 120));
+  view->setGridSize(QSize(150, 150));
 }
 
 void
 MainWindow::displaySeason(const QModelIndex & item)
 {
-  listView->setRootIndex(item);
+  MainListView *view = newView(item);
 
-  listView->setViewMode(QListView::ListMode);
-  listView->setIconSize(QSize(100, 56));
-  listView->setGridSize(QSize(110, 60));
+  view->setRootIndex(item);
+
+  view->setViewMode(QListView::ListMode);
+  view->setIconSize(QSize(100, 56));
+  view->setGridSize(QSize(110, 60));
 }
 
 void
@@ -384,7 +402,8 @@ MainWindow::updateShow(qint64 showId)
 void
 MainWindow::deleteShow()
 {
-  QModelIndexList list = listView->selectedIndexes();
+  MainListView *view = topView();
+  QModelIndexList list = view->selectedIndexes();
 
   foreach (QModelIndex item, list) {
     int type = item.data(TvDBModel::Id).toInt();
@@ -423,7 +442,8 @@ MainWindow::markNotWatched()
 void
 MainWindow::markWatched(bool watched)
 {
-  QModelIndexList list = listView->selectedIndexes();
+  MainListView *view = topView();
+  QModelIndexList list = view->selectedIndexes();
 
   foreach (QModelIndex item, list)
     tvdbModel->setData(item, watched, TvDBModel::EpisodesWatched);
@@ -435,9 +455,10 @@ MainWindow::episodeDetails(qint64 id)
   QtTvDB::Episode *episode = cache->fetchEpisode(id);
 
   if (episode && !episode->isNull()) {
-    EpisodeDialog dialog(this);
+    EpisodeDialog dialog(this); /* FIXME child */
 
     dialog.setEpisode(episode, cache);
+    /* FIXME show and delete */
     dialog.exec();
   }
 
@@ -450,9 +471,10 @@ MainWindow::showDetails(qint64 id)
   QtTvDB::Show *show = cache->fetchShow(id);
 
   if (show && !show->isNull()) {
-    ShowDialog dialog(this);
+    ShowDialog dialog(this); /* FIXME child */
 
     dialog.setShow(show, cache);
+    /* FIXME show and delete */
     dialog.exec();
   }
 
@@ -499,17 +521,71 @@ MainWindow::databaseUpdated(void)
 void
 MainWindow::reload()
 {
+  foreach (ListWindow *window, childWindows)
+    window->close();
+
   listView->setModel(NULL);
+
   if (treeView)
     treeView->setModel(NULL);
+
   delete tvdbModel;
   tvdbModel = new TvDBModel(this);
+
   listView->setModel(tvdbModel);
   listView->setModelColumn(7);
+
   if (treeView)
     treeView->setModel(tvdbModel);
+
   displayShows();
 
   reloadActions();
 }
 
+/* Stacked windows hack for Maemo 5 */
+MainListView *
+MainWindow::newView(const QModelIndex & item)
+{
+#if !defined(Q_WS_MAEMO_5)
+  return listView;
+#else
+  QWidget *parent;
+  ListWindow *window;
+  MainListView *view;
+
+  if (!childWindows.isEmpty())
+    parent = childWindows.top();
+  else
+    parent = this;
+  window = new ListWindow(parent);
+  view = window->view();
+
+  view->buildMenus();
+  setupList(view);
+
+  connect(window, SIGNAL(destroyed(QObject *)), this, SLOT(windowClosed()));
+
+  childWindows.push(window);
+
+  window->setWindowTitle(item.data(Qt::DisplayRole).toString());
+  window->setWindowModality(Qt::WindowModal);
+  window->setAttribute(Qt::WA_DeleteOnClose, true);
+  window->show();
+  return view;
+#endif
+}
+
+MainListView *
+MainWindow::topView()
+{
+  if (!childWindows.isEmpty())
+    return childWindows.top()->view();
+  return listView;
+}
+
+void
+MainWindow::windowClosed()
+{
+  childWindows.pop();
+}

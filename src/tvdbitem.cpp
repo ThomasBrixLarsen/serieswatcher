@@ -180,9 +180,12 @@ TvDBItem::data(int column, int role) const
 #endif
     if (column == 0) {
       if (role == Qt::DisplayRole) {
-	if (itemType == TvDBItem::Season)
-	  return QObject::tr("Season %1").arg(name);
-	else
+	if (itemType == TvDBItem::Season) {
+	  if (name.toInt() == 0)
+	    return QObject::tr("Specials");
+	  else
+	    return QObject::tr("Season %1").arg(name);
+	} else
 	  return name;
       }
       if (role == Qt::DecorationRole) {
