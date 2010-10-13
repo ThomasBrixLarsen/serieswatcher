@@ -50,7 +50,6 @@ MainWindow::MainWindow()
   createSearchDialog();
   setupCache();
   setupModel();
-  setupList(listView);
 #if !defined(Q_WS_MAEMO_5)
   setupTree();
 #endif
@@ -71,7 +70,7 @@ MainWindow::MainWindow()
   menu_File->removeAction(importAction);
   menu_File->removeAction(exportAction);
 #endif
-  QTimer::singleShot(0, this, SLOT(displayShows()));
+  QTimer::singleShot(100, this, SLOT(delayedInit()));
 }
 
 MainWindow::~MainWindow()
@@ -85,6 +84,13 @@ MainWindow::~MainWindow()
   QSqlDatabase::removeDatabase("default");
 
   delete cache;
+}
+
+void
+MainWindow::delayedInit()
+{
+  setupList(listView);
+  displayShows();
 }
 
 void
@@ -305,8 +311,14 @@ MainWindow::displayShows()
   MainListView *view = topView();
 
   view->setViewMode(QListView::IconMode);
+
+#if defined(Q_WS_MAEMO_5)
+  view->setIconSize(QSize(204, 300));
+  view->setGridSize(QSize(240, 320));
+#else
   view->setIconSize(QSize(100, 120));
   view->setGridSize(QSize(150, 150));
+#endif
 
   view->setRootIndex(QModelIndex());
 }
@@ -317,8 +329,13 @@ MainWindow::displayShow(const QModelIndex & item)
   MainListView *view = newView(item);
 
   view->setViewMode(QListView::IconMode);
+#if defined(Q_WS_MAEMO_5)
+  view->setIconSize(QSize(204, 300));
+  view->setGridSize(QSize(240, 320));
+#else
   view->setIconSize(QSize(100, 120));
   view->setGridSize(QSize(150, 150));
+#endif
 
   view->setRootIndex(item);
 }
@@ -329,8 +346,13 @@ MainWindow::displaySeason(const QModelIndex & item)
   MainListView *view = newView(item);
 
   view->setViewMode(QListView::ListMode);
+#if defined(Q_WS_MAEMO_5)
+  view->setIconSize(QSize(200, 112));
+  view->setGridSize(QSize(220, 120));
+#else
   view->setIconSize(QSize(100, 56));
   view->setGridSize(QSize(110, 60));
+#endif
 
   view->setRootIndex(item);
 }

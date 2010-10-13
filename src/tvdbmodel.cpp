@@ -87,6 +87,11 @@ TvDBModel::data(const QModelIndex &index, int role) const
     QString key = pixmapKey(index);
     QPixmap pm;
 
+    if (bannerLoader->hasBanner((unsigned long)item)) { 
+      pm = bannerLoader->banner((unsigned long)item).pixmap(200);
+      QPixmapCache::insert(key, pm);
+      return QIcon(pm);
+    }
     if (QPixmapCache::find(key, &pm))
       return QIcon(pm);
     if (bannerRequests.contains((unsigned long)item))
