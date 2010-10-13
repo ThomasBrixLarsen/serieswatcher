@@ -18,6 +18,8 @@
 
 #include <QtGui/QMessageBox>
 
+#include "config.h"
+
 #include "searchdialog.h"
 #include "searchmodel.h"
 #include "tvdb.h"
@@ -71,7 +73,7 @@ void
 SearchDialog::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
 {
   if (bytesTotal == -1)
-    bytesTotal = bytesReceived;
+    bytesTotal = 0;
 
   progressBar->setRange(0, bytesTotal);
   progressBar->setValue(bytesReceived);

@@ -347,8 +347,8 @@ MainWindow::displaySeason(const QModelIndex & item)
 
   view->setViewMode(QListView::ListMode);
 #if defined(Q_WS_MAEMO_5)
-  view->setIconSize(QSize(200, 112));
-  view->setGridSize(QSize(220, 120));
+  view->setIconSize(QSize(115, 60));
+  view->setUniformItemSizes(true);
 #else
   view->setIconSize(QSize(100, 56));
   view->setGridSize(QSize(110, 60));

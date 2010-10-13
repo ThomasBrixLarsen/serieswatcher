@@ -26,7 +26,7 @@ UpdateProgressDialog::UpdateProgressDialog(QWidget * parent)
 {
   setupUi(this);
 
-#if defined(Q_WS_MAEMO_5)
+#if 1 /* FIXME create an option to display that */
   downloadLabel->hide();
   downloadBar->hide();
   parseLabel->hide();
@@ -98,8 +98,11 @@ UpdateProgressDialog::updateItem(Job *job)
       emit finished();
 
   } else {
-    globalBar->setRange(0, jobs.size());
-    globalBar->setValue(done.size());
+    globalBar->setRange(0, jobs.size() * 100);
+
+    globalBar->setValue(done.size() * 100 +
+			(100. * downloadBar->value() / downloadBar->maximum()) +
+			(100. * parseBar->value() / parseBar->maximum())); 
     emit progress(done.size(), jobs.size());
   }
 }
@@ -168,7 +171,7 @@ UpdateProgressDialog::parseFinished(Job *job)
   parseLabel->setText(tr("Parsing: none"));
   parseBar->reset();
   parseBar->setRange(0, 1);
-  parseBar->setValue(1);
+  parseBar->setValue(0);
 
   updateItem(job);
 }
@@ -218,7 +221,7 @@ UpdateProgressDialog::downloadFinished(Job *job)
   downloadLabel->setText(tr("Downloading: none"));
   downloadBar->reset();
   downloadBar->setRange(0, 1);
-  downloadBar->setValue(1);
+  downloadBar->setValue(0);
 
   updateItem(job);
 }
