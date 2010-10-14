@@ -63,8 +63,9 @@ MainWindow::MainWindow()
   treeDock->hide();
   toolBar->hide();
   statusBar()->hide();
-  menu_Edit->removeAction(updateShowAction);
+
   menu_Edit->removeAction(markWatchedAction);
+  menu_Edit->removeAction(markNotWatchedAction);
   menu_Edit->removeAction(deleteShowAction);
   menu_Help->removeAction(aboutQtAction);
   menu_File->removeAction(importAction);

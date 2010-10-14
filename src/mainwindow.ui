@@ -61,8 +61,8 @@
     <addaction name="settingsAction"/>
    </widget>
    <addaction name="menu_File"/>
-   <addaction name="menu_Help"/>
    <addaction name="menu_Edit"/>
+   <addaction name="menu_Help"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">

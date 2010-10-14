@@ -41,12 +41,12 @@
   </widget>
   <action name="markWatchedAction">
    <property name="text">
-    <string>Mark as watched</string>
+    <string>Mark All</string>
    </property>
   </action>
   <action name="markNotWatchedAction">
    <property name="text">
-    <string>Mark as not watched</string>
+    <string>Unmark All</string>
    </property>
   </action>
   <action name="actionInfos">
