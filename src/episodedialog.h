@@ -21,7 +21,13 @@
 
 #include <QtTvDB>
 
+#include "config.h"
+
+#if defined(Q_WS_MAEMO_5)
+#include "ui_episodedialogscroll.h"
+#else
 #include "ui_episodedialog.h"
+#endif
 
 class TvDBCache;
 class BannerLoader;
@@ -37,6 +43,7 @@ public:
 
 private slots:
   void bannerReceived();
+  void adaptSize();
 
 private:
   BannerLoader *bannerLoader;

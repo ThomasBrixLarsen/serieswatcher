@@ -52,6 +52,8 @@ EpisodeDialog::setEpisode(QtTvDB::Episode *episode, TvDBCache *cache)
   QVariantMap map = episode->map();
   QString text;
 
+  setWindowTitle(episode->name());
+
   text += "<p>";
   text += episode->overview();
   text += "</p><p>";
@@ -84,12 +86,12 @@ EpisodeDialog::setEpisode(QtTvDB::Episode *episode, TvDBCache *cache)
   nameLabel->setText(episode->name());
   overviewEdit->setText(text);
 
-#if defined(Q_WS_MAEMO_5)
-  bannerLabel->hide();
-#else
+
   bannerLabel->setPixmap(QIcon::fromTheme("image-loading").pixmap(160));
   bannerLoader->clear();
   bannerLoader->fetchBanner(0, mirrors->bannerUrl(episode->image()));
+#if defined(Q_WS_MAEMO_5)
+  QTimer::singleShot(0, this, SLOT(adaptSize()));
 #endif
 }
 
@@ -102,5 +104,20 @@ EpisodeDialog::bannerReceived(void)
 
   bannerLabel->show();
   bannerLabel->setPixmap(bannerLoader->banner(0).pixmap(size));
+#if defined(Q_WS_MAEMO_5)
+  adaptSize();
+#else
   resize(sizeHint());
+#endif
+}
+
+void
+EpisodeDialog::adaptSize(void)
+{
+#if defined(Q_WS_MAEMO_5)
+  QTextDocument *doc = overviewEdit->document();
+  QSize size = doc->size().toSize();
+
+  overviewEdit->setMinimumHeight(size.height());
+#endif
 }

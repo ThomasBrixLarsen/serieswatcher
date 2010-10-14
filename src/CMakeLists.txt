@@ -53,7 +53,9 @@ SET(serieswatcher_UIS
   settingsdialog.ui
   actiondialog.ui
   episodedialog.ui
-  showdialog.ui)
+  episodedialogscroll.ui
+  showdialog.ui
+  showdialogscroll.ui)
 
 SET(serieswatcher_MOC_HDRS
   mainwindow.h

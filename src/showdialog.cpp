@@ -54,6 +54,8 @@ ShowDialog::setShow(QtTvDB::Show *show, TvDBCache *cache)
   QVariantMap map = show->map();
   QString text;
 
+  setWindowTitle(show->name());
+
   text += "<p>";
   text += show->overview();
   text += "</p><p>";
@@ -90,12 +92,11 @@ ShowDialog::setShow(QtTvDB::Show *show, TvDBCache *cache)
   nameLabel->setText(show->name());
   overviewEdit->setText(text);
 
-#if defined(Q_WS_MAEMO_5)
-  bannerLabel->hide();
-#else
   bannerLabel->setPixmap(QIcon::fromTheme("image-loading").pixmap(160));
   bannerLoader->clear();
   bannerLoader->fetchBanner(0, mirrors->bannerUrl(map["banner"].toString()));
+#if defined(Q_WS_MAEMO_5)
+  QTimer::singleShot(0, this, SLOT(adaptSize()));
 #endif
 }
 
@@ -109,5 +110,20 @@ ShowDialog::bannerReceived(void)
   nameLabel->hide();
   bannerLabel->show();
   bannerLabel->setPixmap(bannerLoader->banner(0).pixmap(size));
+#if defined(Q_WS_MAEMO_5)
+  adaptSize();
+#else
   resize(sizeHint());
+#endif
+}
+
+void
+ShowDialog::adaptSize(void)
+{
+#if defined(Q_WS_MAEMO_5)
+  QTextDocument *doc = overviewEdit->document();
+  QSize size = doc->size().toSize();
+
+  overviewEdit->setMinimumHeight(size.height());
+#endif
 }

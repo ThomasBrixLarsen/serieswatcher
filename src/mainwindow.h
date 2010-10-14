@@ -63,6 +63,11 @@ private slots:
   void deleteShow();
   void deleteShow(qint64 showId);
 
+  void stackMarkWatched();
+  void stackMarkNotWatched();
+  void stackMarkWatched(bool watched);
+  void stackInfos();
+
   void markWatched();
   void markNotWatched();
   void markWatched(bool watched);

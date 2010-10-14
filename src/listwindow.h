@@ -30,6 +30,11 @@ public:
   ~ListWindow();
 
   MainListView *view();
+
+signals:
+  void markWatched();
+  void markNotWatched();
+  void infos();
 };
 
 #endif

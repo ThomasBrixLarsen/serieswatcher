@@ -28,7 +28,9 @@ ListWindow::ListWindow(QWidget * parent)
   setAttribute(Qt::WA_Maemo5StackedWindow);
   setAttribute(Qt::WA_Maemo5AutoOrientation, true);
 #endif
-  /* FIXME setup actions icons */
+  connect(markWatchedAction, SIGNAL(triggered()), this, SIGNAL(markWatched()));
+  connect(markNotWatchedAction, SIGNAL(triggered()), this, SIGNAL(markNotWatched()));
+  connect(infosAction, SIGNAL(triggered()), this, SIGNAL(infos()));
 }
 
 ListWindow::~ListWindow()

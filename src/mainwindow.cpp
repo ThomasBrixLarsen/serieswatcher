@@ -462,6 +462,44 @@ MainWindow::episodesWatched(const QModelIndex & index, bool watched)
 }
 
 void
+MainWindow::stackMarkWatched()
+{
+  stackMarkWatched(true);
+}
+
+void
+MainWindow::stackMarkNotWatched()
+{
+  stackMarkWatched(false);
+}
+
+void
+MainWindow::stackMarkWatched(bool watched)
+{
+  MainListView *view = topView();
+  QModelIndex root = view->rootIndex();
+
+  if (root.isValid())
+    tvdbModel->setData(root, watched, TvDBModel::EpisodesWatched);
+}
+
+void
+MainWindow::stackInfos()
+{
+  MainListView *view = topView();
+  QModelIndex root = view->rootIndex();
+
+  if (!root.isValid())
+    return ;
+
+  if (root.data(TvDBModel::Type) == TvDBModel::Season)
+    root = root.parent();
+
+  if (root.data(TvDBModel::Type) == TvDBModel::Show)
+    showDetails(root.data(TvDBModel::Id).toLongLong());
+}
+
+void
 MainWindow::markWatched()
 {
   markWatched(true);
@@ -609,6 +647,10 @@ MainWindow::newView(const QModelIndex & item)
   window->setWindowTitle(item.data(Qt::DisplayRole).toString());
   window->setAttribute(Qt::WA_DeleteOnClose, true);
   window->show();
+
+  connect(window, SIGNAL(markWatched()), this, SLOT(stackMarkWatched()));
+  connect(window, SIGNAL(markNotWatched()), this, SLOT(stackMarkNotWatched()));
+  connect(window, SIGNAL(infos()), this, SLOT(stackInfos()));
   return view;
 #endif
 }
