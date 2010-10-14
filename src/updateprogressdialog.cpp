@@ -26,6 +26,14 @@ UpdateProgressDialog::UpdateProgressDialog(QWidget * parent)
 {
   setupUi(this);
 
+#if defined(Q_WS_MAEMO_5)
+  downloadLabel->hide();
+  downloadBar->hide();
+  parseLabel->hide();
+  parseBar->hide();
+  label->hide();
+#endif
+
   icons[Job::Downloading] = QIcon::fromTheme("download");
   icons[Job::Waiting] = QIcon::fromTheme("chronometer");
   icons[Job::Parsing] = QIcon::fromTheme("run-build");

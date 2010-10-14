@@ -75,6 +75,16 @@ SearchDialog::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
 
   progressBar->setRange(0, bytesTotal);
   progressBar->setValue(bytesReceived);
+
+#if defined(Q_WS_MAEMO_5)
+  if (bytesReceived >= bytesTotal) {
+    progressBar->hide();
+    setAttribute(Qt::WA_Maemo5ShowProgressIndicator, false);
+  } else {
+    progressBar->show();
+    setAttribute(Qt::WA_Maemo5ShowProgressIndicator, true);
+  }
+#endif
 }
 
 void
@@ -86,6 +96,9 @@ SearchDialog::error(QNetworkReply::NetworkError code)
       return;
   if (r)
       QMessageBox::critical(this, tr("Network Error"), r->errorString());
+#if defined(Q_WS_MAEMO_5)
+  setAttribute(Qt::WA_Maemo5ShowProgressIndicator, false);
+#endif
 }
 
 void

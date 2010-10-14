@@ -52,7 +52,7 @@ private slots:
 
   void threadStarted();
 
-  void itemOpened(const QModelIndex & index);
+  void itemOpened(const QModelIndex & index, bool dclick);
   void itemClicked(const QModelIndex & index);
   void itemEntered(const QModelIndex & index);
   void itemDoubleClicked(const QModelIndex & index);
@@ -95,6 +95,7 @@ private:
 
   MainListView *newView(const QModelIndex &item);
   MainListView *topView(void);
+  QWidget *parentWidget(void);
 
 private:
   int currentShowId;

@@ -21,6 +21,7 @@
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlRecord>
 #include <QtCore/QThread>
+#include <QtCore/QTimer>
 
 #include "config.h"
 
@@ -53,7 +54,6 @@ MainWindow::MainWindow()
 #if !defined(Q_WS_MAEMO_5)
   setupTree();
 #endif
-  displayShows();
 
   modelsDirty = false;
 #if defined(Q_WS_MAEMO_5)
@@ -71,6 +71,7 @@ MainWindow::MainWindow()
   menu_File->removeAction(importAction);
   menu_File->removeAction(exportAction);
 #endif
+  QTimer::singleShot(0, this, SLOT(displayShows()));
 }
 
 MainWindow::~MainWindow()
@@ -257,27 +258,29 @@ MainWindow::connectSeriesMenus(const SeriesMenus *menus)
 void
 MainWindow::itemClicked(const QModelIndex & item)
 {
-#if defined(Q_WS_MAEMO_5)
-  itemOpened(item);
-#endif
+  itemOpened(item, false);
 }
 
 void
 MainWindow::itemEntered(const QModelIndex & item)
 {
+
 }
 
 void
 MainWindow::itemDoubleClicked(const QModelIndex & item)
 {
-#if !defined(Q_WS_MAEMO_5)
-  itemOpened(item);
-#endif
+  itemOpened(item, true);
 }
 
 void
-MainWindow::itemOpened(const QModelIndex & item)
+MainWindow::itemOpened(const QModelIndex & item, bool dclick)
 {
+#if !defined(Q_WS_MAEMO_5)
+  if (!dclick) /* Only act on double click for desktop */ 
+    return ;
+#endif
+
   QModelIndex index = tvdbModel->index(item.row(), 0, item.parent());
   int type = index.data(TvDBModel::Type).toInt();
 
@@ -285,9 +288,14 @@ MainWindow::itemOpened(const QModelIndex & item)
     displayShow(index);
   else if (type == TvDBModel::Season)
     displaySeason(index);
-  else if (type == TvDBModel::Episode)
-    episodeDetails(item.data(TvDBModel::Id).toInt());
-  else if (type == TvDBModel::Root)
+  else if (type == TvDBModel::Episode) {
+#if defined(Q_WS_MAEMO_5)
+    if (dclick) /* Because click may be for the checkbox ..*/
+      episodeDetails(item.data(TvDBModel::Id).toInt());
+#else
+  episodeDetails(item.data(TvDBModel::Id).toInt());
+#endif
+  } else if (type == TvDBModel::Root)
     displayShows();
 }
 
@@ -296,11 +304,11 @@ MainWindow::displayShows()
 {
   MainListView *view = topView();
 
-  view->setRootIndex(QModelIndex());
-
   view->setViewMode(QListView::IconMode);
   view->setIconSize(QSize(100, 120));
   view->setGridSize(QSize(150, 150));
+
+  view->setRootIndex(QModelIndex());
 }
 
 void
@@ -308,11 +316,11 @@ MainWindow::displayShow(const QModelIndex & item)
 {
   MainListView *view = newView(item);
 
-  view->setRootIndex(item);
-
   view->setViewMode(QListView::IconMode);
   view->setIconSize(QSize(100, 120));
   view->setGridSize(QSize(150, 150));
+
+  view->setRootIndex(item);
 }
 
 void
@@ -320,11 +328,11 @@ MainWindow::displaySeason(const QModelIndex & item)
 {
   MainListView *view = newView(item);
 
-  view->setRootIndex(item);
-
   view->setViewMode(QListView::ListMode);
   view->setIconSize(QSize(100, 56));
   view->setGridSize(QSize(110, 60));
+
+  view->setRootIndex(item);
 }
 
 void
@@ -387,6 +395,10 @@ MainWindow::aboutQt()
 void
 MainWindow::updateShow(qint64 showId)
 {
+#if defined(Q_WS_MAEMO_5)
+  progress->show();
+#endif
+
   if (showId >= 0)
     downloadWorker->updateShow(showId);
   else {
@@ -397,7 +409,6 @@ MainWindow::updateShow(qint64 showId)
 
     qDeleteAll(shows);
   }
-  //progress->show();
 }
 
 void
@@ -456,10 +467,9 @@ MainWindow::episodeDetails(qint64 id)
   QtTvDB::Episode *episode = cache->fetchEpisode(id);
 
   if (episode && !episode->isNull()) {
-    EpisodeDialog dialog(this); /* FIXME child */
+    EpisodeDialog dialog(parentWidget());
 
     dialog.setEpisode(episode, cache);
-    /* FIXME show and delete */
     dialog.exec();
   }
 
@@ -472,10 +482,9 @@ MainWindow::showDetails(qint64 id)
   QtTvDB::Show *show = cache->fetchShow(id);
 
   if (show && !show->isNull()) {
-    ShowDialog dialog(this); /* FIXME child */
+    ShowDialog dialog(parentWidget());
 
     dialog.setShow(show, cache);
-    /* FIXME show and delete */
     dialog.exec();
   }
 
@@ -485,6 +494,11 @@ MainWindow::showDetails(qint64 id)
 void
 MainWindow::updateStarted()
 {
+#if defined(Q_WS_MAEMO_5)
+  foreach (ListWindow *window, childWindows)
+    window->setAttribute(Qt::WA_Maemo5ShowProgressIndicator, true);
+  setAttribute(Qt::WA_Maemo5ShowProgressIndicator, true);
+#endif
   statusBar()->showMessage(tr("Updating database"));
   updateBar->show();
   updateButton->show();
@@ -496,6 +510,12 @@ MainWindow::updateStarted()
 void
 MainWindow::updateFinished()
 {
+#if defined(Q_WS_MAEMO_5)
+  foreach (ListWindow *window, childWindows)
+    window->setAttribute(Qt::WA_Maemo5ShowProgressIndicator, false);
+  setAttribute(Qt::WA_Maemo5ShowProgressIndicator, false);
+  progress->hide();
+#endif
   updateBar->hide();
   updateButton->hide();
   statusBar()->clearMessage();
@@ -551,15 +571,10 @@ MainWindow::newView(const QModelIndex & item)
 #if !defined(Q_WS_MAEMO_5)
   return listView;
 #else
-  QWidget *parent;
   ListWindow *window;
   MainListView *view;
 
-  if (!childWindows.isEmpty())
-    parent = childWindows.top();
-  else
-    parent = this;
-  window = new ListWindow(parent);
+  window = new ListWindow(parentWidget());
   view = window->view();
 
   view->buildMenus();
@@ -570,11 +585,18 @@ MainWindow::newView(const QModelIndex & item)
   childWindows.push(window);
 
   window->setWindowTitle(item.data(Qt::DisplayRole).toString());
-  window->setWindowModality(Qt::WindowModal);
   window->setAttribute(Qt::WA_DeleteOnClose, true);
   window->show();
   return view;
 #endif
+}
+
+QWidget *
+MainWindow::parentWidget()
+{
+  if (!childWindows.isEmpty())
+    return childWindows.top();
+  return this;
 }
 
 MainListView *
