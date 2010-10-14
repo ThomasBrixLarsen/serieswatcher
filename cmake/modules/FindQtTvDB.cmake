@@ -17,7 +17,7 @@ else (QTTVDB_INCLUDE_DIR AND QTTVDB_LIBRARIES)
     # use pkg-config to get the values of QTTVDB_INCLUDE_DIRS
     # and QTTVDB_LIBRARY_DIRS to add as hints to the find commands.
     include (FindPkgConfig)
-    pkg_check_modules (QTTVDB REQUIRED QtTvDB>=0.1)
+    pkg_check_modules (QTTVDB QtTvDB>=0.1)
   endif (NOT WIN32)
 
   find_library (QTTVDB_LIBRARIES

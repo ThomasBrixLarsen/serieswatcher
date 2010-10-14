@@ -12,8 +12,8 @@
 # FIXME: use cdbs-dh7 and cmake magic stuff instead
 
 CFLAGS = -Wall -g
-CMAKEFLAGS = -DCMAKE_PREFIX_PATH=/usr/bin -DCMAKE_INSTALL_PREFIX=/opt/serieswatcher
-CMAKEFLAGS = $(CMAKEFLAGS) -DQTTVDB_LIBRARY_DIRS=$(CURDIR)/build-qttvdb/src/ -DQTTVDB_INCLUDE_DIRS=$(CURDIR)/qttvdb/src/
+CMAKEFLAGS = -DCMAKE_PREFIX_PATH=/usr/bin -DCMAKE_INSTALL_PREFIX=/opt/serieswatcher \
+	-DQTTVDB_LIBRARY_DIRS=$(CURDIR)/build-qttvdb/lib/ -DQTTVDB_INCLUDE_DIRS=$(CURDIR)/qttvdb/src/
 
 ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
 	CFLAGS += -O0
@@ -36,7 +36,7 @@ build-stamp: configure-stamp
 	mkdir -p $(CURDIR)/build-qttvdb
 	mkdir -p $(CURDIR)/build
 
-	cd $(CURDIR)/build-qttvdb && cmake $(CMAKEFLAGS) $(CURDIR) && $(MAKE)
+	cd $(CURDIR)/build-qttvdb && cmake $(CMAKEFLAGS) $(CURDIR)/qttvdb/ && $(MAKE)
 	cd $(CURDIR)/build && cmake $(CMAKEFLAGS) $(CURDIR) && $(MAKE)
 
 	touch $@
@@ -59,6 +59,7 @@ install: build
 	cd $(CURDIR)/build-qttvdb && $(MAKE) DESTDIR=$(CURDIR)/debian/tmp install
 	cd $(CURDIR)/build && $(MAKE) DESTDIR=$(CURDIR)/debian/tmp install
 
+	chmod +x debian/tmp/opt/serieswatcher/bin/serieswatcher-wrapper
 
 # Build architecture-independent files here.
 binary-indep: build install
@@ -75,7 +76,7 @@ binary-arch: build install
 	dh_fixperms
 	dh_makeshlibs
 	dh_installdeb
-	dh_shlibdeps
+	LD_LIBRARY_PATH=debian/opt/serieswatcher/lib:debian/serieswatcher/opt/serieswatcher/lib/ dh_shlibdeps
 	dh_gencontrol
 	dh_md5sums
 	dh_builddeb

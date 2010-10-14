@@ -1,9 +1,8 @@
 [Desktop Entry]
 Version=0.1.0
 Encoding=UTF-8
-Name=Lugdulov
-Exec=/opt/lugdulov/bin/lugdulov
+Name=Series Watcher
+Exec=/opt/serieswatcher/bin/serieswatcher-wrapper
 Type=Application
-Icon=lugdulov
+Icon=serieswatcher
 
-Name[fr_FR]=lugdulov.desktop

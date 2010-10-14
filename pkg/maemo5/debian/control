@@ -1,17 +1,28 @@
 Source: serieswatcher
-Section: user/navigation
+Section: user/utilities
 Priority: extra
 Maintainer: Corentin Chary <corentincj@iksaif.net>
 XSBC-Bugtracker: http://dev.iksaif.net/projects/serieswatcher
-Build-Depends: debhelper (>= 5), libqtm-dev, libqt4-dev, cmake
+Build-Depends: debhelper (>= 5), libqtm-dev, libqt4-dev, libzip-dev, cmake
 Standards-Version: 3.7.2
 
 Package: serieswatcher
 Architecture: armel
 Depends: ${shlibs:Depends}, ${misc:Depends}
-XB-Description-fr_FR: FIXME
+XB-Description-fr_FR: SeriesWatcher permet de surveiller
+ les séries que vous regardez. Vous pourrez être prévenus
+ des nouveaux épisodes, les marquer comme vus, etc...
+ SeriesWatcher permet aussi de rajouter des liens dynamiques
+ vers d'autres services afin de pouvoir rapidement trouver
+ les DVDs ou sous-titres correspondant à un épisode ou à
+ une saison. L'application utilise l'API fournie par
+ thetvdb.com.
 XB-Maemo-Display-Name: Serieswatcher
-Description: FIXME
+Description: SeriesWatcher can help you keep track of the
+ TV shows you're watching. It let you mark watched episode
+ and allow to add dynamic links to other services (to buy
+ DVDs, download subtitles, etc...). Data comes from
+ thetvdb.com XML API.
 XB-Maemo-Icon-26:
  iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAAXNSR0IArs4c
  6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAA3XQAAN10BGYBGXQAAAAd0
