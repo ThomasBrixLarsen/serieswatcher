@@ -1,0 +1,3 @@
+opt/serieswatcher/share/applications/hildon/serieswatcher.desktop /usr/share/applications/hildon/
+opt/serieswatcher/share/icons/hicolor/64x64/hildon/serieswatcher.png  /usr/share/icons/hicolor/64x64/hildon/
+opt/serieswatcher/bin/serieswatcher

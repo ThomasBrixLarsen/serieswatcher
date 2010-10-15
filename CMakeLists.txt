@@ -5,8 +5,8 @@ project(serieswatcher)
 include(CMakeDependentOption)
 
 set(VERSION_MAJOR "0")
-set(VERSION_MINOR "0")
-set(VERSION_PATCH "1")
+set(VERSION_MINOR "1")
+set(VERSION_PATCH "0")
 
 if(CMAKE_SYSTEM_NAME MATCHES Linux)
   set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} /usr/share/apps/cmake/modules/)
@@ -70,6 +70,7 @@ set (SERIES_WATCHER_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}"
 CHECK_SYMBOL_EXISTS(Q_WS_MAEMO_5 "QtCore/qglobal.h" Q_WS_MAEMO_5)
 
 add_subdirectory(src)
+add_subdirectory(pkg)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake config.h ESCAPE_QUOTES)
 
