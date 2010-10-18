@@ -51,43 +51,63 @@ void
 ShowDialog::setShow(QtTvDB::Show *show, TvDBCache *cache)
 {
   QtTvDB::Mirrors *mirrors = TvDB::mirrors();
-  QVariantMap map;
+  QVariantMap map = show->map();
+  QString text;
+
+  text += "<p>";
+  text += show->overview();
+  text += "</p><p>";
+
+  foreach (QString key, map.keys()) {
+    QString title = "";
+    QString value = map[key].toString();
+
+    if (key == "lastUpdated") {
+      title = tr("Last Updated");
+      value = map[key].toDateTime().toString(Qt::SystemLocaleDate);
+    } else if (key == "airsDay")
+      title = tr("Airs Day");
+    else if (key == "network")
+      title = tr("Network");
+    else if (key == "runtime")
+      title = tr("Runtime");
+    else if (key == "status")
+      title = tr("Status");
+    else if (key == "actors") {
+      QStringList list = map[key].toStringList();
+
+      list.removeDuplicates();
+      list.removeAll(QString());
+      title = tr("Actors");
+      value = list.join(", ");
+    }
+
+    if (!title.isEmpty() && !value.isEmpty())
+      text += QString("<strong>%1:</strong> %2<br />").arg(title).arg(value);
+  }
+  text += "</p>";
 
   nameLabel->setText(show->name());
-  overviewEdit->setText(show->overview());
+  overviewEdit->setText(text);
 
-  map = show->map();
-  foreach (QString key, map.keys()) {
-    if (map[key].isNull() || map[key].toString().isEmpty())
-      continue;
-    if (key == "overview" || key == "name" || key == "banner" || key == "poster" || key == "fanArt")
-      continue ;
-
-    QTreeWidgetItem *item = new QTreeWidgetItem(treeWidget);
-
-    item->setText(0, key);
-    item->setText(1, map[key].toString());
-    treeWidget->addTopLevelItem(item);
-  }
-
-  QString sql;
-
-  sql = "SELECT banners.id as bannerId, banners.path FROM banners ";
-  sql += "WHERE (banners.type = 'poster' AND banners.language = 'en') ";
-  sql += QString("AND banners.showId = %1").arg(show->id());
-
-  QSqlQuery query(sql);
-
-  if (!query.next())
-    return ;
-
+#if defined(Q_WS_MAEMO_5)
+  bannerLabel->hide();
+#else
   bannerLabel->setPixmap(QIcon::fromTheme("image-loading").pixmap(160));
   bannerLoader->clear();
-  bannerLoader->fetchBanner(0, mirrors->bannerUrl(query.record().value("path").toString()));
+  bannerLoader->fetchBanner(0, mirrors->bannerUrl(map["banner"].toString()));
+#endif
 }
 
 void
 ShowDialog::bannerReceived(void)
 {
-  bannerLabel->setPixmap(bannerLoader->banner(0).pixmap(QSize(160, 160)));
+  QSize size;
+
+  size = QSize(bannerLabel->width(), 100);
+
+  nameLabel->hide();
+  bannerLabel->show();
+  bannerLabel->setPixmap(bannerLoader->banner(0).pixmap(size));
+  resize(sizeHint());
 }

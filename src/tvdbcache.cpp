@@ -211,7 +211,7 @@ TvDBCache::storeEpisode(QtTvDB::Episode *episode)
   query.addBindValue(episode->season());
   query.addBindValue(episode->episode());
   query.addBindValue(episode->director());
-  query.addBindValue(episode->guestStars());
+  query.addBindValue(episode->guestStars().join("|"));
   query.addBindValue(episode->language());
   query.addBindValue(episode->productionCode());
   query.addBindValue(episode->rating());
@@ -377,7 +377,7 @@ TvDBCache::episodeFromRecord(QSqlRecord record)
   episode->setSeason(record.value("season").toUInt());
   episode->setEpisode(record.value("episode").toUInt());
   episode->setDirector(record.value("director").toString());
-  episode->setGuestStars(record.value("guestStars").toString()); /* | */
+  episode->setGuestStars(record.value("guestStars").toString().split("|"));
   episode->setLanguage(record.value("language").toString());
   episode->setProductionCode(record.value("productionCode").toString());
   episode->setRating(record.value("rating").toString());

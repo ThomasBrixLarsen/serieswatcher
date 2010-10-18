@@ -36,7 +36,9 @@ EpisodeDialog::EpisodeDialog(QWidget * parent)
   setupUi(this);
   setupDialog(this);
 
+#if !defined(Q_WS_MAEMO_5)
   overviewEdit->viewport()->setAutoFillBackground(false);
+#endif
 }
 
 EpisodeDialog::~EpisodeDialog()
@@ -47,32 +49,58 @@ void
 EpisodeDialog::setEpisode(QtTvDB::Episode *episode, TvDBCache *cache)
 {
   QtTvDB::Mirrors *mirrors = TvDB::mirrors();
-  QVariantMap map;
+  QVariantMap map = episode->map();
+  QString text;
+
+  text += "<p>";
+  text += episode->overview();
+  text += "</p><p>";
+
+  foreach (QString key, map.keys()) {
+    QString title = "";
+    QString value = map[key].toString();
+
+    if (key == "firstAired") {
+      title = tr("firstAired");
+      value = map[key].toDateTime().toString(Qt::SystemLocaleDate);
+    } else if (key == "episode")
+      title = tr("Episode");
+    else if (key == "writer")
+      title = tr("Writer");
+    else if (key == "guestStars") {
+      QStringList list = map[key].toStringList();
+
+      list.removeDuplicates();
+      list.removeAll(QString());
+      title = tr("Guest Stars");
+      value = list.join(", ");
+    }
+
+    if (!title.isEmpty() && !value.isEmpty())
+      text += QString("<strong>%1:</strong> %2<br />").arg(title).arg(value);
+  }
+  text += "</p>";
 
   nameLabel->setText(episode->name());
-  overviewEdit->setText(episode->overview());
+  overviewEdit->setText(text);
 
-  map = episode->map();
-  foreach (QString key, map.keys()) {
-    if (map[key].isNull() || map[key].toString().isEmpty())
-      continue;
-    if (key == "overview" || key == "name" || key == "image")
-      continue ;
-
-    QTreeWidgetItem *item = new QTreeWidgetItem(treeWidget);
-
-    item->setText(0, key);
-    item->setText(1, map[key].toString());
-    treeWidget->addTopLevelItem(item);
-  }
-
+#if defined(Q_WS_MAEMO_5)
+  bannerLabel->hide();
+#else
   bannerLabel->setPixmap(QIcon::fromTheme("image-loading").pixmap(160));
   bannerLoader->clear();
   bannerLoader->fetchBanner(0, mirrors->bannerUrl(episode->image()));
+#endif
 }
 
 void
 EpisodeDialog::bannerReceived(void)
 {
-  bannerLabel->setPixmap(bannerLoader->banner(0).pixmap(QSize(160, 160)));
+  QSize size;
+
+  size = QSize(width(), width() / 2);
+
+  bannerLabel->show();
+  bannerLabel->setPixmap(bannerLoader->banner(0).pixmap(size));
+  resize(sizeHint());
 }
