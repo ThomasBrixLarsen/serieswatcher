@@ -47,9 +47,11 @@ SearchModel::setQuery(const QString & query)
   if (query == currentQuery)
     return ;
 
-  beginRemoveRows(QModelIndex(), 0, shows.size() - 1);
-  clear();
-  endRemoveRows();
+  if (shows.size()) {
+    beginRemoveRows(QModelIndex(), 0, shows.size() - 1);
+    clear();
+    endRemoveRows();
+  }
 
   currentQuery = query;
   if (query.isEmpty())
@@ -139,9 +141,11 @@ SearchModel::searchResultsReceived(void)
 
   result = QtTvDB::Show::parseShows(reply->readAll());
 
-  beginInsertRows(QModelIndex(), 0, result.size() - 1);
-  shows = result;
-  endInsertRows();
+  if (result.size()) {
+    beginInsertRows(QModelIndex(), 0, result.size() - 1);
+    shows = result;
+    endInsertRows();
+  }
 
   emit searchDone(reply->error() == QNetworkReply::NoError);
 }

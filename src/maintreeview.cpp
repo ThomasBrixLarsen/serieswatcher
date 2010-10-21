@@ -48,6 +48,9 @@ MainTreeView::setModel(QAbstractItemModel *model)
 {
   QTreeView::setModel(model);
 
+  if (!model)
+      return ;
+
   setColumnHidden(2, true);
   setColumnHidden(4, true);
   setColumnHidden(5, true);
