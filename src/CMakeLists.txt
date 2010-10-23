@@ -43,7 +43,8 @@ SET(serieswatcher_SRCS
   showdialog.cpp
   bannerloader.cpp
   tvdbmodel.cpp
-  tvdbitem.cpp)
+  tvdbitem.cpp
+  aboutdialog.cpp)
 
 SET(serieswatcher_UIS
   mainwindow.ui
@@ -55,7 +56,8 @@ SET(serieswatcher_UIS
   episodedialog.ui
   episodedialogscroll.ui
   showdialog.ui
-  showdialogscroll.ui)
+  showdialogscroll.ui
+  aboutdialog.ui)
 
 SET(serieswatcher_MOC_HDRS
   mainwindow.h
@@ -77,7 +79,8 @@ SET(serieswatcher_MOC_HDRS
   episodedialog.h
   showdialog.h
   bannerloader.h
-  tvdbmodel.h)
+  tvdbmodel.h
+  aboutdialog.h)
 
 SET(serieswatcher_RCS serieswatcher.qrc)
 
