@@ -87,7 +87,7 @@ EpisodeDialog::setEpisode(QtTvDB::Episode *episode, TvDBCache *cache)
   overviewEdit->setText(text);
 
 
-  bannerLabel->setPixmap(QIcon::fromTheme("image-loading").pixmap(160));
+  bannerLabel->setPixmap(QIcon::fromTheme("image-loading").pixmap(400));
   bannerLoader->clear();
   bannerLoader->fetchBanner(0, mirrors->bannerUrl(episode->image()));
 #if defined(Q_WS_MAEMO_5)
@@ -100,14 +100,14 @@ EpisodeDialog::bannerReceived(void)
 {
   QSize size;
 
-  size = QSize(width(), width() / 2);
+  size = QSize(width(), width());
 
   bannerLabel->show();
   bannerLabel->setPixmap(bannerLoader->banner(0).pixmap(size));
 #if defined(Q_WS_MAEMO_5)
   adaptSize();
 #else
-  resize(sizeHint());
+  resize(QSize(width(), sizeHint().height()));
 #endif
 }
 

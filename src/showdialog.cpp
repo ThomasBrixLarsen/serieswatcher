@@ -97,6 +97,8 @@ ShowDialog::setShow(QtTvDB::Show *show, TvDBCache *cache)
   bannerLoader->fetchBanner(0, mirrors->bannerUrl(map["banner"].toString()));
 #if defined(Q_WS_MAEMO_5)
   QTimer::singleShot(0, this, SLOT(adaptSize()));
+#else
+  nameLabel->hide();
 #endif
 }
 
