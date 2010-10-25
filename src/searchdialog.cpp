@@ -78,15 +78,17 @@ SearchDialog::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
   progressBar->setRange(0, bytesTotal);
   progressBar->setValue(bytesReceived);
 
-#if defined(Q_WS_MAEMO_5)
   if (bytesReceived >= bytesTotal) {
     progressBar->hide();
+#if defined(Q_WS_MAEMO_5)
     setAttribute(Qt::WA_Maemo5ShowProgressIndicator, false);
+#endif
   } else {
     progressBar->show();
+#if defined(Q_WS_MAEMO_5)
     setAttribute(Qt::WA_Maemo5ShowProgressIndicator, true);
-  }
 #endif
+  }
 }
 
 void

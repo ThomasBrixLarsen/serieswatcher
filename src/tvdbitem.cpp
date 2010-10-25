@@ -248,7 +248,7 @@ TvDBItem::data(int column, int role) const
 
 	if (query.next())
 	  return TvDB::mirrors()->bannerUrl(query.record().value("path").toString());
-	else
+	else if (query.lastError().number() != -1)
 	  qWarning() << query.lastError();
 	return QVariant();
       }

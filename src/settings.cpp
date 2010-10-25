@@ -46,17 +46,10 @@ Settings::instance()
       QList < SeriesAction * > actions;
       SeriesAction *action = new SeriesAction();
 
-      action->setText(tr("Search on Torrentz.com"));
-      action->setShowUrl(QString("http://torrentz.com/search?q=%S"));
-      action->setSeasonUrl(QString("http://torrentz.com/search?q=%S season %n"));
-      action->setEpisodeUrl(QString("http://torrentz.com/search?q=%S %m%b"));
-      action->setIconPath(":/res/torrentz.png");
-      actions << action;
-
       action = new SeriesAction();
       action->setText(tr("Buy on Amazon"));
-      action->setShowUrl(QString("http://www.amazon.com/s/?url=search-alias%3Ddvd&field-keywords=%S"));
-      action->setSeasonUrl(QString("http://www.amazon.com/s/?url=search-alias%3Ddvd&field-keywords=%S season %n"));
+      action->setShowUrl(QString("http://www.amazon.com/s/?tag=httpxfiksaifn-21&url=search-alias%3Ddvd&field-keywords=%S"));
+      action->setSeasonUrl(QString("http://www.amazon.com/s/?tag=httpxfiksaifn-21&url=search-alias%3Ddvd&field-keywords=%S season %n"));
       action->setIconPath(":/res/amazon.png");
       actions << action;
 
