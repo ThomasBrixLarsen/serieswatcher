@@ -33,8 +33,7 @@ if(HAVE_LIBZIP OR HAVE_QUAZIP)
   set(HAVE_ZIP 1)
 endif()
 
-# Disabled because it does not always work
-cmake_dependent_option(WITH_ZIP "With zip support [default: off]" ON "HAVE_ZIP" OFF)
+cmake_dependent_option(WITH_ZIP "With zip support [default: on]" ON "HAVE_ZIP" OFF)
 option(WITH_BUILTIN_ICONS  "Include icon theme in built-in ressources" ON)
 
 ## GCC  ##
@@ -96,18 +95,31 @@ set(CPACK_SOURCE_PACKAGE_FILE_NAME "serieswatcher-${CPACK_VERSION}")
 
 
 if(WIN32)
-  # set(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\MyExecutable.exe")
+  install(FILES
+        "${QT_BINARY_DIR}/QtCore${QT_VERSION_MAJOR}.dll"
+        "${QT_BINARY_DIR}/QtXml${QT_VERSION_MAJOR}.dll"
+        "${QT_BINARY_DIR}/QtGui${QT_VERSION_MAJOR}.dll"
+        "${QT_BINARY_DIR}/QtNetwork${QT_VERSION_MAJOR}.dll"
+		"${QT_BINARY_DIR}/QtSql${QT_VERSION_MAJOR}.dll"
+        "${QT_BINARY_DIR}/mingwm10.dll"
+        "${QT_BINARY_DIR}/libgcc_s_dw2-1.dll"
+        "${CMAKE_BINARY_DIR}/src/libqttvdb.dll"
+        DESTINATION bin
+  )
+  set(CPACK_PACKAGE_FILE_NAME "serieswatcher-${CPACK_VERSION}-win32")
+  set(CPACK_SOURCE_PACKAGE_FILE_NAME "serieswatcher")
+  set(CPACK_PACKAGE_EXECUTABLES "serieswatcher;Series Watcher")
   set(CPACK_NSIS_MUI_ICON "${CMAKE_SOURCE_DIR}/res/serieswatcher.ico")
   set(CPACK_NSIS_MUI_UNIICON "${CMAKE_SOURCE_DIR}/res/serieswatcher.ico")
-  set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/res/package.bmp")
   set(CPACK_BINARY_NSIS "ON")
+  set(CPACK_NSIS_MODIFY_PATH "OFF")
   set(CPACK_BINARY_CYGWIN "OFF")
   set(CPACK_SOURCE_CYGWIN "OFF")
-  set(CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_INSTALL_DIRECTORY} Series Watcher")
+  set(CPACK_NSIS_DISPLAY_NAME "Series Watcher")
   set(CPACK_NSIS_HELP_LINK "http://xf.iksaif.net/dev/serieswatcher.html")
   set(CPACK_NSIS_URL_INFO_ABOUT "http://xf.iksaif.net/dev/serieswatcher.html")
   set(CPACK_NSIS_CONTACT "Corentin Chary <corentin.chary@gmail.com>")
-  set(CPACK_NSIS_MODIFY_PATH ON)
+  set(CPACK_PACKAGE_INSTALL_DIRECTORY "serieswatcher")
 else(WIN32)
   set(CPACK_GENERATOR "DEB")
   set(CPACK_SOURCE_GENERATOR "TGZ;TBZ2")

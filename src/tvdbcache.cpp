@@ -74,7 +74,7 @@ TvDBCache::connectDb(const QString & name)
     QSqlQuery q(query, db);
 
     if (!q.exec()) {
-      qWarning() << q.lastError();
+      qWarning() << q.lastError().text();
       return false;
     }
   }
@@ -92,7 +92,7 @@ TvDBCache::deleteShow(qint64 showId)
   query.prepare(sql);
   if (!query.exec()) {
     qWarning() << query.executedQuery();
-    qWarning() << query.lastError();
+    qWarning() << query.lastError().text();
   }
 
   sql = QString("DELETE FROM episodes WHERE showId = %1").arg(showId);
@@ -100,7 +100,7 @@ TvDBCache::deleteShow(qint64 showId)
   query.prepare(sql);
   if (!query.exec()) {
     qWarning() << query.executedQuery();
-    qWarning() << query.lastError();
+    qWarning() << query.lastError().text();
   }
 
   sql = QString("DELETE FROM banners WHERE showId = %1").arg(showId);
@@ -108,7 +108,7 @@ TvDBCache::deleteShow(qint64 showId)
   query.prepare(sql);
   if (!query.exec()) {
     qWarning() << query.executedQuery();
-    qWarning() << query.lastError();
+    qWarning() << query.lastError().text();
   }
 }
 
@@ -129,7 +129,7 @@ TvDBCache::episodesWatched(qint64 showId, int season, bool watched)
   query.prepare(sql);
   if (!query.exec()) {
     qWarning() << query.executedQuery();
-    qWarning() << query.lastError();
+    qWarning() << query.lastError().text();
   }
 }
 
@@ -144,7 +144,7 @@ TvDBCache::episodeWatched(qint64 id, bool watched)
   query.prepare(sql);
   if (!query.exec()) {
     qWarning() << query.executedQuery();
-    qWarning() << query.lastError();
+    qWarning() << query.lastError().text();
   }
 }
 
@@ -182,7 +182,7 @@ TvDBCache::storeShow(QtTvDB::Show *show)
 
   if (!query.exec()) {
     qWarning() << query.executedQuery();
-    qWarning() << query.lastError();
+    qWarning() << query.lastError().text();
   }
 }
 
@@ -234,7 +234,7 @@ TvDBCache::storeEpisode(QtTvDB::Episode *episode)
 
   if (!query.exec()) {
     qWarning() << query.executedQuery();
-    qWarning() << query.lastError();
+    qWarning() << query.lastError().text();
   }
 }
 
@@ -265,7 +265,7 @@ TvDBCache::storeBanner(QtTvDB::Banner *banner, qint64 showId)
 
   if (!query.exec()) {
     qWarning() << query.executedQuery();
-    qWarning() << query.lastError();
+    qWarning() << query.lastError().text();
   }
 }
 

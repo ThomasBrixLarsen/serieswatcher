@@ -92,8 +92,17 @@ QT4_WRAP_CPP(MOC_SOURCE ${serieswatcher_MOC_HDRS})
 QT4_WRAP_UI(UI_HDRS ${serieswatcher_UIS})
 QT4_ADD_RESOURCES(RC_SRCS ${serieswatcher_RCS})
 
+if (WIN32)
+ set(GUI_TYPE WIN32)
+ add_custom_command( OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/icon.o
+                     COMMAND windres.exe -I${CMAKE_CURRENT_SOURCE_DIR} -i${CMAKE_CURRENT_SOURCE_DIR}/serieswatcher.rc
+                     -o ${CMAKE_CURRENT_BINARY_DIR}/icon.o )
+ set(serieswatcher_SRCS ${serieswatcher_SRCS} ${CMAKE_CURRENT_BINARY_DIR}/icon.o)
+endif ()
+
 ADD_EXECUTABLE(
 	serieswatcher
+	${GUI_TYPE}
 	${serieswatcher_SRCS}
 	${UI_HDRS}
 	${MOC_SOURCE}
