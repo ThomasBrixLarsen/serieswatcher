@@ -18,6 +18,10 @@
 
 #include "config.h"
 
+#if defined(Q_WS_MAEMO_5)
+#include <QtGui/QAbstractKineticScroller>
+#endif
+
 #include "serieswatcher.h"
 #include "aboutdialog.h"
 
@@ -35,6 +39,18 @@ AboutDialog::AboutDialog(QWidget *parent)
   ui->setupUi(this);
   setupDialog(this);
   ui->versionLabel->setText(ui->versionLabel->text() + QString(" %1").arg(SERIES_WATCHER_VERSION));
+
+#if defined(Q_WS_MAEMO_5)
+  ui->buttonBox->hide();
+
+  QAbstractKineticScroller *scroller;
+
+  if ((scroller = ui->licenceBrowser->property("kineticScroller").value<QAbstractKineticScroller *>()) != NULL)
+    scroller->setEnabled(true);
+
+  if ((scroller = ui->authorsBrowser->property("kineticScroller").value<QAbstractKineticScroller *>()) != NULL)
+    scroller->setEnabled(true);
+#endif
 }
 
 AboutDialog::~AboutDialog()

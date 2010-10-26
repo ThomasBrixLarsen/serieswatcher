@@ -1,3 +1,11 @@
+serieswatcher (0.1.1-1) unstable; urgency=low
+
+  * Better maemo integration
+  * Built with Qt 4.7
+  * New About dialog
+
+ -- Corentin Chary <corentincj@iksaif.net>  Thu, 15 Oct 2010 16:02:59 +0200
+
 serieswatcher (0.1.0-1) unstable; urgency=low
 
   * Initial release
