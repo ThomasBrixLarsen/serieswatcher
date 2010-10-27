@@ -206,3 +206,15 @@ SettingsDialog::accept()
 
   QDialog::accept();
 }
+
+void
+SettingsDialog::reject()
+{
+#if defined(Q_WS_MAEMO_5)
+  SeriesAction::addToSettings(actions.values());
+#endif
+
+  qDeleteAll(actions.values());
+
+  QDialog::reject();
+}

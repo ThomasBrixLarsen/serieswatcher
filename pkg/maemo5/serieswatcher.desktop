@@ -1,5 +1,5 @@
 [Desktop Entry]
-Version=0.1.1
+Version=0.1.2
 Encoding=UTF-8
 Name=Series Watcher
 Exec=/opt/serieswatcher/bin/serieswatcher-wrapper
