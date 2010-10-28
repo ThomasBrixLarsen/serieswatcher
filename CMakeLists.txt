@@ -89,6 +89,7 @@ set(CPACK_PACKAGE_VENDOR "http://xf.iksaif.net/dev/serieswatcher.html")
 set(CPACK_SOURCE_IGNORE_FILES
   "~$"
   "^${PROJECT_SOURCE_DIR}/\\\\.git"
+  "^${PROJECT_SOURCE_DIR}/qttvdb/\\\\.git"
   "^${PROJECT_SOURCE_DIR}/build/")
 set(CPACK_PACKAGE_FILE_NAME "serieswatcher-${CPACK_VERSION}-${CMAKE_SYSTEM_NAME}")
 set(CPACK_SOURCE_PACKAGE_FILE_NAME "serieswatcher-${CPACK_VERSION}")
