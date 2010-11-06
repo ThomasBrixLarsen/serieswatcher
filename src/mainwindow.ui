@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="serieswatcher.qrc">
-    <normaloff>:/res/serieswatcher.png</normaloff>:/res/serieswatcher.png</iconset>
+    <normaloff>:/res/icon32.png</normaloff>:/res/icon32.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
