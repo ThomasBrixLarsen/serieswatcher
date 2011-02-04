@@ -23,6 +23,7 @@
 #include <QtSql/QSqlQuery>
 #include <QtSql/QSqlRecord>
 #include <QtSql/QSqlError>
+#include <QtCore/QDebug>
 
 #include "tvdb.h"
 #include "tvdbitem.h"

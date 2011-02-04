@@ -25,6 +25,7 @@
 #include <QtGui/QPixmap>
 #include <QtGui/QPixmapCache>
 #include <QtGui/QApplication>
+#include <QtCore/QDebug>
 #include <QtCore/QThread>
 
 #include "settings.h"

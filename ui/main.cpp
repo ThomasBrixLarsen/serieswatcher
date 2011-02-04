@@ -24,6 +24,10 @@
 int main(int argc, char *argv[])
 {
   QApplication app(argc, argv);
+  Q_INIT_RESOURCE(serieswatcher);
+#if defined(WITH_BUILTIN_ICONS)
+  Q_INIT_RESOURCE(icon);
+#endif
 
   QCoreApplication::setOrganizationName("SeriesWatcher");
   QCoreApplication::setApplicationName("SeriesWatcher");

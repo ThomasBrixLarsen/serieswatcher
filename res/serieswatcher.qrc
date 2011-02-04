@@ -1,0 +1,12 @@
+<RCC>
+  <qresource prefix="/res">
+    <file>paypal.png</file>
+    <file>flattr.png</file>
+    <file>amazon.png</file>
+    <file>torrentz.png</file>
+    <file>podnapisi.png</file>
+    <file>icon32.png</file>
+    <file>icon64.png</file>
+    <file>icon128.png</file>
+  </qresource>
+</RCC>

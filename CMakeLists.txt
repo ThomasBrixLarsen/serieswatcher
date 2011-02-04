@@ -18,6 +18,8 @@ find_package(QtTvDB REQUIRED)
 find_package(Quazip)
 find_package(LibZip)
 
+include(serieswatcher)
+
 set(HAVE_QUAZIP ${QUAZIP_FOUND})
 set(HAVE_LIBZIP ${LIBZIP_FOUND})
 
@@ -66,9 +68,11 @@ set(INCLUDE_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE STRING "Director
 
 set (SERIES_WATCHER_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
-CHECK_SYMBOL_EXISTS(Q_WS_MAEMO_5 "QtCore/qglobal.h" Q_WS_MAEMO_5)
+check_symbol_exists(Q_WS_MAEMO_5 "QtCore/qglobal.h" Q_WS_MAEMO_5)
 
-add_subdirectory(src)
+add_subdirectory(common)
+add_subdirectory(ui)
+add_subdirectory(res)
 add_subdirectory(pkg)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake config.h ESCAPE_QUOTES)
