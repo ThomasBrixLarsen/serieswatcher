@@ -24,10 +24,46 @@
 
 #include <QtTvDB>
 
-class TvDBCache
+class TvDBCache : public QObject
 {
+  Q_OBJECT
+
 public:
-  enum BannerType { Poster, Banner, Search, Episode };
+  struct Show
+  {
+    int seasons;
+    int episodes;
+    int episodesWatched;
+    int episodesNew;
+    QtTvDB::Episode *nextEpisode;
+  };
+
+  struct Season
+  {
+    int season;
+    QString name;
+    int episodes;
+    int episodesWatched;
+    int episodesNew;
+    QUrl banner;
+    QUrl bannerWide;
+    QtTvDB::Episode *nextEpisode;
+  };
+
+  struct Episode
+  {
+    bool watched;
+    bool hot;
+  };
+
+  enum BannerType {
+    BannerTypePoster,
+    BannerTypeBanner,
+    BannerTypeSeason,
+    BannerTypeSeasonWide,
+    BannerTypeSearch,
+    BannerTypeEpisode
+  };
 
   TvDBCache(const QString & name = QLatin1String(QSqlDatabase::defaultConnection));
   ~TvDBCache();
@@ -54,8 +90,15 @@ public:
   QtTvDB::Banner *fetchBanner(qint64 id);
   QList < QtTvDB::Banner * > fetchBanners(qint64 showId);
 
+  QList < Show * > fetchShowsExtras();
+  QList < Season * > fetchSeasonsExtras(qint64 showId);
+  QList < Episode * > fetchEpisodesExtras(qint64 showId, qint64 season);
+
   QString name();
   void sync();
+
+ signals:
+  void cacheChanged(qint64 showId, qint64 seasonId, qint64 episodeId);
 
  private:
   bool connectDb(const QString & name = QLatin1String(QSqlDatabase::defaultConnection));

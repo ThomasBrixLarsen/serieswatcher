@@ -28,6 +28,7 @@
 #include "tvdb.h"
 
 class QNetworkReply;
+struct Job;
 
 class SearchModel : public QAbstractListModel
 {
@@ -47,20 +48,25 @@ public:
 
 signals:
     void searchStarted();
-    void searchProgress(qint64 bytesReceived, qint64 bytesTotal);
+    void searchProgress(qint64 done, qint64 total);
+    void searchFailed(const QString & error);
     void searchDone(bool ok);
-    void networkError(QNetworkReply::NetworkError code);
 
 private slots:
-    void searchResultsReceived();
-    void bannerReceived();
+    void downloadFinished(Job *job, const QByteArray & data);
+    void downloadProgress(Job *job, qint64 done, qint64 total);
+    void downloadFailed(Job *job, const QString & error);
+
+    void searchResultsReceived(const QByteArray & data);
+    void bannerReceived(QtTvDB::Show *show, const QByteArray & data);
 
 private:
     void clear();
     void fetchBanner(QtTvDB::Show *show) const;
 
     QList < QtTvDB::Show * > shows;
-    mutable QMap < QNetworkReply * , QtTvDB::Show * > bannersReplies;
+    mutable QMap < Job * , QtTvDB::Show * > bannersJobs;
+    Job *searchJob;
     QMap < int, QIcon > banners;
     QString currentQuery;
 };

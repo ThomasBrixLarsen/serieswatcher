@@ -38,7 +38,8 @@ set(common_MOC_HDRS
   settings.h
   seriesaction.h
   tvdbmodel.h
-  bannerloader.h)
+  bannerloader.h
+  tvdbcache.h)
 
 qt4_wrap_cpp(MOC_SOURCE ${common_MOC_HDRS})
 

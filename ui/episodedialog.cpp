@@ -49,8 +49,11 @@ void
 EpisodeDialog::setEpisode(QtTvDB::Episode *episode, TvDBCache *cache)
 {
   QtTvDB::Mirrors *mirrors = TvDB::mirrors();
-  QVariantMap map = episode->map();
+  QVariantMap map;
   QString text;
+
+  foreach (QByteArray name, QObject::dynamicPropertyNames())
+    map[name] = episode->property(name);
 
   setWindowTitle(episode->name());
 

@@ -49,7 +49,7 @@ protected:
 private slots:
   void search();
   void downloadProgress(qint64 bytesReceived, qint64 bytesTotal);
-  void error(QNetworkReply::NetworkError code);
+  void error(const QString & error);
 
 private:
   void clear();

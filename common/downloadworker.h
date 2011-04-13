@@ -41,9 +41,9 @@ public:
   DownloadWorker(QObject *parent = 0);
   ~DownloadWorker();
 
-  QNetworkReply *fetchBanner(int id, const QUrl & url);
-  QNetworkReply *fetchEpisodeBanner(int id, const QUrl & url);
-  QNetworkReply *fetchSearchResults(const QString & query);
+  Job *fetchBanner(int id, const QUrl & url);
+  Job *fetchEpisodeBanner(int id, const QUrl & url);
+  Job *fetchSearchResults(const QString & query);
 
 public slots:
   Job *startJob(qint64 id, const QUrl & url, Job::Type type);
@@ -58,6 +58,7 @@ private slots:
 
 signals:
   void newJob(Job *job);
+  void dataReceived(Job *job, const QByteArray & data);
   void downloadStarted(Job *job);
   void downloadFailed(Job *job, const QString & error);
   void downloadProgress(Job *job, qint64 done, qint64 total);

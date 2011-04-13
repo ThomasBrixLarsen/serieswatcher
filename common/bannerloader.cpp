@@ -27,10 +27,14 @@
 BannerLoader::BannerLoader(QObject *parent)
   : QObject(parent)
 {
+  DownloadWorker *worker = DownloadWorker::sharedInstance();
+
   diskCache = new QNetworkDiskCache(this);
   diskCache->setCacheDirectory(QDesktopServices::storageLocation(QDesktopServices::CacheLocation));
 
   connect(&timer, SIGNAL(timeout()), this, SLOT(pendingTimeout()));
+  connect(worker, SIGNAL(dataReceived(Job *, const QByteArray &)),
+	  this, SLOT(jobFinished(Job *, const QByteArray &)));
 }
 
 BannerLoader::~BannerLoader()
@@ -41,6 +45,7 @@ BannerLoader::~BannerLoader()
 void
 BannerLoader::clear()
 {
+  jobs.clear();
   replies.clear();
   banners.clear();
 }
@@ -64,8 +69,9 @@ BannerLoader::fetchBanner(int id, const QUrl & url)
 {
   DownloadWorker *worker = DownloadWorker::sharedInstance();
   QIODevice *device;
+  Job *job;
 
-  if (banners.contains(id) || replies.key(id))
+  if (banners.contains(id) || replies.key(id) || jobs.key(id))
     return ;
 
   // FIXME: ask Bearer if network is up
@@ -75,9 +81,8 @@ BannerLoader::fetchBanner(int id, const QUrl & url)
     pending.append(device);
     timer.start(100);
   } else {
-    device = worker->fetchBanner(id, url);
-    connect(device, SIGNAL(finished()), this, SLOT(bannerReceived()));
-    replies[device] = id;
+    job = worker->fetchBanner(id, url);
+    jobs[job] = id;
   }
 }
 
@@ -85,35 +90,32 @@ void
 BannerLoader::pendingTimeout(void)
 {
   foreach (QIODevice *device, pending) {
-    bannerReceived(device);
+    if (replies.contains(device))
+      bannerReceived(replies.take(device), device->readAll());
     device->deleteLater();
   }
   pending.clear();
 }
 
 void
-BannerLoader::bannerReceived(void)
+BannerLoader::jobFinished(Job *job, const QByteArray & data)
 {
-  QNetworkReply *reply = dynamic_cast<QNetworkReply *>(sender());
+  if (!jobs.contains(job))
+    return ;
 
-  bannerReceived(reply);
+  bannerReceived(jobs.take(job), data);
 }
 
 void
-BannerLoader::bannerReceived(QIODevice *device)
+BannerLoader::bannerReceived(int id, const QByteArray & data)
 {
-  int id;
   QPixmap pixmap;
 
-  if (!replies.contains(device) || banners.contains(replies[device]))
+  if (banners.contains(id))
     return ;
 
-  id = replies[device];
-  replies.remove(device);
-
-  pixmap.loadFromData(device->readAll());
+  pixmap.loadFromData(data);
   banners[id] = pixmap;
 
   emit bannerReceived(id);
 }
-

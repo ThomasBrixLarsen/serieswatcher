@@ -43,7 +43,7 @@ SearchDialog::SearchDialog(QWidget * parent)
 
   model = new SearchModel(this);
   connect(model, SIGNAL(searchProgress(qint64, qint64)), this, SLOT(downloadProgress(qint64, qint64)));
-  connect(model, SIGNAL(networkError(QNetworkReply::NetworkError)), this, SLOT(error(QNetworkReply::NetworkError)));
+  connect(model, SIGNAL(searchFailed(const QString &)), this, SLOT(error(const QString &)));
   listView->setModel(model);
 
   searchButton->setIcon(QIcon::fromTheme("edit-find"));
@@ -92,14 +92,12 @@ SearchDialog::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
 }
 
 void
-SearchDialog::error(QNetworkReply::NetworkError code)
+SearchDialog::error(const QString & error)
 {
   QNetworkReply *r = dynamic_cast<QNetworkReply *>(sender());
 
-  if (code == QNetworkReply::OperationCanceledError)
-      return;
   if (r)
-      QMessageBox::critical(this, tr("Network Error"), r->errorString());
+      QMessageBox::critical(this, tr("Network Error"), error);
 #if defined(Q_WS_MAEMO_5)
   setAttribute(Qt::WA_Maemo5ShowProgressIndicator, false);
 #endif

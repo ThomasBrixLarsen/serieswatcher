@@ -27,6 +27,7 @@
 #include <QtGui/QApplication>
 #include <QtCore/QDebug>
 #include <QtCore/QThread>
+#include <QtCore/QDebug>
 
 #include "settings.h"
 #include "tvdbcache.h"
@@ -178,7 +179,7 @@ TvDBCache::storeShow(QtTvDB::Show *show)
   query.addBindValue(show->fanArt());
   query.addBindValue(show->imdbId());
   query.addBindValue(show->seriesId());
-  query.addBindValue(show->zap2itId());
+  query.addBindValue(show->zap2ItId());
   query.addBindValue(show->lastUpdated().toTime_t());
 
   if (!query.exec()) {
@@ -433,3 +434,36 @@ TvDBCache::name()
 {
   return dbName;
 }
+/*
+  sql = "SELECT COUNT(DISTINCT episodes.id) as episodesNb, "
+    "COUNT(DISTINCT episodes.season) as seasons, "
+    "SUM(episodes_extra.watched) as episodesWatched, "
+    "MAX(CASE WHEN episodes_extra.watched THEN episodes.firstAired ELSE 0 END) as nextAirs "
+    "FROM shows "
+    "LEFT JOIN episodes ON shows.id = episodes.showId "
+    "LEFT JOIN episodes_extra ON episodes.id = episodes_extra.id "
+    "GROUP BY shows.id ";
+
+  QSqlQuery query(query, ;
+  setQuery(query);
+
+  query = "SELECT episodes.season, episodes.seasonId, COUNT(DISTINCT episodes.id) as episodes, ";
+  query += "SUM(episodes_extra.watched) as episodesWatched, ";
+  query += "episodes.showId as showId ";
+  query += "FROM episodes ";
+  query += "LEFT JOIN episodes_extra ON episodes.id = episodes_extra.id ";
+  query += QString("WHERE episodes.showId = %1 ").arg(showId);
+  query += "GROUP BY episodes.season";
+
+  sql = "SELECT banners.id as bannerId, banners.path FROM banners ";
+  sql += "WHERE banners.type = 'season' AND banners.type2 = 'season' ";
+  sql += "AND banners.season = %1 AND banners.language = 'en' ";
+  sql += "AND banners.showId = %2";
+
+  query = "SELECT episodes.name, episodes.id, episodes_extra.watched, episodes.showId, episodes.season, ";
+  query += " episodes.firstAired, episodes.image ";
+  query += "FROM episodes ";
+  query += "LEFT JOIN episodes_extra ";
+  query += "ON episodes.id = episodes_extra.id ";
+  query += QString("WHERE episodes.showId = %1 AND episodes.season = %2").arg(showId).arg(season);
+*/

@@ -205,7 +205,7 @@ UpdateWorker::parseBannersXml(Job *job)
 	continue ;
       if (banner->type() == "poster" || banner->type() == "series" ||
 	  (banner->type() == "season" && banner->type2() == "season"))
-	bannerJob(banner->id(), TvDBCache::Poster, mirrors->bannerUrl(banner->path()));
+	bannerJob(banner->id(), TvDBCache::BannerTypePoster, mirrors->bannerUrl(banner->path()));
     }
   }
 
@@ -232,7 +232,7 @@ UpdateWorker::parseShowAndEpisodesXml(Job *job)
 
   foreach (QtTvDB::Episode *episode, episodes) {
     if (prefetch && episode->language() == "en" && !episode->image().isEmpty())
-      bannerJob(episode->id(), TvDBCache::Episode, mirrors->bannerUrl(episode->image()));
+      bannerJob(episode->id(), TvDBCache::BannerTypeEpisode, mirrors->bannerUrl(episode->image()));
 
     cache->storeEpisode(episode);
     emit parseProgress(job, done++, total);

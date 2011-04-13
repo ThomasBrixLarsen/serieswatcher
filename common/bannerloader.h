@@ -26,6 +26,7 @@
 
 class QIODevice;
 class QNetworkDiskCache;
+struct Job;
 
 class BannerLoader : public QObject
 {
@@ -41,16 +42,17 @@ class BannerLoader : public QObject
 
  private slots:
   void pendingTimeout();
-  void bannerReceived();
-  void bannerReceived(QIODevice *device);
+  void jobFinished(Job *job, const QByteArray & data);
+  void bannerReceived(int id, const QByteArray & data);
 
  signals:
   void bannerReceived(int id);
 
  private:
   QNetworkDiskCache *diskCache;
-  QMap < QIODevice * , int > replies;
+  QMap < Job * , int > jobs;
   QMap < int, QIcon > banners;
+  QMap < QIODevice *, int > replies;
   QList < QIODevice * > pending;
   QTimer timer;
 };

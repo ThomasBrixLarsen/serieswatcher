@@ -63,25 +63,25 @@ DownloadWorker::updateShow(qint64 id)
 #endif
 }
 
-QNetworkReply *
+Job *
 DownloadWorker::fetchBanner(int id, const QUrl & url)
 {
   Job *job = startJob(id, url, Job::Banner);
-  return downloads.key(job);
+  return job;
 }
 
-QNetworkReply *
+Job *
 DownloadWorker::fetchEpisodeBanner(int id, const QUrl & url)
 {
   Job *job = startJob(id, url, Job::EpisodeBanner);
-  return downloads.key(job);
+  return job;
 }
 
-QNetworkReply *
+Job *
 DownloadWorker::fetchSearchResults(const QString & query)
 {
   Job *job = startJob(0, mirrors->searchShowUrl(query), Job::SearchResults);
-  return downloads.key(job);
+  return job;
 }
 
 Job *
@@ -135,7 +135,32 @@ DownloadWorker::downloadProgress(qint64 done, qint64 total)
 void
 DownloadWorker::downloadFinished(QNetworkReply *reply)
 {
+  QVariant location = reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
+
   Job *job = downloads[reply];
+
+  if (location.isValid()) {
+    QUrl url = location.toUrl();
+    if (url.isRelative()) {
+      url.setScheme(reply->url().scheme());
+      url.setEncodedHost(reply->url().encodedHost());
+    }
+    QNetworkRequest req(url);
+
+    downloads.remove(reply);
+    reply->deleteLater();
+
+    job->url = url;
+
+    reply = manager->get(QNetworkRequest(job->url));
+    connect(reply, SIGNAL(downloadProgress(qint64, qint64)),
+	    this, SLOT(downloadProgress(qint64, qint64)));
+    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)),
+	    this, SLOT(downloadError(QNetworkReply::NetworkError)));
+
+    downloads[reply] = job;
+    return;
+  }
 
   job->data = reply->peek(reply->bytesAvailable());
   job->state = Job::Waiting;
@@ -143,6 +168,7 @@ DownloadWorker::downloadFinished(QNetworkReply *reply)
   downloads.remove(reply);
   reply->deleteLater();
 
+  emit dataReceived(job, job->data);
   emit downloadFinished(job);
 }
 

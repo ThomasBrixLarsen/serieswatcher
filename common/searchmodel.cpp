@@ -16,8 +16,6 @@
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <QtNetwork/QNetworkReply>
-
 #include "tvdb.h"
 #include "searchmodel.h"
 #include "downloadworker.h"
@@ -25,6 +23,14 @@
 SearchModel::SearchModel(QObject *parent)
   : QAbstractListModel(parent)
 {
+  DownloadWorker *worker = DownloadWorker::sharedInstance();
+
+  connect(worker, SIGNAL(dataReceived(Job *, const QByteArray &)),
+	  this, SLOT(downloadFinished(Job *, const QByteArray &)));
+  connect(worker, SIGNAL(downloadProgress(Job *, qint64, qint64)),
+	  this, SLOT(downloadProgress(Job *, qint64, qint64)));
+  connect(worker, SIGNAL(downloadFailed(Job *, const QString &)),
+	  this, SLOT(downloadFailed(Job *, const QString &)));
 }
 
 SearchModel::~SearchModel()
@@ -37,7 +43,7 @@ SearchModel::clear()
 {
   qDeleteAll(shows);
   shows.clear();
-  bannersReplies.clear();
+  bannersJobs.clear();
   banners.clear();
 }
 
@@ -47,24 +53,19 @@ SearchModel::setQuery(const QString & query)
   if (query == currentQuery)
     return ;
 
-  if (shows.size()) {
-    beginRemoveRows(QModelIndex(), 0, shows.size() - 1);
-    clear();
-    endRemoveRows();
-  }
+  beginRemoveRows(QModelIndex(), 0, shows.size() - 1);
+  clear();
+  endRemoveRows();
 
   currentQuery = query;
   if (query.isEmpty())
     return ;
 
   DownloadWorker *worker = DownloadWorker::sharedInstance();
-  QNetworkReply *reply = worker->fetchSearchResults(query);
+
+  searchJob = worker->fetchSearchResults(query);
 
   emit searchStarted();
-
-  connect(reply, SIGNAL(downloadProgress(qint64, qint64)), this, SIGNAL(searchProgress(qint64, qint64)));
-  connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SIGNAL(networkError(QNetworkReply::NetworkError)));
-  connect(reply, SIGNAL(finished()), this, SLOT(searchResultsReceived()));
 }
 
 int
@@ -79,18 +80,17 @@ SearchModel::fetchBanner(QtTvDB::Show *show) const
 {
   QtTvDB::Mirrors *mirrors = TvDB::mirrors();
   DownloadWorker *worker = DownloadWorker::sharedInstance();
-  QNetworkReply *reply;
+  Job *job;
 
-  if (banners.contains(show->id()) || bannersReplies.key(show))
+  if (banners.contains(show->id()) || bannersJobs.key(show))
     return ;
 
   if (show->banner().isEmpty())
     return ;
 
-  reply = worker->fetchBanner(show->id(), mirrors->bannerUrl(show->banner()));
-  connect(reply, SIGNAL(finished()), this, SLOT(bannerReceived()));
+  job = worker->fetchBanner(show->id(), mirrors->bannerUrl(show->banner()));
 
-  bannersReplies[reply] = show;
+  bannersJobs[job] = show;
 }
 
 QVariant
@@ -132,14 +132,38 @@ SearchModel::data(const QModelIndex & index, int role) const
 }
 
 void
-SearchModel::searchResultsReceived(void)
+SearchModel::downloadFinished(Job *job, const QByteArray & data)
 {
-  QNetworkReply *reply = dynamic_cast<QNetworkReply *>(sender());
+  if (job == searchJob) {
+    searchResultsReceived(data);
+    searchJob = NULL;
+  }
+  if (bannersJobs.contains(job)) {
+    QtTvDB::Show *show = bannersJobs.take(job);
+    bannerReceived(show, data);
+  }
+}
+
+void
+SearchModel::downloadProgress(Job *job, qint64 done, qint64 total)
+{
+  if (job == searchJob)
+    emit searchProgress(done, total);
+}
+
+void
+SearchModel::downloadFailed(Job *job, const QString & error)
+{
+  if (job == searchJob)
+    emit searchFailed(error);
+}
+
+void
+SearchModel::searchResultsReceived(const QByteArray & data)
+{
   QList < QtTvDB::Show * > result;
 
-  reply->deleteLater();
-
-  result = QtTvDB::Show::parseShows(reply->readAll());
+  result = QtTvDB::Show::parseShows(data);
 
   if (result.size()) {
     beginInsertRows(QModelIndex(), 0, result.size() - 1);
@@ -147,30 +171,23 @@ SearchModel::searchResultsReceived(void)
     endInsertRows();
   }
 
-  emit searchDone(reply->error() == QNetworkReply::NoError);
+  emit searchDone(!!result.size());
 }
 
 void
-SearchModel::bannerReceived(void)
+SearchModel::bannerReceived(QtTvDB::Show *show, const QByteArray & data)
 {
-  QNetworkReply *reply = dynamic_cast<QNetworkReply *>(sender());
-  QtTvDB::Show *show;
   int id;
   QPixmap pixmap;
 
-  reply->deleteLater();
-
-  if (!bannersReplies.contains(reply))
-    return ;
-
-  show = bannersReplies[reply];
   id = show->id();
 
   if (banners.contains(id))
     return ;
 
-  pixmap.loadFromData(reply->readAll());
-  banners[id] = pixmap; //pixmap.scaled(QSize(256, 64), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+  pixmap.loadFromData(data);
+  banners[id] = pixmap;
+  //pixmap.scaled(QSize(256, 64), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
   QModelIndex idx = index(shows.indexOf(show));
   emit dataChanged(idx, idx);

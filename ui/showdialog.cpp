@@ -51,8 +51,11 @@ void
 ShowDialog::setShow(QtTvDB::Show *show, TvDBCache *cache)
 {
   QtTvDB::Mirrors *mirrors = TvDB::mirrors();
-  QVariantMap map = show->map();
+  QVariantMap map;
   QString text;
+
+  foreach (QByteArray name, QObject::dynamicPropertyNames())
+    map[name] = show->property(name);
 
   setWindowTitle(show->name());
 
