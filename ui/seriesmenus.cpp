@@ -37,14 +37,22 @@ SeriesMenus::~SeriesMenus()
 void
 SeriesMenus::buildMenus()
 {
-  delete episodeMenu;
-  delete seasonMenu;
-  delete showMenu;
-  delete updateShowAction;
-  delete deleteShowAction;
-  delete markWatchedAction;
-  delete markNotWatchedAction;
-  delete detailsAction;
+  if (episodeMenu)
+    episodeMenu->deleteLater();
+  if (seasonMenu)
+    seasonMenu->deleteLater();
+  if (showMenu)
+    showMenu->deleteLater();
+  if (updateShowAction)
+    updateShowAction->deleteLater();
+  if (deleteShowAction)
+    deleteShowAction->deleteLater();
+  if (markWatchedAction)
+    markWatchedAction->deleteLater();
+  if (markNotWatchedAction)
+    markNotWatchedAction->deleteLater();
+  if (detailsAction)
+    detailsAction->deleteLater();
 
   updateShowAction = new QAction(QIcon::fromTheme("download"), QObject::tr("Update Show"), parent);
   deleteShowAction = new QAction(QIcon::fromTheme("edit-delete"), QObject::tr("Delete Show"), parent);
