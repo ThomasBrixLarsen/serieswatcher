@@ -20,13 +20,14 @@
 #include <QDebug>
 
 #include "mainwindow.h"
+#include "config.h"
 
 int main(int argc, char *argv[])
 {
   QApplication app(argc, argv);
   Q_INIT_RESOURCE(serieswatcher);
 #if defined(WITH_BUILTIN_ICONS)
-  Q_INIT_RESOURCE(icon);
+  Q_INIT_RESOURCE(icons);
 #endif
 
   QCoreApplication::setOrganizationName("SeriesWatcher");
