@@ -16,13 +16,6 @@ endif()
 
 qt4_add_resources(RC_SRCS ${resources_RCS})
 
-if (WIN32)
- add_custom_command( OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/icon.o
-                     COMMAND windres.exe -I${CMAKE_CURRENT_SOURCE_DIR} -i${CMAKE_CURRENT_SOURCE_DIR}/serieswatcher.rc
-                     -o ${CMAKE_CURRENT_BINARY_DIR}/icon.o )
- set(resources_SRCS ${resources_SRCS} ${CMAKE_CURRENT_BINARY_DIR}/icon.o)
-endif ()
-
 add_convenience_library(resources ${RC_SRCS})
 
 target_link_libraries(resources

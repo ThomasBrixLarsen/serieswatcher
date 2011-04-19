@@ -71,7 +71,13 @@ qt4_wrap_cpp(MOC_SOURCE ${serieswatcher_MOC_HDRS})
 qt4_wrap_ui(UI_HDRS ${serieswatcher_UIS})
 
 if (WIN32)
- set(GUI_TYPE WIN32)
+ add_custom_command( OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/icon.o
+                     COMMAND windres.exe -I${resources_SOURCE_DIR} -i${resources_SOURCE_DIR}/serieswatcher.rc
+                     -o ${CMAKE_CURRENT_BINARY_DIR}/icon.o )
+ set(serieswatcher_SRCS ${serieswatcher_SRCS} ${CMAKE_CURRENT_BINARY_DIR}/icon.o)
+ if("${CMAKE_BUILD_TYPE}" MATCHES "^Rel.*")
+   set(GUI_TYPE WIN32)
+ endif()
 endif ()
 
 add_executable(
@@ -96,7 +102,5 @@ target_link_libraries(
 )
 
 install(TARGETS serieswatcher
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
-  ARCHIVE DESTINATION lib
+  RUNTIME DESTINATION ${BIN_INSTALL_DIR}
 )

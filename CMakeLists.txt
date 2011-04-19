@@ -47,6 +47,18 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -ggdb3 -DDEBUG=1")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 
+if(NOT EXECUTABLE_OUTPUT_PATH)
+  set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin CACHE STRING
+    "Single output directory for building all executables."
+    FORCE)
+endif()
+
+if(NOT LIBRARY_OUTPUT_PATH)
+  set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin CACHE STRING
+    "Single output directory for building all libraries."
+    FORCE)
+endif()
+
 # compile in debug mode
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Debug CACHE STRING
@@ -62,9 +74,15 @@ endif("${CMAKE_BUILD_TYPE}" MATCHES "^Rel.*")
 #add extra search paths for libraries and includes
 set(LIB_SUFFIX "" CACHE STRING "Define suffix of directory name (32/64)" )
 set(LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}" CACHE STRING "Directory where lib will install")
-set(BIN_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/bin" CACHE STRING "Directory where binary will install")
 set(INCLUDE_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE STRING "Directory where include will install")
 
+if (APPLE)
+   set(BIN_INSTALL_DIR "serieswatcher.app/Contents/MacOS")
+elseif (WIN32)
+   set(BIN_INSTALL_DIR "bin") # FIXME CMake bug
+else()
+   set(BIN_INSTALL_DIR "bin")
+endif()
 
 set (SERIES_WATCHER_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
@@ -78,16 +96,21 @@ add_subdirectory(pkg)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake config.h ESCAPE_QUOTES)
 
 ## Package ##
+
+# Bundle only accept .txt files
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/COPYING ${CMAKE_CURRENT_BINARY_DIR}/COPYING.txt)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/README ${CMAKE_CURRENT_BINARY_DIR}/README.txt)
+
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Series Watcher")
 set(CPACK_PACKAGE_VENDOR "iksaif.net")
 set(CPACK_PACKAGE_VERSION_MAJOR ${VERSION_MAJOR})
 set(CPACK_PACKAGE_VERSION_MINOR ${VERSION_MINOR})
 set(CPACK_PACKAGE_VERSION_PATCH ${VERSION_PATCH})
 set(CPACK_VERSION ${SERIES_WATCHER_VERSION})
-set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README")
-set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README")
-set(CPACK_RESOURCE_FILE_WELCOME "${CMAKE_CURRENT_SOURCE_DIR}/README")
-set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/COPYING")
+set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_BINARY_DIR}/README.txt")
+set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_BINARY_DIR}/README.txt")
+set(CPACK_RESOURCE_FILE_WELCOME "${CMAKE_CURRENT_BINARY_DIR}/README.txt")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_BINARY_DIR}/COPYING.txt")
 set(CPACK_PACKAGE_CONTACT "Corentin Chary <corentin.chary@gmail.com>")
 set(CPACK_PACKAGE_VENDOR "http://xf.iksaif.net/dev/serieswatcher.html")
 set(CPACK_SOURCE_IGNORE_FILES
@@ -95,27 +118,15 @@ set(CPACK_SOURCE_IGNORE_FILES
   "^${PROJECT_SOURCE_DIR}/\\\\.git"
   "^${PROJECT_SOURCE_DIR}/qttvdb/\\\\.git"
   "^${PROJECT_SOURCE_DIR}/build/")
-set(CPACK_PACKAGE_FILE_NAME "serieswatcher-${CPACK_VERSION}-${CMAKE_SYSTEM_NAME}")
-set(CPACK_SOURCE_PACKAGE_FILE_NAME "serieswatcher-${CPACK_VERSION}")
-
 
 if(WIN32)
-  install(FILES
-        "${QT_BINARY_DIR}/QtCore${QT_VERSION_MAJOR}.dll"
-        "${QT_BINARY_DIR}/QtXml${QT_VERSION_MAJOR}.dll"
-        "${QT_BINARY_DIR}/QtGui${QT_VERSION_MAJOR}.dll"
-        "${QT_BINARY_DIR}/QtNetwork${QT_VERSION_MAJOR}.dll"
-		"${QT_BINARY_DIR}/QtSql${QT_VERSION_MAJOR}.dll"
-        "${QT_BINARY_DIR}/mingwm10.dll"
-        "${QT_BINARY_DIR}/libgcc_s_dw2-1.dll"
-        "${CMAKE_BINARY_DIR}/src/libqttvdb.dll"
-        DESTINATION bin
-  )
   set(CPACK_PACKAGE_FILE_NAME "serieswatcher-${CPACK_VERSION}-win32")
   set(CPACK_SOURCE_PACKAGE_FILE_NAME "serieswatcher")
-  set(CPACK_PACKAGE_EXECUTABLES "serieswatcher;Series Watcher")
   set(CPACK_NSIS_MUI_ICON "${CMAKE_SOURCE_DIR}/res/serieswatcher.ico")
   set(CPACK_NSIS_MUI_UNIICON "${CMAKE_SOURCE_DIR}/res/serieswatcher.ico")
+
+  set(CPACK_PACKAGE_EXECUTABLES "serieswatcher" "Series Watcher")
+
   set(CPACK_BINARY_NSIS "ON")
   set(CPACK_NSIS_MODIFY_PATH "OFF")
   set(CPACK_BINARY_CYGWIN "OFF")
@@ -125,11 +136,40 @@ if(WIN32)
   set(CPACK_NSIS_URL_INFO_ABOUT "http://xf.iksaif.net/dev/serieswatcher.html")
   set(CPACK_NSIS_CONTACT "Corentin Chary <corentin.chary@gmail.com>")
   set(CPACK_PACKAGE_INSTALL_DIRECTORY "serieswatcher")
-else(WIN32)
-  set(CPACK_GENERATOR "DEB")
+
+elseif(APPLE)
+  set(CPACK_GENERATOR "DragNDrop")
+
+  set(CPACK_PACKAGE_FILE_NAME "serieswatcher-${CPACK_VERSION}-osx")
+  set(CPACK_PACKAGE_ICON ${CMAKE_SOURCE_DIR}/serieswatcher/res/serieswatcher.icns)
+
+  set(CPACK_BUNDLE_ICON ${CMAKE_SOURCE_DIR}/serieswatcher/res/serieswatcher.icns)
+  set(CPACK_BUNDLE_NAME "serieswatcher")
+  set(CPACK_BUNDLE_STARTUP_COMMAND "${CMAKE_SOURCE_DIR}/pkg/osx/serieswatcher-startup")
+  set(CPACK_BUNDLE_PLIST ${CMAKE_BINARY_DIR}/Info.plist)
+
+  #set(CPACK_DMG_BACKGROUND_IMAGE pkg/osx/background.png)
+  #set(CPACK_DMG_DS_STORE pkg/osx/DS_Store)
+
+  set(MACOSX_BUNDLE_GUI_IDENTIFIER "http://xf.iksaif.net/dev/serieswatcher.html")
+  set(MACOSX_BUNDLE_LONG_VERSION_STRING "serieswatcher" ${CPACK_VERSION})
+  set(MACOSX_BUNDLE_BUNDLE_NAME "serieswatcher")
+  set(MACOSX_BUNDLE_SHORT_VERSION_STRING ${CPACK_VERSION})
+  set(MACOSX_BUNDLE_BUNDLE_VERSION ${CPACK_VERSION})
+  set(MACOSX_BUNDLE_COPYRIGHT "Copyright 2010-2011 Corentin Chary")
+  set(MACOSX_BUNDLE_INFO_STRING "Lugdulo'V - Find a bike in your city")
+  set(MACOSX_BUNDLE_ICON_FILE "serieswatcher.icns")
+  set(MACOSX_BUNDLE_EXECUTABLE_NAME "${CMAKE_SOURCE_DIR}/pkg/osx/serieswatcher-startup")
+  configure_file(pkg/osx/Info.plist.in ${CMAKE_BINARY_DIR}/Info.plist)
+  set(MACOSX_BUNDLE_INFO_PLIST ${CMAKE_BINARY_DIR}/Info.plist)
+
+  install(FILES ${CMAKE_BINARY_DIR}/Info.plist DESTINATION serieswatcher.app/Contents/)
+  install(FILES serieswatcher/res/serieswatcher.icns DESTINATION serieswatcher.app/Contents/Resources)
+
+  set(CPACK_BINARY_DRAGNDROP ON)
+else()
   set(CPACK_SOURCE_GENERATOR "TGZ;TBZ2")
-  ## Debian specific ##
-  set(CPACK_DEBIAN_PACKAGE_DEPENDS "libqt4-core (>= 4.6), libqt4-xml (>= 4.6), libqt4-gui (>= 4.6), libqt4-network (>= 4.6), qttvdb (>= 0.1)")
-  set(CPACK_DEBIAN_PACKAGE_BUILDS_DEPENDS "libqt4-dev (>= 4.6), cmake (>= 2.6), qttvdb (>= 0.1)")
+  set(CPACK_PACKAGE_FILE_NAME "serieswatcher-${CPACK_VERSION}-${CMAKE_SYSTEM_NAME}")
+  set(CPACK_SOURCE_PACKAGE_FILE_NAME "serieswatcher-${CPACK_VERSION}")
 endif(WIN32)
 include(CPack)
