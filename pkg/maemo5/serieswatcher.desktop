@@ -1,6 +1,6 @@
 #!/usr/bin/env xdg-open
 [Desktop Entry]
-Version=0.1.2
+Version=0.1.3
 Encoding=UTF-8
 Name=Series Watcher
 Exec=/opt/serieswatcher/bin/serieswatcher-wrapper

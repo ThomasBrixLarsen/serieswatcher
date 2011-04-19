@@ -5,7 +5,7 @@ isEmpty(PREFIX) {
 BINDIR = $${PREFIX}/bin
 LIBDIR = $${PREFIX}/lib
 
-VERSION = 0.1.2
+VERSION = 0.1.3
 
 CONFIG += qt thread
 

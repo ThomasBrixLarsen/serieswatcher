@@ -48,10 +48,6 @@ add_convenience_library(common
   ${MOC_SOURCE}
 )
 
-if (Q_WS_MAEMO_5)
-  target_link_libraries(serieswatcher QtMaemo5)
-endif()
-
 target_link_libraries(common
   ${QT_LIBRARIES}
   ${QTTVDB_LIBRARIES}
