@@ -1,0 +1,21 @@
+Name: serieswatcher
+Summary: Series Watcher - TV series browser and tracker application.
+Version: 0.1.3
+Release: 1
+Group: Applications/Productivity
+License: GPLv2
+URL: http://xf.iksaif.net/dev/serieswatcher.html
+Sources:
+    - "%{name}-%{version}.tar.bz2"
+Description: TV series browser and tracker application. Its goal is to help you manage the TV shows you watch regularly and keep track of the episodes you have seen so far. The shows and episodes can be retrieved automatically by using the “TheTVDB API”.
+
+PkgConfigBR:
+    - QtCore >= 4.6.0
+    - QtNetwork
+    - QtGui
+
+PkgBR:
+    - cmake
+
+Configure: none
+Builder: make

@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=0.4.0
+Encoding=UTF-8
+Exec=serieswatcher
+Type=Application
+Icon=serieswatcher
+Categories=Utility;
+Terminal=False
+StartupNotify=true
+Name=Series Watcher
+
