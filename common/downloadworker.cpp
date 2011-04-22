@@ -141,6 +141,7 @@ DownloadWorker::downloadFinished(QNetworkReply *reply)
 
   if (location.isValid()) {
     QUrl url = location.toUrl();
+
     if (url.isRelative()) {
       url.setScheme(reply->url().scheme());
       url.setEncodedHost(reply->url().encodedHost());

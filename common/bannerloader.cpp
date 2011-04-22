@@ -32,6 +32,8 @@ BannerLoader::BannerLoader(QObject *parent)
   diskCache = new QNetworkDiskCache(this);
   diskCache->setCacheDirectory(QDesktopServices::storageLocation(QDesktopServices::CacheLocation));
 
+  timer.setSingleShot(true);
+
   connect(&timer, SIGNAL(timeout()), this, SLOT(pendingTimeout()));
   connect(worker, SIGNAL(dataReceived(Job *, const QByteArray &)),
 	  this, SLOT(jobFinished(Job *, const QByteArray &)));
@@ -68,14 +70,21 @@ void
 BannerLoader::fetchBanner(int id, const QUrl & url)
 {
   DownloadWorker *worker = DownloadWorker::sharedInstance();
-  QIODevice *device;
+  QIODevice *device = NULL;
   Job *job;
 
   if (banners.contains(id) || replies.key(id) || jobs.key(id))
     return ;
 
   // FIXME: ask Bearer if network is up
-  device = diskCache->data(url);
+  QVariant location = url;
+  while (location.isValid()) {
+    /* FIXME: handle relative redirections */
+    device = diskCache->data(location.toUrl());
+    location = diskCache->metaData(location.toUrl())
+      .attributes()[QNetworkRequest::RedirectionTargetAttribute];
+  }
+
   if (device) {
     replies[device] = id;
     pending.append(device);
