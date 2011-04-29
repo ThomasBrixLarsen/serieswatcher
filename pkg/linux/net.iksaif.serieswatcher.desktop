@@ -1,9 +1,9 @@
 [Desktop Entry]
 Version=0.1.3
 Encoding=UTF-8
-Exec=serieswatcher
+Exec=/opt/net.iksaif.serieswatcher/bin/serieswatcher
 Type=Application
-Icon=serieswatcher
+Icon=net.iksaif.serieswatcher
 Categories=Utility;
 Terminal=False
 StartupNotify=true

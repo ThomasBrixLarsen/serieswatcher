@@ -6,3 +6,4 @@
 #cmakedefine WITH_ZIP
 #cmakedefine Q_WS_MAEMO_5
 #cmakedefine WITH_BUILTIN_ICONS
+#cmakedefine SERIESWATCHER_MEEGO

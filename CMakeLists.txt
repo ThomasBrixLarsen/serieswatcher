@@ -37,6 +37,7 @@ endif()
 
 cmake_dependent_option(WITH_ZIP "With zip support [default: on]" ON "HAVE_ZIP" OFF)
 option(WITH_BUILTIN_ICONS  "Include icon theme in built-in ressources" ON)
+option(SERIESWATCHER_MEEGO "build for MeeGo [default: off]"  OFF)
 
 ## GCC  ##
 set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O2")
@@ -83,6 +84,11 @@ elseif (WIN32)
 else()
    set(BIN_INSTALL_DIR "bin")
 endif()
+
+if (SERIESWATCHER_MEEGO)
+   SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
+   SET(CMAKE_INSTALL_RPATH "/opt/net.iksaif/serieswatcher/lib")
+endif ()
 
 set (SERIES_WATCHER_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
@@ -169,7 +175,14 @@ elseif(APPLE)
   set(CPACK_BINARY_DRAGNDROP ON)
 else()
   set(CPACK_SOURCE_GENERATOR "TGZ;TBZ2")
-  set(CPACK_PACKAGE_FILE_NAME "serieswatcher-${CPACK_VERSION}-${CMAKE_SYSTEM_NAME}")
-  set(CPACK_SOURCE_PACKAGE_FILE_NAME "serieswatcher-${CPACK_VERSION}")
-endif(WIN32)
+
+  if (SERIESWATCHER_MEEGO)
+    set(CPACK_PACKAGE_FILE_NAME "net.iksaif.serieswatcher-${CPACK_VERSION}-${CMAKE_SYSTEM_NAME}")
+    set(CPACK_SOURCE_PACKAGE_FILE_NAME "net.iksaif.serieswatcher-${CPACK_VERSION}")
+  else()
+    set(CPACK_PACKAGE_FILE_NAME "serieswatcher-${CPACK_VERSION}-${CMAKE_SYSTEM_NAME}")
+    set(CPACK_SOURCE_PACKAGE_FILE_NAME "serieswatcher-${CPACK_VERSION}")
+  endif()
+endif()
+
 include(CPack)

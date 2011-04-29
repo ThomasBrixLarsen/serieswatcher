@@ -5,7 +5,7 @@
 # >> macros
 # << macros
 
-Name:       serieswatcher
+Name:       net.iksaif.serieswatcher
 Summary:    Series Watcher - TV series browser and tracker application.
 Version:    0.1.3
 Release:    1
@@ -13,7 +13,7 @@ Group:      Applications/Productivity
 License:    GPLv2
 URL:        http://xf.iksaif.net/dev/serieswatcher.html
 Source0:    %{name}-%{version}.tar.bz2
-Source100:  serieswatcher.yaml
+Source100:  net.iksaif.serieswatcher.yaml
 BuildRequires:  pkgconfig(QtCore) >= 4.6.0
 BuildRequires:  pkgconfig(QtNetwork)
 BuildRequires:  pkgconfig(QtGui)
@@ -35,21 +35,26 @@ TV series browser and tracker application. Its goal is to help you manage the TV
 # >> build pre
 # << build pre
 
+SW_ROOT=$(pwd)
+
 mkdir meego-qttvdb-build
 cd meego-qttvdb-build
 
 cmake ../qttvdb/  \
-    -DCMAKE_INSTALL_PREFIX:PATH=%{_prefix} \
+    -DCMAKE_INSTALL_PREFIX:PATH=/opt/%{name} \
 
 make %{?jobs:-j%jobs}
 
+cd ..
+
 mkdir meego-build
 cd meego-build
-cmake ..  \
-    -DCMAKE_INSTALL_PREFIX:PATH=%{_prefix} \
-    -DQTTVDB_LIBRARY_DIRS=%{buildroot}/meego-qttvdb-build/lib/ \
-    -DQTTVDB_INCLUDE_DIRS=%{_sourcedir}/qttvdb/src/
 
+cmake ..  \
+    -DCMAKE_INSTALL_PREFIX:PATH=/opt/%{name} \
+    -DSERIESWATCHER_MEEGO=ON \
+    -DQTTVDB_LIBRARY_DIRS=${SW_ROOT}/meego-qttvdb-build/lib/ \
+    -DQTTVDB_INCLUDE_DIRS=${SW_ROOT}/qttvdb/src/
 
 make %{?jobs:-j%jobs}
 
@@ -59,6 +64,7 @@ make %{?jobs:-j%jobs}
 rm -rf %{buildroot}
 # >> install pre
 # << install pre
+
 cd meego-build
 %make_install 
 
@@ -83,7 +89,9 @@ update-desktop-database %{_datadir}/applications &> /dev/null || :
 %defattr(-,root,root,-)
 # >> files
 # << files
-/usr/bin/serieswatcher
-/usr/share/applications/serieswatcher.desktop
-/usr/share/icons/hicolor/64x64/apps/serieswatcher.png
-/usr/share/icons/hicolor/scalable/apps/serieswatcher.svg
+/opt/net.iksaif.serieswatcher/bin/serieswatcher
+/usr/share/applications/net.iksaif.serieswatcher.desktop
+/usr/share/icons/hicolor/32x32/apps/net.iksaif.serieswatcher.png
+/usr/share/icons/hicolor/64x64/apps/net.iksaif.serieswatcher.png
+/usr/share/icons/hicolor/128x128/apps/net.iksaif.serieswatcher.png
+/usr/share/icons/hicolor/scalable/apps/net.iksaif.serieswatcher.svg

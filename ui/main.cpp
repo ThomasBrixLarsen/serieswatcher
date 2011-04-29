@@ -31,8 +31,13 @@ int main(int argc, char *argv[])
 #endif
 
   QCoreApplication::setOrganizationName("SeriesWatcher");
+#ifdef SERIESWATCHER_MEEGO
   QCoreApplication::setApplicationName("SeriesWatcher");
-  QCoreApplication::setApplicationVersion("0.1");
+#else
+  QCoreApplication::setApplicationName("net.iksaif.serieswatcher");
+#endif
+  QCoreApplication::setApplicationVersion(SERIES_WATCHER_VERSION);
+
   QIcon::setThemeName("serieswatcher");
 
   MainWindow window;
