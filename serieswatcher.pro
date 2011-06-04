@@ -1,6 +1,7 @@
 TEMPLATE = subdirs
-SUBDIRS = sub_qttvdb sub_src
+SUBDIRS = sub_qttvdb sub_common sub_ui
 
 sub_qttvdb.subdir = qttvdb
-sub_src.subdir    = src
+sub_common.subdir    = common
+sub_ui.subdir    = ui
 

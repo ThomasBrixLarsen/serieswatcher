@@ -9,7 +9,8 @@ DESTDIR = ../bin
 
 include(../serieswatcher.pri)
 
-INCLUDEPATH += ../qmake/ ../qttvdb/
+INCLUDEPATH += ../qmake/ ../qttvdb/src/
+INCLUDEPATH += ../common/
 
 unix {
     suffix = ""
@@ -22,40 +23,26 @@ win32 {
     }
 }
 
+LIBS += -L../bin/$${suffix} -lcommon
 LIBS += -L../qttvdb/$${suffix} -lqttvdb
 
 HEADERS += aboutdialog.h \
   actiondialog.h \
-  bannerloader.h \
-  downloadworker.h \
   episodedialog.h \
-  job.h \
   listwindow.h \
   mainlistview.h \
   maintreeview.h \
   mainwindow.h \
-  schema.h \
   searchdialog.h \
   searchlistview.h \
-  searchmodel.h \
-  seriesaction.h \
   seriesmenus.h \
-  serieswatcher.h \
   settingsdialog.h \
-  settings.h \
   showdelegate.h \
   showdialog.h \
-  tvdbcache.h \
-  tvdb.h \
-  tvdbitem.h \
-  tvdbmodel.h \
-  updateprogressdialog.h \
-  updateworker.h
+  updateprogressdialog.h
 
-SOURCES +=  aboutdialog.cpp \
+SOURCES += aboutdialog.cpp \
   actiondialog.cpp \
-  bannerloader.cpp \
-  downloadworker.cpp \
   episodedialog.cpp \
   listwindow.cpp \
   main.cpp \
@@ -64,21 +51,29 @@ SOURCES +=  aboutdialog.cpp \
   mainwindow.cpp \
   searchdialog.cpp \
   searchlistview.cpp \
-  searchmodel.cpp \
-  seriesaction.cpp \
   seriesmenus.cpp \
-  settings.cpp \
   settingsdialog.cpp \
   showdelegate.cpp \
   showdialog.cpp \
-  tvdbcache.cpp \
-  tvdb.cpp \
-  tvdbitem.cpp \
-  tvdbmodel.cpp \
-  updateprogressdialog.cpp \
-  updateworker.cpp
+  updateprogressdialog.cpp
 
 TRANSLATIONS = i18n/serieswatcher_fr.ts
+
+FORMS += aboutdialog.ui \
+  actiondialog.ui \
+  episodedialogscroll.ui \
+  episodedialog.ui \
+  listwindow.ui \
+  mainwindow.ui \
+  searchdialog.ui \
+  settingsdialog.ui \
+  showdialogscroll.ui \
+  showdialog.ui \
+  updateprogressdialog.ui
+
+RESOURCES += ../res/serieswatcher.qrc \
+  ../res/icons/icons.qrc \
+  ../i18n/i18n.qrc
 
 symbian: {
     TARGET.EPOCALLOWDLLDATA = 1
@@ -95,18 +90,3 @@ symbian: {
 
     DEPLOYMENT += SeriesWatcherDeployment
 }
-
-FORMS += aboutdialog.ui \
-         actiondialog.ui \
-         episodedialogscroll.ui \
-         episodedialog.ui \
-         listwindow.ui \
-         mainwindow.ui \
-         searchdialog.ui \
-         settingsdialog.ui \
-         showdialogscroll.ui \
-         showdialog.ui \
-         updateprogressdialog.ui
-
-RESOURCES += serieswatcher.qrc \
-              ../i18n/i18n.qrc
