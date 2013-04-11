@@ -248,6 +248,8 @@ TvDBModel::setupModelData(void)
 
       int episodeNumber = 1;
       while (queryEpisode.next()) {
+	if(queryEpisode.record().value("name").toString().trimmed() == "" || queryEpisode.record().value("name").toString().trimmed() == "TBA")
+		continue;
 	episode = new TvDBItem(TvDBItem::Episode, show);
 	episode->id = queryEpisode.record().value("id").toInt();
 	episode->name = season->name+"x"+(episodeNumber>9? "":"0")+QString::number(episodeNumber)+" - "+queryEpisode.record().value("name").toString();
