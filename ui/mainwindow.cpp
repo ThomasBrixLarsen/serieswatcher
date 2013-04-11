@@ -662,3 +662,9 @@ MainWindow::windowClosed()
 {
   childWindows.pop();
 }
+
+void
+MainWindow::resizeEvent(QResizeEvent *event)
+{
+  reload();
+}

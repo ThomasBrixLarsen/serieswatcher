@@ -41,6 +41,9 @@ public:
   MainWindow();
   ~MainWindow();
 
+protected:
+  void resizeEvent(QResizeEvent *event);
+
 private slots:
   void delayedInit(void);
 
