@@ -29,6 +29,11 @@ class TvDBModel;
 class TvDBItem
 {
 public:
+  struct SortOperator
+  {
+    bool operator()(const TvDBItem *a, const TvDBItem *b) const;
+  };
+
   TvDBItem(int type, TvDBItem *parent = 0);
   ~TvDBItem();
 
@@ -42,6 +47,7 @@ public:
   int row() const;
   Qt::ItemFlags flags(int column) const;
   TvDBItem *parent();
+  void sortChildren();
 
   enum Type {
     Root,

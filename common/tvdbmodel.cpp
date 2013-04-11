@@ -270,4 +270,5 @@ TvDBModel::setupModelData(void)
     }
     rootItem->appendChild(show);
   }
+  rootItem->sortChildren();
 }

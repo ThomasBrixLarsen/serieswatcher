@@ -296,3 +296,15 @@ TvDBItem::flags(int column) const
     flags |= Qt::ItemIsUserCheckable;
   return flags;
 }
+
+bool TvDBItem::SortOperator::operator()(const TvDBItem *a, const TvDBItem *b) const
+{
+  if(a->episodesNew == b->episodesNew)
+    return a->name < b->name;
+  return a->episodesNew > b->episodesNew;
+}
+
+void TvDBItem::sortChildren()
+{
+  qSort(childItems.begin(), childItems.end(), SortOperator());
+}
