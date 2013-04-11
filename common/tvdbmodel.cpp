@@ -246,10 +246,11 @@ TvDBModel::setupModelData(void)
 
       queryEpisode.exec(sql);
 
+      int episodeNumber = 1;
       while (queryEpisode.next()) {
 	episode = new TvDBItem(TvDBItem::Episode, show);
 	episode->id = queryEpisode.record().value("id").toInt();
-	episode->name = queryEpisode.record().value("name").toString();
+	episode->name = season->name+"x"+(episodeNumber>9? "":"0")+QString::number(episodeNumber)+" - "+queryEpisode.record().value("name").toString();
 	episode->nextEpisodeName = episode->name;
 	episode->nextEpisodeDate = QDateTime::fromTime_t(queryEpisode.record().value("firstAired").toULongLong());
 	episode->episodesWatched = queryEpisode.record().value("watched").toBool();
@@ -261,6 +262,7 @@ TvDBModel::setupModelData(void)
 	  episode->episodesNew = true;
 
 	season->appendChild(episode);
+    episodeNumber++;
       }
       show->appendChild(season);
     }
